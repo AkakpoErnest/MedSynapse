@@ -1,0 +1,24 @@
+{
+  "name": "medsynapse",
+  "version": "0.1.0",
+  "description": "Decentralized AI-powered platform for secure health data sharing",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "build": "npm run build:contracts && npm run build:frontend && npm run build:backend",
+    "build:contracts": "cd contracts && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "test": "npm run test:contracts && npm run test:backend",
+    "test:contracts": "cd contracts && npm test",
+    "test:backend": "cd backend && npm test"
+  },
+  "keywords": ["healthcare", "blockchain", "ai", "data-privacy", "medical-research"],
+  "author": "MedSynapse Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
