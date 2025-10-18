@@ -10,8 +10,10 @@ contract MedSynapseConsent is Ownable, ReentrancyGuard {
         address contributor;
         string dataHash; // Lighthouse file hash
         string dataType; // e.g., "lab_results", "wearable_data"
+        string description; // Human readable description
         uint256 timestamp;
         bool isActive;
+        uint256 accessCount; // Track how many times accessed
         mapping(address => bool) authorizedResearchers;
     }
     
@@ -25,7 +27,7 @@ contract MedSynapseConsent is Ownable, ReentrancyGuard {
     
     mapping(bytes32 => ConsentRecord) public consents;
     mapping(address => bytes32[]) public contributorConsents;
-    mapping(address => ResearchRequest[]) public researchRequests;
+    mapping(bytes32 => ResearchRequest[]) public researchRequests;
     
     uint256 public totalConsents;
     uint256 public feePercentage = 5; // 5% fee for platform
@@ -41,8 +43,12 @@ contract MedSynapseConsent is Ownable, ReentrancyGuard {
     
     function createConsent(
         string memory _dataHash,
-        string memory _dataType
+        string memory _dataType,
+        string memory _description
     ) external returns (bytes32) {
+        require(bytes(_dataHash).length > 0, "Data hash cannot be empty");
+        require(bytes(_dataType).length > 0, "Data type cannot be empty");
+        
         bytes32 consentId = keccak256(abi.encodePacked(
             msg.sender,
             _dataHash,
@@ -54,8 +60,10 @@ contract MedSynapseConsent is Ownable, ReentrancyGuard {
         consent.contributor = msg.sender;
         consent.dataHash = _dataHash;
         consent.dataType = _dataType;
+        consent.description = _description;
         consent.timestamp = block.timestamp;
         consent.isActive = true;
+        consent.accessCount = 0;
         
         contributorConsents[msg.sender].push(consentId);
         totalConsents++;
@@ -120,17 +128,37 @@ contract MedSynapseConsent is Ownable, ReentrancyGuard {
         address contributor,
         string memory dataHash,
         string memory dataType,
+        string memory description,
         uint256 timestamp,
-        bool isActive
+        bool isActive,
+        uint256 accessCount
     ) {
         ConsentRecord storage consent = consents[_consentId];
         return (
             consent.contributor,
             consent.dataHash,
             consent.dataType,
+            consent.description,
             consent.timestamp,
-            consent.isActive
+            consent.isActive,
+            consent.accessCount
         );
+    }
+    
+    function recordDataAccess(bytes32 _consentId) external {
+        ConsentRecord storage consent = consents[_consentId];
+        require(consent.isActive, "Consent not active");
+        require(consent.authorizedResearchers[msg.sender], "Not authorized");
+        
+        consent.accessCount++;
+    }
+    
+    function getContributorConsents(address _contributor) external view returns (bytes32[] memory) {
+        return contributorConsents[_contributor];
+    }
+    
+    function getResearchRequests(bytes32 _consentId) external view returns (ResearchRequest[] memory) {
+        return researchRequests[_consentId];
     }
     
     // Admin functions
