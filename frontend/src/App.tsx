@@ -25,17 +25,15 @@ const config = createConfig({
 function App() {
   return (
     <WagmiConfig config={config}>
-      <div className="min-h-screen bg-gray-50">
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/contributor" element={<ContributorDashboard />} />
-            <Route path="/researcher" element={<ResearcherDashboard />} />
-            <Route path="/upload" element={<DataUpload />} />
-            <Route path="/analysis" element={<DataAnalysis />} />
-          </Routes>
-        </Layout>
-      </div>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/contributor" element={<ContributorDashboard />} />
+          <Route path="/researcher" element={<ResearcherDashboard />} />
+          <Route path="/upload" element={<DataUpload />} />
+          <Route path="/analysis" element={<DataAnalysis />} />
+        </Routes>
+      </Layout>
     </WagmiConfig>
   )
 }
