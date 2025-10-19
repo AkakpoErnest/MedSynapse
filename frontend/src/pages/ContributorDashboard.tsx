@@ -1,27 +1,27 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Upload, FileText, Shield, Eye } from 'lucide-react'
+import { Upload, FileText, Shield, Eye, MoreVertical, Trash2, Eye as ViewIcon } from 'lucide-react'
+import { useContributorData } from '../hooks/useMedSynapse'
+import { formatDate, getDataTypeIcon, getStatusColor } from '../utils/helpers'
+import ConsentDetails from '../components/ConsentDetails'
 
 const ContributorDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview')
+  const [showActions, setShowActions] = useState<string | null>(null)
+  const [selectedConsent, setSelectedConsent] = useState<any>(null)
+  const { consents, loading, error } = useContributorData()
 
-  // Mock data - in real app this would come from API
-  const mockData = [
-    {
-      id: '1',
-      type: 'Lab Results',
-      date: '2024-01-15',
-      status: 'Active',
-      requests: 3
-    },
-    {
-      id: '2', 
-      type: 'Wearable Data',
-      date: '2024-01-10',
-      status: 'Active',
-      requests: 1
-    }
-  ]
+  const handleRevokeConsent = (consentId: string) => {
+    // In a real app, this would call the smart contract
+    console.log('Revoking consent:', consentId)
+    setShowActions(null)
+  }
+
+  const handleViewDetails = (consentId: string) => {
+    const consent = consents.find(c => c.id === consentId)
+    setSelectedConsent(consent)
+    setShowActions(null)
+  }
 
   return (
     <div className="space-y-6">
@@ -43,7 +43,7 @@ const ContributorDashboard: React.FC = () => {
             <FileText className="w-8 h-8 text-blue-500" />
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Total Datasets</p>
-              <p className="text-2xl font-bold text-gray-900">{mockData.length}</p>
+              <p className="text-2xl font-bold text-gray-900">{consents.length}</p>
             </div>
           </div>
         </div>
@@ -52,7 +52,7 @@ const ContributorDashboard: React.FC = () => {
             <Shield className="w-8 h-8 text-green-500" />
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Active Consents</p>
-              <p className="text-2xl font-bold text-gray-900">{mockData.filter(d => d.status === 'Active').length}</p>
+              <p className="text-2xl font-bold text-gray-900">{consents.filter(c => c.status === 'Active').length}</p>
             </div>
           </div>
         </div>
@@ -61,7 +61,7 @@ const ContributorDashboard: React.FC = () => {
             <Eye className="w-8 h-8 text-purple-500" />
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Research Requests</p>
-              <p className="text-2xl font-bold text-gray-900">{mockData.reduce((sum, d) => sum + d.requests, 0)}</p>
+              <p className="text-2xl font-bold text-gray-900">{consents.reduce((sum, c) => sum + c.requests, 0)}</p>
             </div>
           </div>
         </div>
@@ -105,40 +105,93 @@ const ContributorDashboard: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {mockData.map((item) => (
-                <tr key={item.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {item.type}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.date}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      item.status === 'Active' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {item.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.requests}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button className="text-blue-600 hover:text-blue-900 mr-4">
-                      View Details
-                    </button>
-                    <button className="text-red-600 hover:text-red-900">
-                      Revoke
-                    </button>
+              {loading ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                    Loading your data...
                   </td>
                 </tr>
-              ))}
+              ) : consents.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                    No data uploaded yet. <Link to="/upload" className="text-blue-600 hover:text-blue-800">Upload your first dataset</Link>
+                  </td>
+                </tr>
+              ) : (
+                consents.map((item) => (
+                  <tr key={item.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <span className="text-2xl mr-3">{getDataTypeIcon(item.type)}</span>
+                        <div>
+                          <div className="text-sm font-medium text-gray-900 capitalize">
+                            {item.type.replace('_', ' ')}
+                          </div>
+                          <div className="text-sm text-gray-500">{item.description}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {formatDate(item.date)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        item.status === 'Active' 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {item.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {item.requests}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="relative">
+                        <button
+                          onClick={() => setShowActions(showActions === item.id ? null : item.id)}
+                          className="text-gray-400 hover:text-gray-600"
+                        >
+                          <MoreVertical className="w-4 h-4" />
+                        </button>
+                        
+                        {showActions === item.id && (
+                          <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border">
+                            <div className="py-1">
+                              <button
+                                onClick={() => handleViewDetails(item.id)}
+                                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                              >
+                                <ViewIcon className="w-4 h-4 mr-3" />
+                                View Details
+                              </button>
+                              <button
+                                onClick={() => handleRevokeConsent(item.id)}
+                                className="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-red-50"
+                              >
+                                <Trash2 className="w-4 h-4 mr-3" />
+                                Revoke Consent
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
       </div>
+      
+      {/* Consent Details Modal */}
+      {selectedConsent && (
+        <ConsentDetails
+          consent={selectedConsent}
+          onClose={() => setSelectedConsent(null)}
+        />
+      )}
     </div>
   )
 }
