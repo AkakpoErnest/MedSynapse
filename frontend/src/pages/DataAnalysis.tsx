@@ -222,7 +222,7 @@ const DataAnalysis: React.FC = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Significance Level:</span>
-                    <span className="font-medium">p < 0.001</span>
+                    <span className="font-medium">p &lt; 0.001</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Effect Size:</span>

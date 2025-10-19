@@ -1,9 +1,8 @@
-import React from 'react'
 import { Routes, Route } from 'react-router-dom'
-import { WagmiConfig, createConfig, configureChains } from 'wagmi'
-import { polygonMumbai } from 'wagmi/chains'
-import { publicProvider } from 'wagmi/providers/public'
+import { WagmiConfig, createConfig } from 'wagmi'
+import { mainnet } from 'wagmi/chains'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
+import { http } from 'viem'
 
 import Layout from './components/Layout'
 import Home from './pages/Home'
@@ -12,19 +11,15 @@ import ResearcherDashboard from './pages/ResearcherDashboard'
 import DataUpload from './pages/DataUpload'
 import DataAnalysis from './pages/DataAnalysis'
 
-// Configure wagmi
-const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [polygonMumbai],
-  [publicProvider()]
-)
-
+// Simplified wagmi configuration
 const config = createConfig({
-  autoConnect: true,
+  chains: [mainnet],
   connectors: [
-    new MetaMaskConnector({ chains }),
+    new MetaMaskConnector(),
   ],
-  publicClient,
-  webSocketPublicClient,
+  transports: {
+    [mainnet.id]: http(),
+  },
 })
 
 function App() {

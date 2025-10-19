@@ -1,118 +1,132 @@
 import { useState, useEffect } from 'react'
-import { useAccount, useContract, useContractRead, useContractWrite } from 'wagmi'
-import { ethers } from 'ethers'
+import { useAccount } from 'wagmi'
 
-// Contract ABI - simplified version for now
-const CONTRACT_ABI = [
+// Mock data for demonstration
+const MOCK_CONSENTS = [
   {
-    "inputs": [
-      {"internalType": "string", "name": "_dataHash", "type": "string"},
-      {"internalType": "string", "name": "_dataType", "type": "string"},
-      {"internalType": "string", "name": "_description", "type": "string"}
-    ],
-    "name": "createConsent",
-    "outputs": [{"internalType": "bytes32", "name": "", "type": "bytes32"}],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    id: '0x123abc',
+    type: 'lab_results',
+    description: 'Comprehensive blood panel from 2023',
+    date: '2023-01-15T10:00:00Z',
+    status: 'Active',
+    requests: 3,
+    accessCount: 1,
+    researchers: ['0xResearcher1', '0xResearcher2']
   },
   {
-    "inputs": [{"internalType": "bytes32", "name": "_consentId", "type": "bytes32"}],
-    "name": "revokeConsent",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    id: '0x456def',
+    type: 'wearable_data',
+    description: 'Heart rate and sleep data from Q2 2023',
+    date: '2023-04-20T14:30:00Z',
+    status: 'Active',
+    requests: 5,
+    accessCount: 2,
+    researchers: ['0xResearcher3']
   },
   {
-    "inputs": [{"internalType": "address", "name": "_contributor", "type": "address"}],
-    "name": "getContributorConsents",
-    "outputs": [{"internalType": "bytes32[]", "name": "", "type": "bytes32[]"}],
-    "stateMutability": "view",
-    "type": "function"
-  }
+    id: '0x789ghi',
+    type: 'genetic_data',
+    description: 'Anonymized genetic markers for disease research',
+    date: '2023-07-01T09:10:00Z',
+    status: 'Inactive',
+    requests: 0,
+    accessCount: 0,
+    researchers: []
+  },
 ]
 
-const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS || '0x1234567890123456789012345678901234567890'
-
-export const useMedSynapseContract = () => {
-  const { address } = useAccount()
-  
-  const contract = useContract({
-    address: CONTRACT_ADDRESS,
-    abi: CONTRACT_ABI,
-  })
-
-  return { contract, address }
-}
-
-export const useContributorData = () => {
-  const { address } = useAccount()
-  const [consents, setConsents] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-
-  const { data: consentIds } = useContractRead({
-    address: CONTRACT_ADDRESS,
-    abi: CONTRACT_ABI,
-    functionName: 'getContributorConsents',
-    args: address ? [address] : undefined,
-    enabled: !!address,
-  })
-
-  useEffect(() => {
-    if (consentIds && consentIds.length > 0) {
-      // In a real app, we'd fetch consent details here
-      // For now, we'll use mock data
-      const mockConsents = consentIds.map((id, index) => ({
-        id: id,
-        type: ['lab_results', 'wearable_data', 'survey_data'][index % 3],
-        date: new Date(Date.now() - index * 86400000).toISOString().split('T')[0],
-        status: 'Active',
-        requests: Math.floor(Math.random() * 5),
-        description: `Health data upload ${index + 1}`
-      }))
-      setConsents(mockConsents)
-    }
-  }, [consentIds])
-
-  return { consents, loading, error, setConsents }
-}
-
 export const useDataUpload = () => {
+  const { address, isConnected } = useAccount()
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
 
-  const uploadData = async (file, dataType, description) => {
+  // Placeholder for Lighthouse upload
+  const uploadToLighthouse = async (file: File) => {
+    return new Promise<string>((resolve) => {
+      setUploadProgress(0)
+      let progress = 0
+      const interval = setInterval(() => {
+        progress += 10
+        setUploadProgress(progress)
+        if (progress >= 100) {
+          clearInterval(interval)
+          // Simulate Lighthouse hash
+          resolve(`Qm${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`)
+        }
+      }, 100)
+    })
+  }
+
+  const uploadData = async (file: File, dataType: string, description: string) => {
+    if (!isConnected || !address) {
+      throw new Error('Wallet not connected.')
+    }
+
     setUploading(true)
     setError(null)
     setUploadProgress(0)
 
     try {
-      // Simulate file upload to Lighthouse
-      // In real implementation, this would upload to Lighthouse and get hash
-      const mockHash = `Qm${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`
-      
-      // Simulate upload progress
-      for (let i = 0; i <= 100; i += 10) {
-        await new Promise(resolve => setTimeout(resolve, 100))
-        setUploadProgress(i)
-      }
+      // 1. Upload to Lighthouse (simulated)
+      const dataHash = await uploadToLighthouse(file)
+      console.log('Uploaded to Lighthouse, hash:', dataHash)
 
-      // Return mock data
-      return {
-        hash: mockHash,
-        type: dataType,
-        description: description,
-        size: file.size,
-        uploadedAt: new Date().toISOString()
-      }
-    } catch (err) {
-      setError(err.message)
-      throw err
-    } finally {
+      // 2. Create consent on-chain (simulated)
+      console.log('Simulating on-chain consent creation...')
+      await new Promise(resolve => setTimeout(resolve, 2000)) // Simulate transaction time
+      console.log('Consent created on-chain (simulated)')
+
       setUploading(false)
+      setUploadProgress(100)
+      return { success: true, dataHash }
+
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unknown error occurred during upload.')
+      setUploading(false)
+      setUploadProgress(0)
+      throw err
     }
   }
 
   return { uploadData, uploading, uploadProgress, error }
+}
+
+export const useContributorData = () => {
+  const { address, isConnected } = useAccount()
+  const [consents, setConsents] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchConsents = async () => {
+      if (!isConnected || !address) {
+        setConsents([])
+        setLoading(false)
+        return
+      }
+
+      setLoading(true)
+      setError(null)
+      try {
+        // In a real application, this would fetch data from:
+        // 1. Smart contract (e.g., MedSynapseConsent.getContributorConsents(address))
+        // 2. Envio HyperSync (for real-time indexed data)
+        // 3. Potentially a backend API that aggregates this data
+
+        // For now, return mock data
+        await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
+        setConsents(MOCK_CONSENTS)
+      } catch (err) {
+        setError('Failed to fetch consents.')
+        console.error('Error fetching consents:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchConsents()
+  }, [address, isConnected])
+
+  return { consents, loading, error }
 }
