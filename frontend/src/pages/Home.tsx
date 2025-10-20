@@ -1,75 +1,93 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Shield, Brain, Heart, ArrowRight, Sparkles, Lock, Globe, Zap, Database, Users, TrendingUp } from 'lucide-react'
+import { Shield, Brain, Heart, ArrowRight, Sparkles, Lock, Globe, Zap, Database, Users, TrendingUp, Star } from 'lucide-react'
 
 const Home: React.FC = () => {
   return (
-    <div className="w-full overflow-hidden">
+    <div className="w-full min-h-screen relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="fixed inset-0 cyber-grid opacity-20"></div>
+      <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900"></div>
+      
+      {/* Floating Particles */}
+      <div className="particles">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="particle"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 8}s`,
+              animationDuration: `${8 + Math.random() * 4}s`
+            }}
+          />
+        ))}
+      </div>
+
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 py-20 md:py-32">
-        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 py-20 md:py-32">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center space-y-8">
-            {/* Badge */}
-            <div className="inline-flex items-center px-6 py-3 rounded-full bg-white shadow-lg border border-purple-100 animate-bounce-slow">
-              <Sparkles className="w-5 h-5 text-purple-600 mr-2" />
-              <span className="text-sm font-semibold text-gray-700">Revolutionizing Healthcare Data</span>
+            {/* Animated Badge */}
+            <div className="inline-flex items-center px-8 py-4 rounded-full glass-card animate-slide-up">
+              <Sparkles className="w-6 h-6 neon-text mr-3 animate-glow" />
+              <span className="text-lg font-bold text-white">Revolutionizing Healthcare Data</span>
             </div>
             
             {/* Main Title */}
-            <h1 className="text-6xl md:text-8xl font-extrabold">
-              <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 bg-clip-text text-transparent">
+            <h1 className="text-7xl md:text-9xl font-black animate-slide-up stagger-1">
+              <span className="text-gradient-animated">
                 MedSynapse
               </span>
             </h1>
             
             {/* Subtitle */}
-            <p className="text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto leading-relaxed font-medium">
-              The world's first <span className="text-purple-600 font-bold">decentralized, AI-powered platform</span> for secure health data sharing
+            <p className="text-2xl md:text-3xl text-gray-300 max-w-5xl mx-auto leading-relaxed font-medium animate-slide-up stagger-2">
+              The world's first <span className="neon-text font-bold">decentralized, AI-powered platform</span> for secure health data sharing
             </p>
             
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-400 max-w-4xl mx-auto animate-slide-up stagger-3">
               Bridge siloed healthcare data across blockchains while maintaining complete privacy and patient control
             </p>
             
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row justify-center gap-4 pt-8">
+            <div className="flex flex-col sm:flex-row justify-center gap-6 pt-12 animate-slide-up stagger-4">
               <Link
                 to="/contributor"
-                className="group inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                className="group btn-neon inline-flex items-center justify-center px-10 py-5 text-xl font-bold"
               >
-                <Heart className="w-5 h-5 mr-2" />
+                <Heart className="w-6 h-6 mr-3" />
                 I'm a Contributor
-                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-6 h-6 ml-3 group-hover:translate-x-2 transition-transform" />
               </Link>
               <Link
                 to="/researcher"
-                className="group inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-pink-500 to-rose-500 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+                className="group btn-cyber inline-flex items-center justify-center px-10 py-5 text-xl font-bold"
               >
-                <Brain className="w-5 h-5 mr-2" />
+                <Brain className="w-6 h-6 mr-3" />
                 I'm a Researcher
-                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-6 h-6 ml-3 group-hover:translate-x-2 transition-transform" />
               </Link>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-16 max-w-5xl mx-auto">
-              <div className="text-center p-6 bg-white rounded-2xl shadow-lg">
-                <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">10K+</div>
-                <div className="text-sm font-medium text-gray-600">Active Contributors</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-20 max-w-6xl mx-auto">
+              <div className="floating-card text-center animate-scale-in stagger-1">
+                <div className="text-5xl font-black neon-text mb-3">10K+</div>
+                <div className="text-lg font-semibold text-gray-300">Active Contributors</div>
               </div>
-              <div className="text-center p-6 bg-white rounded-2xl shadow-lg">
-                <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2">50M+</div>
-                <div className="text-sm font-medium text-gray-600">Data Points</div>
+              <div className="floating-card text-center animate-scale-in stagger-2">
+                <div className="text-5xl font-black neon-text mb-3">50M+</div>
+                <div className="text-lg font-semibold text-gray-300">Data Points</div>
               </div>
-              <div className="text-center p-6 bg-white rounded-2xl shadow-lg">
-                <div className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2">500+</div>
-                <div className="text-sm font-medium text-gray-600">Researchers</div>
+              <div className="floating-card text-center animate-scale-in stagger-3">
+                <div className="text-5xl font-black neon-text mb-3">500+</div>
+                <div className="text-lg font-semibold text-gray-300">Researchers</div>
               </div>
-              <div className="text-center p-6 bg-white rounded-2xl shadow-lg">
-                <div className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-2">99.9%</div>
-                <div className="text-sm font-medium text-gray-600">Uptime</div>
+              <div className="floating-card text-center animate-scale-in stagger-4">
+                <div className="text-5xl font-black neon-text mb-3">99.9%</div>
+                <div className="text-lg font-semibold text-gray-300">Uptime</div>
               </div>
             </div>
           </div>
@@ -77,66 +95,66 @@ const Home: React.FC = () => {
       </div>
 
       {/* Features Section */}
-      <div className="py-24 bg-white">
+      <div className="relative z-10 py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Why Choose <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">MedSynapse</span>?
+          <div className="text-center mb-20">
+            <h2 className="text-5xl md:text-6xl font-black mb-6 animate-slide-up">
+              Why Choose <span className="text-gradient-animated">MedSynapse</span>?
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-2xl text-gray-300 max-w-4xl mx-auto animate-slide-up stagger-1">
               We combine cutting-edge blockchain technology with AI to create the most secure and efficient health data platform
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Feature 1 */}
-            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Shield className="w-8 h-8 text-white" />
+            <div className="floating-card text-center group animate-slide-up stagger-1">
+              <div className="icon-container icon-neon mx-auto group-hover:animate-glow">
+                <Shield className="w-10 h-10 text-white relative z-10" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
+              <h3 className="text-2xl font-bold text-white mb-4">
                 Military-Grade Security
               </h3>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-300 leading-relaxed text-lg">
                 Your health data is encrypted with AES-256 and stored securely on Lighthouse with blockchain-verified consent
               </p>
             </div>
 
             {/* Feature 2 */}
-            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-              <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Brain className="w-8 h-8 text-white" />
+            <div className="floating-card text-center group animate-slide-up stagger-2">
+              <div className="icon-container icon-purple mx-auto group-hover:animate-glow">
+                <Brain className="w-10 h-10 text-white relative z-10" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
+              <h3 className="text-2xl font-bold text-white mb-4">
                 AI-Powered Insights
               </h3>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-300 leading-relaxed text-lg">
                 Advanced machine learning algorithms analyze anonymized data to discover breakthrough medical insights
               </p>
             </div>
 
             {/* Feature 3 */}
-            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-              <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Globe className="w-8 h-8 text-white" />
+            <div className="floating-card text-center group animate-slide-up stagger-3">
+              <div className="icon-container icon-green mx-auto group-hover:animate-glow">
+                <Globe className="w-10 h-10 text-white relative z-10" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
+              <h3 className="text-2xl font-bold text-white mb-4">
                 Global Network
               </h3>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-300 leading-relaxed text-lg">
                 Researchers worldwide can access diverse, real-time medical data from our global contributor network
               </p>
             </div>
 
             {/* Feature 4 */}
-            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Lock className="w-8 h-8 text-white" />
+            <div className="floating-card text-center group animate-slide-up stagger-4">
+              <div className="icon-container icon-pink mx-auto group-hover:animate-glow">
+                <Lock className="w-10 h-10 text-white relative z-10" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
+              <h3 className="text-2xl font-bold text-white mb-4">
                 Complete Control
               </h3>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-300 leading-relaxed text-lg">
                 You own your data. Control who accesses it, when, and for what purpose with transparent audit trails
               </p>
             </div>
@@ -145,67 +163,61 @@ const Home: React.FC = () => {
       </div>
 
       {/* How It Works */}
-      <div className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
+      <div className="relative z-10 py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              How <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">MedSynapse</span> Works
+          <div className="text-center mb-20">
+            <h2 className="text-5xl md:text-6xl font-black mb-6 animate-slide-up">
+              How <span className="text-gradient-animated">MedSynapse</span> Works
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-2xl text-gray-300 max-w-4xl mx-auto animate-slide-up stagger-1">
               Our three-step process makes secure health data sharing simple and transparent
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
             {/* Step 1 */}
-            <div className="text-center">
-              <div className="relative mb-8">
-                <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto shadow-lg">
-                  <span className="text-3xl font-bold text-white">1</span>
-                </div>
+            <div className="text-center animate-slide-up stagger-1">
+              <div className="step-circle step-blue animate-float">
+                <span className="relative z-10">1</span>
               </div>
-              <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-shadow">
-                <Zap className="w-12 h-12 text-purple-600 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              <div className="floating-card">
+                <Zap className="w-16 h-16 neon-text mx-auto mb-6 animate-glow" />
+                <h3 className="text-3xl font-bold text-white mb-6">
                   Upload & Encrypt
                 </h3>
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-gray-300 leading-relaxed text-lg">
                   Contributors securely upload their health data, which gets automatically encrypted and stored on Lighthouse's decentralized network
                 </p>
               </div>
             </div>
 
             {/* Step 2 */}
-            <div className="text-center">
-              <div className="relative mb-8">
-                <div className="w-20 h-20 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-full flex items-center justify-center mx-auto shadow-lg">
-                  <span className="text-3xl font-bold text-white">2</span>
-                </div>
+            <div className="text-center animate-slide-up stagger-2">
+              <div className="step-circle step-cyan animate-float">
+                <span className="relative z-10">2</span>
               </div>
-              <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-shadow">
-                <Lock className="w-12 h-12 text-cyan-600 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              <div className="floating-card">
+                <Lock className="w-16 h-16 neon-text mx-auto mb-6 animate-glow" />
+                <h3 className="text-3xl font-bold text-white mb-6">
                   Grant Consent
                 </h3>
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-gray-300 leading-relaxed text-lg">
                   Smart contracts manage consent, giving you granular control over who can access your data and for what research purposes
                 </p>
               </div>
             </div>
 
             {/* Step 3 */}
-            <div className="text-center">
-              <div className="relative mb-8">
-                <div className="w-20 h-20 bg-gradient-to-br from-pink-500 to-purple-500 rounded-full flex items-center justify-center mx-auto shadow-lg">
-                  <span className="text-3xl font-bold text-white">3</span>
-                </div>
+            <div className="text-center animate-slide-up stagger-3">
+              <div className="step-circle step-pink animate-float">
+                <span className="relative z-10">3</span>
               </div>
-              <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-shadow">
-                <Brain className="w-12 h-12 text-pink-600 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              <div className="floating-card">
+                <Brain className="w-16 h-16 neon-text mx-auto mb-6 animate-glow" />
+                <h3 className="text-3xl font-bold text-white mb-6">
                   Research & Analyze
                 </h3>
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-gray-300 leading-relaxed text-lg">
                   Researchers discover breakthrough insights using our AI tools while maintaining complete privacy and data ownership
                 </p>
               </div>
@@ -215,30 +227,31 @@ const Home: React.FC = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="relative py-24 bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 overflow-hidden">
-        <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
-        <div className="relative max-w-5xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Ready to Transform Healthcare?
-          </h2>
-          <p className="text-xl text-purple-100 mb-12 max-w-3xl mx-auto">
-            Join thousands of contributors and researchers already using MedSynapse to advance medical research and improve global health outcomes
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-6">
-            <Link
-              to="/contributor"
-              className="group inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-purple-600 bg-white rounded-xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300"
-            >
-              Start Contributing
-              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link
-              to="/researcher"
-              className="group inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white border-2 border-white rounded-xl hover:bg-white hover:text-purple-600 transform hover:-translate-y-1 transition-all duration-300"
-            >
-              Explore Datasets
-              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Link>
+      <div className="relative z-10 py-24">
+        <div className="max-w-6xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+          <div className="floating-card p-16">
+            <h2 className="text-5xl md:text-6xl font-black text-white mb-8 animate-slide-up">
+              Ready to Transform Healthcare?
+            </h2>
+            <p className="text-2xl text-gray-300 mb-12 max-w-4xl mx-auto animate-slide-up stagger-1">
+              Join thousands of contributors and researchers already using MedSynapse to advance medical research and improve global health outcomes
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-8 animate-slide-up stagger-2">
+              <Link
+                to="/contributor"
+                className="group btn-neon inline-flex items-center justify-center px-12 py-6 text-2xl font-bold"
+              >
+                Start Contributing
+                <ArrowRight className="w-6 h-6 ml-3 group-hover:translate-x-2 transition-transform" />
+              </Link>
+              <Link
+                to="/researcher"
+                className="group btn-cyber inline-flex items-center justify-center px-12 py-6 text-2xl font-bold"
+              >
+                Explore Datasets
+                <ArrowRight className="w-6 h-6 ml-3 group-hover:translate-x-2 transition-transform" />
+              </Link>
+            </div>
           </div>
         </div>
       </div>

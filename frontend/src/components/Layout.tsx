@@ -19,15 +19,15 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <div className="min-h-screen">
-      <nav className="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-200 sticky top-0 z-50">
+      <nav className="glass-nav sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20">
             <div className="flex items-center">
               <Link to="/" className="flex items-center group">
-                <div className="medsynapse-gradient w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg group-hover:scale-105 transition-transform">
+                <div className="medsynapse-gradient w-14 h-14 rounded-xl flex items-center justify-center text-white font-black text-xl group-hover:scale-110 transition-transform animate-glow">
                   M
                 </div>
-                <span className="ml-3 text-2xl font-bold text-gray-900">
+                <span className="ml-4 text-3xl font-black text-white">
                   MedSynapse
                 </span>
               </Link>
@@ -38,10 +38,10 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                  className={`px-6 py-3 rounded-xl text-lg font-bold transition-all ${
                     location.pathname === item.path
-                      ? 'bg-purple-100 text-purple-700 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                      ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg'
+                      : 'text-gray-300 hover:text-white hover:bg-white/10'
                   }`}
                 >
                   {item.label}
@@ -52,15 +52,15 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <div className="flex items-center">
               {isConnected ? (
                 <div className="flex items-center space-x-4">
-                  <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                  <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg">
                     Connected
                   </div>
-                  <span className="text-sm text-gray-600 font-mono">
+                  <span className="text-sm text-gray-300 font-mono">
                     {address?.slice(0, 6)}...{address?.slice(-4)}
                   </span>
                   <button
                     onClick={() => disconnect()}
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-600 transition-colors"
+                    className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-xl text-sm font-bold hover:shadow-lg transition-all"
                   >
                     Disconnect
                   </button>
@@ -68,7 +68,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               ) : (
                 <button
                   onClick={() => connect()}
-                  className="btn-primary text-sm px-6 py-2"
+                  className="btn-neon text-lg px-8 py-3"
                 >
                   Connect Wallet
                 </button>
