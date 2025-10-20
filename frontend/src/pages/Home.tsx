@@ -6,40 +6,63 @@ const Home: React.FC = () => {
   return (
     <div className="space-y-0">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-20 md:py-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative bg-gradient-to-br from-blue-50 to-white py-20 md:py-32 overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-100/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-200/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
             <div className="space-y-8">
+              {/* Logo and Brand */}
               <div className="space-y-6">
-                <h1 className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight">
-                  MedSynapse
-                </h1>
-                <p className="text-xl text-gray-600 leading-relaxed">
-                  The world's first decentralized, AI-powered platform for secure health data sharing
-                </p>
-                <p className="text-lg text-gray-500">
-                  Bridge siloed healthcare data across blockchains while maintaining complete privacy and patient control
-                </p>
+                <div className="flex items-center space-x-4 animate-fade-in-up">
+                  <div className="relative">
+                    {/* Large logo container */}
+                    <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center shadow-2xl hover:shadow-blue-500/25 transition-all duration-500 hover:scale-110 border border-gray-200">
+                      <img src="/logo.png" alt="MedSynapse Logo" className="w-14 h-14 object-contain" />
+                    </div>
+                    {/* Subtle animated ring */}
+                    <div className="absolute inset-0 rounded-2xl bg-blue-100/30 animate-pulse"></div>
+                  </div>
+                  <div>
+                    <h1 className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight animate-fade-in-up delay-200">
+                      MedSynapse
+                    </h1>
+                    <div className="h-1 w-24 bg-blue-500 rounded-full mt-2 animate-slide-in-left delay-300"></div>
+                  </div>
+                </div>
+                
+                <div className="space-y-4 animate-fade-in-up delay-400">
+                  <p className="text-xl text-gray-700 leading-relaxed">
+                    The world's first <span className="font-semibold text-blue-600">decentralized, AI-powered</span> platform for secure health data sharing
+                  </p>
+                  <p className="text-lg text-gray-600">
+                    Bridge siloed healthcare data across blockchains while maintaining complete privacy and patient control
+                  </p>
+                </div>
               </div>
               
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up delay-600">
                 <Link
                   to="/contributor"
-                  className="btn-primary inline-flex items-center justify-center"
+                  className="group relative bg-blue-600 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-blue-700 inline-flex items-center justify-center"
                 >
-                  <Heart className="w-5 h-5 mr-2" />
+                  <Heart className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
                   I'm a Contributor
-                  <ArrowRight className="w-5 h-5 ml-2" />
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                 </Link>
                 <Link
                   to="/researcher"
-                  className="btn-secondary inline-flex items-center justify-center"
+                  className="group relative bg-white border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-blue-50 inline-flex items-center justify-center"
                 >
-                  <Brain className="w-5 h-5 mr-2" />
+                  <Brain className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
                   I'm a Researcher
-                  <ArrowRight className="w-5 h-5 ml-2" />
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                 </Link>
               </div>
             </div>
