@@ -1,56 +1,174 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { Shield, Brain, Heart, ArrowRight, Lock, Globe, Zap, Users, Database, TrendingUp } from 'lucide-react'
+import { Shield, Brain, Heart, ArrowRight, Zap, Globe, Database } from 'lucide-react'
 
 const Home: React.FC = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    // Set canvas size
+    const resizeCanvas = () => {
+      canvas.width = canvas.offsetWidth * window.devicePixelRatio
+      canvas.height = canvas.offsetHeight * window.devicePixelRatio
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
+    }
+    resizeCanvas()
+    window.addEventListener('resize', resizeCanvas)
+
+    // Sphere animation
+    const particles: Array<{
+      x: number
+      y: number
+      z: number
+      vx: number
+      vy: number
+      vz: number
+    }> = []
+
+    // Create particles in a sphere
+    const numParticles = 50
+    for (let i = 0; i < numParticles; i++) {
+      const phi = Math.acos(2 * Math.random() - 1)
+      const theta = 2 * Math.PI * Math.random()
+      const radius = 100
+
+      particles.push({
+        x: radius * Math.sin(phi) * Math.cos(theta),
+        y: radius * Math.sin(phi) * Math.sin(theta),
+        z: radius * Math.cos(phi),
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        vz: (Math.random() - 0.5) * 0.5,
+      })
+    }
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight)
+      
+      const centerX = canvas.offsetWidth / 2
+      const centerY = canvas.offsetHeight / 2
+
+      // Update particles
+      particles.forEach(particle => {
+        particle.x += particle.vx
+        particle.y += particle.vy
+        particle.z += particle.vz
+
+        // Keep particles in sphere
+        const distance = Math.sqrt(particle.x ** 2 + particle.y ** 2 + particle.z ** 2)
+        if (distance > 100) {
+          particle.x *= 100 / distance
+          particle.y *= 100 / distance
+          particle.z *= 100 / distance
+        }
+      })
+
+      // Draw connections
+      ctx.strokeStyle = 'rgba(59, 130, 246, 0.3)'
+      ctx.lineWidth = 1
+      
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x
+          const dy = particles[i].y - particles[j].y
+          const dz = particles[i].z - particles[j].z
+          const distance = Math.sqrt(dx * dx + dy * dy + dz * dz)
+
+          if (distance < 80) {
+            const alpha = 1 - distance / 80
+            ctx.strokeStyle = `rgba(59, 130, 246, ${alpha * 0.3})`
+            ctx.beginPath()
+            ctx.moveTo(
+              centerX + particles[i].x,
+              centerY + particles[i].y
+            )
+            ctx.lineTo(
+              centerX + particles[j].x,
+              centerY + particles[j].y
+            )
+            ctx.stroke()
+          }
+        }
+      }
+
+      // Draw particles
+      particles.forEach(particle => {
+        const screenX = centerX + particle.x
+        const screenY = centerY + particle.y
+        const size = (100 + particle.z) / 200 * 3
+
+        ctx.fillStyle = `rgba(59, 130, 246, ${(100 + particle.z) / 200})`
+        ctx.beginPath()
+        ctx.arc(screenX, screenY, size, 0, Math.PI * 2)
+        ctx.fill()
+      })
+
+      requestAnimationFrame(animate)
+    }
+
+    animate()
+
+    return () => {
+      window.removeEventListener('resize', resizeCanvas)
+    }
+  }, [])
+
   return (
-    <div className="space-y-0">
+    <div className="min-h-screen bg-black text-white">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-50 to-white py-20 md:py-32 overflow-hidden">
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-100/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-200/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Animated Sphere Background */}
+        <div className="absolute inset-0">
+          <canvas
+            ref={canvasRef}
+            className="w-full h-full opacity-60"
+            style={{ background: 'transparent' }}
+          />
         </div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+        {/* Content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
             <div className="space-y-8">
               {/* Logo and Brand */}
               <div className="space-y-6">
-                <div className="flex items-center space-x-4 animate-fade-in-up">
+                <div className="flex items-center space-x-4">
                   <div className="relative">
-                    {/* Large logo container */}
-                    <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center shadow-2xl hover:shadow-blue-500/25 transition-all duration-500 hover:scale-110 border border-gray-200">
+                    <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl flex items-center justify-center shadow-2xl border border-blue-400/30">
                       <img src="/logo.png" alt="MedSynapse Logo" className="w-14 h-14 object-contain" />
                     </div>
-                    {/* Subtle animated ring */}
-                    <div className="absolute inset-0 rounded-2xl bg-blue-100/30 animate-pulse"></div>
+                    <div className="absolute inset-0 rounded-2xl bg-blue-400/20 animate-pulse"></div>
                   </div>
                   <div>
-                    <h1 className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight animate-fade-in-up delay-200">
+                    <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
                       MedSynapse
                     </h1>
-                    <div className="h-1 w-24 bg-blue-500 rounded-full mt-2 animate-slide-in-left delay-300"></div>
+                    <div className="h-1 w-32 bg-gradient-to-r from-blue-500 to-blue-400 rounded-full mt-2"></div>
                   </div>
                 </div>
                 
-                <div className="space-y-4 animate-fade-in-up delay-400">
-                  <p className="text-xl text-gray-700 leading-relaxed">
-                    The world's first <span className="font-semibold text-blue-600">decentralized, AI-powered</span> platform for secure health data sharing
+                <div className="space-y-4">
+                  <p className="text-2xl text-gray-300 leading-relaxed">
+                    The world's first <span className="font-semibold text-blue-400">decentralized, AI-powered</span> platform for secure health data sharing
                   </p>
-                  <p className="text-lg text-gray-600">
+                  <p className="text-lg text-gray-400">
                     Bridge siloed healthcare data across blockchains while maintaining complete privacy and patient control
                   </p>
                 </div>
               </div>
               
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up delay-600">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   to="/contributor"
-                  className="group relative bg-blue-600 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-blue-700 inline-flex items-center justify-center"
+                  className="group relative bg-gradient-to-r from-blue-500 to-blue-600 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105 hover:from-blue-600 hover:to-blue-700 inline-flex items-center justify-center border border-blue-400/30"
                 >
                   <Heart className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
                   I'm a Contributor
@@ -58,7 +176,7 @@ const Home: React.FC = () => {
                 </Link>
                 <Link
                   to="/researcher"
-                  className="group relative bg-white border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-blue-50 inline-flex items-center justify-center"
+                  className="group relative bg-transparent border-2 border-blue-500 text-blue-400 px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105 hover:bg-blue-500/10 inline-flex items-center justify-center"
                 >
                   <Brain className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
                   I'm a Researcher
@@ -67,25 +185,41 @@ const Home: React.FC = () => {
               </div>
             </div>
             
-            {/* Right Illustration */}
-            <div className="relative">
-              <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
-                <div className="text-center space-y-6">
-                  <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-                    <Shield className="w-10 h-10 text-blue-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Secure Health Data</h3>
-                    <p className="text-gray-600">Encrypted and decentralized storage</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 text-center">
-                    <div className="bg-blue-50 rounded-lg p-4">
-                      <div className="text-2xl font-bold text-blue-600">10K+</div>
-                      <div className="text-sm text-gray-600">Contributors</div>
+            {/* Right Content - Features */}
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 gap-6">
+                <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-xl p-6 hover:border-blue-400/40 transition-all duration-300">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                      <Shield className="w-6 h-6 text-blue-400" />
                     </div>
-                    <div className="bg-blue-50 rounded-lg p-4">
-                      <div className="text-2xl font-bold text-blue-600">50M+</div>
-                      <div className="text-sm text-gray-600">Data Points</div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">Military-Grade Security</h3>
+                      <p className="text-gray-400 text-sm">AES-256 encryption with blockchain-verified consent</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-xl p-6 hover:border-blue-400/40 transition-all duration-300">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                      <Brain className="w-6 h-6 text-blue-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">AI-Powered Insights</h3>
+                      <p className="text-gray-400 text-sm">Advanced ML algorithms for medical discoveries</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-xl p-6 hover:border-blue-400/40 transition-all duration-300">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                      <Globe className="w-6 h-6 text-blue-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">Global Network</h3>
+                      <p className="text-gray-400 text-sm">Worldwide researcher access to diverse datasets</p>
                     </div>
                   </div>
                 </div>
@@ -93,243 +227,80 @@ const Home: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Floating elements */}
+        <div className="absolute top-20 left-10 w-4 h-4 bg-blue-400 rounded-full animate-pulse opacity-60"></div>
+        <div className="absolute top-40 right-20 w-2 h-2 bg-blue-500 rounded-full animate-ping opacity-40"></div>
+        <div className="absolute bottom-40 left-20 w-3 h-3 bg-blue-300 rounded-full animate-pulse opacity-50"></div>
+        <div className="absolute bottom-20 right-10 w-2 h-2 bg-blue-400 rounded-full animate-ping opacity-60"></div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gradient-to-b from-black to-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center space-y-4 mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+            <h2 className="text-4xl md:text-5xl font-bold text-white">
               Why Choose MedSynapse?
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
               We combine cutting-edge blockchain technology with AI to create the most secure and efficient health data platform
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="card text-center hover:shadow-md transition-shadow">
-              <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-6">
-                <Shield className="w-8 h-8 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
-                Military-Grade Security
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Your health data is encrypted with AES-256 and stored securely on Lighthouse with blockchain-verified consent
-              </p>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="card text-center hover:shadow-md transition-shadow">
-              <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-6">
-                <Brain className="w-8 h-8 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
-                AI-Powered Insights
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Advanced machine learning algorithms analyze anonymized data to discover breakthrough medical insights
-              </p>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="card text-center hover:shadow-md transition-shadow">
-              <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-6">
-                <Globe className="w-8 h-8 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
-                Global Network
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Researchers worldwide can access diverse, real-time medical data from our global contributor network
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-              How MedSynapse Works
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Our three-step process makes secure health data sharing simple and transparent
-            </p>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Step 1 */}
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-white font-bold text-xl">1</span>
+            <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-8 hover:border-blue-400/40 transition-all duration-300">
+              <div className="w-16 h-16 bg-blue-500/20 rounded-xl flex items-center justify-center mb-6">
+                <Database className="w-8 h-8 text-blue-400" />
               </div>
-              <div className="card">
-                <Zap className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
-                  Upload & Encrypt
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Contributors securely upload their health data, which gets automatically encrypted and stored on Lighthouse's decentralized network
-                </p>
-              </div>
-            </div>
-
-            {/* Step 2 */}
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-white font-bold text-xl">2</span>
-              </div>
-              <div className="card">
-                <Lock className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
-                  Grant Consent
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Smart contracts manage consent, giving you granular control over who can access your data and for what research purposes
-                </p>
-              </div>
-            </div>
-
-            {/* Step 3 */}
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-white font-bold text-xl">3</span>
-              </div>
-              <div className="card">
-                <Brain className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
-                  Research & Analyze
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Researchers discover breakthrough insights using our AI tools while maintaining complete privacy and data ownership
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-20 bg-blue-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white">
-              Trusted by Thousands
-            </h2>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Join the growing community of contributors and researchers advancing medical research
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="text-4xl font-bold text-white mb-2">10K+</div>
-              <div className="text-blue-100">Active Contributors</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-white mb-2">50M+</div>
-              <div className="text-blue-100">Data Points</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-white mb-2">500+</div>
-              <div className="text-blue-100">Researchers</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-white mb-2">99.9%</div>
-              <div className="text-blue-100">Uptime</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-                Ready to Transform Healthcare?
-              </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Join thousands of contributors and researchers already using MedSynapse to advance medical research and improve global health outcomes
+              <h3 className="text-xl font-bold text-white mb-4">
+                Decentralized Storage
+              </h3>
+              <p className="text-gray-400 leading-relaxed">
+                Your health data is encrypted and stored across multiple blockchain networks for maximum security and availability
               </p>
             </div>
-            
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link
-                to="/contributor"
-                className="btn-primary inline-flex items-center justify-center"
-              >
-                Start Contributing
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Link>
-              <Link
-                to="/researcher"
-                className="btn-secondary inline-flex items-center justify-center"
-              >
-                Explore Datasets
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Link>
+
+            <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-8 hover:border-blue-400/40 transition-all duration-300">
+              <div className="w-16 h-16 bg-blue-500/20 rounded-xl flex items-center justify-center mb-6">
+                <Zap className="w-8 h-8 text-blue-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-4">
+                Real-Time Processing
+              </h3>
+              <p className="text-gray-400 leading-relaxed">
+                Lightning-fast data processing and analysis using advanced AI algorithms for instant insights
+              </p>
+            </div>
+
+            <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-8 hover:border-blue-400/40 transition-all duration-300">
+              <div className="w-16 h-16 bg-blue-500/20 rounded-xl flex items-center justify-center mb-6">
+                <Shield className="w-8 h-8 text-blue-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-4">
+                Privacy First
+              </h3>
+              <p className="text-gray-400 leading-relaxed">
+                Complete patient control with granular consent management and anonymization protocols
+              </p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+      <footer className="bg-black border-t border-blue-500/20 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {/* Logo and Description */}
-            <div className="col-span-1 md:col-span-2">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">M</span>
-                </div>
-                <span className="text-xl font-bold">MedSynapse</span>
-              </div>
-              <p className="text-gray-400 max-w-md">
-                The world's first decentralized, AI-powered platform for secure health data sharing. 
-                Transforming healthcare through blockchain technology.
-              </p>
+          <div className="text-center space-y-4">
+            <h3 className="text-2xl font-bold text-white">MedSynapse</h3>
+            <p className="text-gray-400">Transforming healthcare through decentralized data sharing</p>
+            <div className="flex justify-center space-x-6">
+              <Link to="/contributor" className="text-gray-400 hover:text-blue-400 transition-colors">
+                Contributor
+              </Link>
+              <Link to="/researcher" className="text-gray-400 hover:text-blue-400 transition-colors">
+                Researcher
+              </Link>
             </div>
-
-            {/* Quick Links */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-              <div className="space-y-2">
-                <Link to="/contributor" className="block text-gray-400 hover:text-white transition-colors">
-                  Contributor Dashboard
-                </Link>
-                <Link to="/researcher" className="block text-gray-400 hover:text-white transition-colors">
-                  Researcher Dashboard
-                </Link>
-                <Link to="/upload" className="block text-gray-400 hover:text-white transition-colors">
-                  Upload Data
-                </Link>
-                <Link to="/analysis" className="block text-gray-400 hover:text-white transition-colors">
-                  Data Analysis
-                </Link>
-              </div>
-            </div>
-
-            {/* Contact */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Contact</h3>
-              <div className="space-y-2 text-gray-400">
-                <p>support@medsynapse.com</p>
-                <p>+1 (555) 123-4567</p>
-                <p>San Francisco, CA</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 MedSynapse. All rights reserved.</p>
           </div>
         </div>
       </footer>
