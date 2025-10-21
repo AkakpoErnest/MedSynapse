@@ -1,101 +1,50 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Filter, Download, BarChart3, Eye, Clock, Users, TrendingUp } from 'lucide-react'
-import { mockDatasets } from '../utils/helpers'
+import { Search, Filter, BarChart3, Eye, Clock, Users, TrendingUp, Wifi, WifiOff } from 'lucide-react'
+import { useResearchRequests, useAnalytics, useEnvioConnection } from '../hooks/useEnvio'
 
 const ResearcherDashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedFilter, setSelectedFilter] = useState('all')
   const [sortBy, setSortBy] = useState('date')
-  const [viewMode, setViewMode] = useState('grid')
   const [selectedDataset, setSelectedDataset] = useState<any>(null)
   const [requestHistory, setRequestHistory] = useState<any[]>([])
+  
+  // Use Envio hooks for real-time data
+  const { requests, loading: requestsLoading, error: requestsError } = useResearchRequests()
+  const { analytics, loading: analyticsLoading } = useAnalytics()
+  const { isConnected: envioConnected, isChecking } = useEnvioConnection()
 
-  // Mock data - in real app this would come from HyperSync
-  const mockDatasets = [
-    {
-      id: '1',
-      title: 'Diabetes Biomarkers Study',
-      type: 'lab_results',
-      contributorCount: 150,
-      dataPoints: 2500,
-      lastUpdated: '2024-01-15',
-      description: 'Blood glucose, HbA1c, and insulin levels from diabetic patients',
-      tags: ['diabetes', 'biomarkers', 'glucose'],
-      accessLevel: 'public',
-      price: 0.05
-    },
-    {
-      id: '2',
-      title: 'Cardiovascular Health Monitoring',
-      type: 'wearable_data',
-      contributorCount: 89,
-      dataPoints: 12000,
-      lastUpdated: '2024-01-14',
-      description: 'Heart rate, blood pressure, and activity data from fitness trackers',
-      tags: ['cardiovascular', 'heart-rate', 'activity'],
-      accessLevel: 'restricted',
-      price: 0.1
-    },
-    {
-      id: '3',
-      title: 'Mental Health Patterns',
-      type: 'survey_data',
-      contributorCount: 67,
-      dataPoints: 800,
-      lastUpdated: '2024-01-13',
-      description: 'Depression and anxiety screening results with demographic data',
-      tags: ['mental-health', 'depression', 'anxiety'],
-      accessLevel: 'public',
-      price: 0.03
-    },
-    {
-      id: '4',
-      title: 'Sleep Quality Analysis',
-      type: 'wearable_data',
-      contributorCount: 203,
-      dataPoints: 15000,
-      lastUpdated: '2024-01-12',
-      description: 'Sleep duration, quality, and patterns from smart devices',
-      tags: ['sleep', 'quality', 'patterns'],
-      accessLevel: 'public',
-      price: 0.08
-    }
-  ]
-
-  const filteredDatasets = mockDatasets.filter(dataset => {
-    const matchesSearch = dataset.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         dataset.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         dataset.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-    const matchesFilter = selectedFilter === 'all' || dataset.type === selectedFilter
+  const filteredRequests = requests.filter(request => {
+    const matchesSearch = request.purpose.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         request.consentRecord?.description.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesFilter = selectedFilter === 'all' || request.consentRecord?.dataType === selectedFilter
     return matchesSearch && matchesFilter
   })
 
-  const sortedDatasets = [...filteredDatasets].sort((a, b) => {
+  const sortedRequests = [...filteredRequests].sort((a, b) => {
     switch (sortBy) {
       case 'date':
-        return new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime()
-      case 'contributors':
-        return b.contributorCount - a.contributorCount
-      case 'dataPoints':
-        return b.dataPoints - a.dataPoints
+        return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
       case 'price':
-        return a.price - b.price
+        return parseFloat(a.price) - parseFloat(b.price)
+      case 'status':
+        return a.status.localeCompare(b.status)
       default:
         return 0
     }
   })
 
-  const handleRequestAccess = (dataset: any) => {
-    const request = {
+  const handleRequestAccess = (request: any) => {
+    const newRequest = {
       id: Date.now().toString(),
-      datasetId: dataset.id,
-      datasetTitle: dataset.title,
+      datasetId: request.datasetId,
+      datasetTitle: request.consentRecord?.description || 'Unknown Dataset',
       requestedAt: new Date().toISOString(),
       status: 'pending',
-      price: dataset.price
+      price: request.price
     }
-    setRequestHistory(prev => [request, ...prev])
+    setRequestHistory(prev => [newRequest, ...prev])
     setSelectedDataset(null)
   }
 
@@ -110,302 +59,232 @@ const ResearcherDashboard: React.FC = () => {
     return icons[type] || '📄'
   }
 
-  const getAccessLevelColor = (level: string) => {
-    const colors: { [key: string]: string } = {
-      'public': 'bg-green-100 text-green-800',
-      'restricted': 'bg-yellow-100 text-yellow-800',
-      'private': 'bg-red-100 text-red-800'
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'approved':
+        return 'bg-green-500/20 text-green-400 border-green-500/30'
+      case 'pending':
+        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+      case 'rejected':
+        return 'bg-red-500/20 text-red-400 border-red-500/30'
+      default:
+        return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
     }
-    return colors[level] || 'bg-gray-100 text-gray-800'
   }
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Researcher Dashboard</h1>
+        <div>
+          <h1 className="text-3xl font-bold text-white">Researcher Dashboard</h1>
+          <div className="flex items-center mt-2">
+            {isChecking ? (
+              <div className="flex items-center text-gray-400">
+                <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin mr-2"></div>
+                Checking Envio connection...
+              </div>
+            ) : envioConnected ? (
+              <div className="flex items-center text-green-400">
+                <Wifi className="w-4 h-4 mr-2" />
+                Envio HyperSync Connected
+              </div>
+            ) : (
+              <div className="flex items-center text-red-400">
+                <WifiOff className="w-4 h-4 mr-2" />
+                Envio HyperSync Disconnected
+              </div>
+            )}
+          </div>
+        </div>
         <Link
           to="/analysis"
-          className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center"
+          className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 flex items-center border border-blue-400/30"
         >
           <BarChart3 className="w-4 h-4 mr-2" />
-          AI Analysis
+          Analyze Data
         </Link>
       </div>
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center">
-            <BarChart3 className="w-8 h-8 text-blue-500" />
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Available Datasets</p>
-              <p className="text-2xl font-bold text-gray-900">{mockDatasets.length}</p>
+      {/* Analytics Cards */}
+      {analytics && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 p-6 rounded-lg hover:border-blue-400/40 transition-all duration-300">
+            <div className="flex items-center">
+              <Users className="w-8 h-8 text-blue-400" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-400">Total Consents</p>
+                <p className="text-2xl font-bold text-white">{analytics.totalConsents}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 p-6 rounded-lg hover:border-blue-400/40 transition-all duration-300">
+            <div className="flex items-center">
+              <Eye className="w-8 h-8 text-green-400" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-400">Active Consents</p>
+                <p className="text-2xl font-bold text-white">{analytics.activeConsents}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 p-6 rounded-lg hover:border-blue-400/40 transition-all duration-300">
+            <div className="flex items-center">
+              <TrendingUp className="w-8 h-8 text-purple-400" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-400">Total Requests</p>
+                <p className="text-2xl font-bold text-white">{analytics.totalRequests}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 p-6 rounded-lg hover:border-blue-400/40 transition-all duration-300">
+            <div className="flex items-center">
+              <Clock className="w-8 h-8 text-yellow-400" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-400">Pending Requests</p>
+                <p className="text-2xl font-bold text-white">{analytics.pendingRequests}</p>
+              </div>
             </div>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center">
-            <Users className="w-8 h-8 text-green-500" />
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Contributors</p>
-              <p className="text-2xl font-bold text-gray-900">{mockDatasets.reduce((sum, d) => sum + d.contributorCount, 0)}</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center">
-            <TrendingUp className="w-8 h-8 text-purple-500" />
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Data Points</p>
-              <p className="text-2xl font-bold text-gray-900">{mockDatasets.reduce((sum, d) => sum + d.dataPoints, 0).toLocaleString()}</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center">
-            <Clock className="w-8 h-8 text-orange-500" />
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Pending Requests</p>
-              <p className="text-2xl font-bold text-gray-900">{requestHistory.filter(r => r.status === 'pending').length}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Search and Filters */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
-        <div className="flex flex-col lg:flex-row gap-4">
+      <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-lg p-6">
+        <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
-                placeholder="Search datasets by title, description, or tags..."
+                placeholder="Search datasets by purpose or description..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 bg-black/50 border border-blue-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
               />
             </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <Filter className="w-4 h-4 text-gray-400" />
+          <div className="flex gap-4">
             <select
               value={selectedFilter}
               onChange={(e) => setSelectedFilter(e.target.value)}
-              className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-4 py-2 bg-black/50 border border-blue-500/30 rounded-lg text-white focus:outline-none focus:border-blue-400"
             >
               <option value="all">All Types</option>
               <option value="lab_results">Lab Results</option>
               <option value="wearable_data">Wearable Data</option>
               <option value="survey_data">Survey Data</option>
+              <option value="imaging_data">Imaging Data</option>
+              <option value="genetic_data">Genetic Data</option>
             </select>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-4 py-2 bg-black/50 border border-blue-500/30 rounded-lg text-white focus:outline-none focus:border-blue-400"
             >
               <option value="date">Sort by Date</option>
-              <option value="contributors">Sort by Contributors</option>
-              <option value="dataPoints">Sort by Data Points</option>
               <option value="price">Sort by Price</option>
+              <option value="status">Sort by Status</option>
             </select>
           </div>
         </div>
       </div>
 
-      {/* Dataset Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sortedDatasets.map((dataset) => (
-          <div key={dataset.id} className="bg-white rounded-lg shadow-sm border p-6 card-hover">
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center">
-                <span className="text-2xl mr-2">{getDataTypeIcon(dataset.type)}</span>
-                <h3 className="text-lg font-semibold text-gray-900">{dataset.title}</h3>
-              </div>
-              <div className="flex flex-col items-end space-y-1">
-                <span className={`text-xs font-medium px-2 py-1 rounded-full ${getAccessLevelColor(dataset.accessLevel)}`}>
-                  {dataset.accessLevel}
-                </span>
-                <span className="text-xs text-gray-500">${dataset.price.toFixed(3)}</span>
+      {/* Available Datasets */}
+      <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-lg">
+        <div className="px-6 py-4 border-b border-blue-500/20">
+          <h2 className="text-lg font-semibold text-white">Available Datasets</h2>
+        </div>
+        <div className="p-6">
+          {requestsLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="flex items-center text-gray-400">
+                <div className="w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin mr-3"></div>
+                Loading datasets from blockchain...
               </div>
             </div>
-            
-            <p className="text-gray-600 text-sm mb-4">{dataset.description}</p>
-            
-            {/* Tags */}
-            <div className="flex flex-wrap gap-1 mb-4">
-              {dataset.tags.map((tag: string) => (
-                <span key={tag} className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">
-                  #{tag}
-                </span>
+          ) : requestsError ? (
+            <div className="text-center py-12">
+              <p className="text-red-400 mb-4">Error loading datasets: {requestsError}</p>
+              <button 
+                onClick={() => window.location.reload()}
+                className="text-blue-400 hover:text-blue-300"
+              >
+                Try again
+              </button>
+            </div>
+          ) : sortedRequests.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-400">No datasets available at the moment.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {sortedRequests.map((request) => (
+                <div key={request.id} className="bg-black/30 border border-blue-500/20 rounded-lg p-6 hover:border-blue-400/40 transition-all duration-300">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center">
+                      <span className="text-2xl mr-3">
+                        {getDataTypeIcon(request.consentRecord?.dataType || 'unknown')}
+                      </span>
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">
+                          {request.consentRecord?.description || 'Unknown Dataset'}
+                        </h3>
+                        <p className="text-sm text-gray-400 capitalize">
+                          {request.consentRecord?.dataType?.replace('_', ' ') || 'Unknown Type'}
+                        </p>
+                      </div>
+                    </div>
+                    <span className={`px-2 py-1 text-xs font-semibold rounded-full border ${getStatusColor(request.status)}`}>
+                      {request.status}
+                    </span>
+                  </div>
+                  
+                  <p className="text-gray-300 text-sm mb-4 line-clamp-2">
+                    {request.purpose}
+                  </p>
+                  
+                  <div className="flex items-center justify-between text-sm text-gray-400 mb-4">
+                    <span>Price: {request.price} ETH</span>
+                    <span>{new Date(request.timestamp).toLocaleDateString()}</span>
+                  </div>
+                  
+                  <button
+                    onClick={() => handleRequestAccess(request)}
+                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 px-4 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 font-medium"
+                  >
+                    Request Access
+                  </button>
+                </div>
               ))}
             </div>
-            
-            <div className="space-y-2 mb-4">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Contributors:</span>
-                <span className="font-medium">{dataset.contributorCount}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Data Points:</span>
-                <span className="font-medium">{dataset.dataPoints.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Last Updated:</span>
-                <span className="font-medium">{new Date(dataset.lastUpdated).toLocaleDateString()}</span>
-              </div>
-            </div>
-            
-            <div className="flex space-x-2">
-              <button 
-                onClick={() => setSelectedDataset(dataset)}
-                className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-blue-600 transition-colors flex items-center justify-center"
-              >
-                <Eye className="w-4 h-4 mr-2" />
-                View Details
-              </button>
-              <button 
-                onClick={() => handleRequestAccess(dataset)}
-                className="bg-green-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-green-600 transition-colors"
-              >
-                Request Access
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {sortedDatasets.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-500 text-lg">No datasets found matching your criteria.</p>
-          <p className="text-gray-400 text-sm mt-2">Try adjusting your search or filters.</p>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Request History */}
       {requestHistory.length > 0 && (
-        <div className="bg-white rounded-lg shadow-sm border">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">Recent Access Requests</h2>
+        <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-lg">
+          <div className="px-6 py-4 border-b border-blue-500/20">
+            <h2 className="text-lg font-semibold text-white">Your Request History</h2>
           </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dataset</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Requested</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {requestHistory.slice(0, 5).map((request) => (
-                  <tr key={request.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {request.datasetTitle}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(request.requestedAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        request.status === 'pending' 
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : request.status === 'approved'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {request.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      ${request.price.toFixed(3)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Dataset Details Modal */}
-      {selectedDataset && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex justify-center items-center">
-          <div className="relative bg-white rounded-lg shadow-xl p-8 m-4 max-w-2xl w-full">
-            <button
-              onClick={() => setSelectedDataset(null)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            <div className="flex items-start mb-6">
-              <span className="text-4xl mr-4">{getDataTypeIcon(selectedDataset.type)}</span>
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">{selectedDataset.title}</h2>
-                <div className="flex items-center space-x-2 mt-2">
-                  <span className={`text-sm font-medium px-2 py-1 rounded-full ${getAccessLevelColor(selectedDataset.accessLevel)}`}>
-                    {selectedDataset.accessLevel}
-                  </span>
-                  <span className="text-sm text-gray-500">${selectedDataset.price.toFixed(3)}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4 mb-6">
-              <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Description</h3>
-                <p className="text-gray-600">{selectedDataset.description}</p>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Tags</h3>
-                <div className="flex flex-wrap gap-2">
-                  {selectedDataset.tags.map((tag: string) => (
-                    <span key={tag} className="bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full">
-                      #{tag}
+          <div className="p-6">
+            <div className="space-y-4">
+              {requestHistory.map((request) => (
+                <div key={request.id} className="flex items-center justify-between p-4 bg-black/30 border border-blue-500/20 rounded-lg">
+                  <div>
+                    <h3 className="text-white font-medium">{request.datasetTitle}</h3>
+                    <p className="text-sm text-gray-400">
+                      Requested: {new Date(request.requestedAt).toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusColor(request.status)}`}>
+                      {request.status}
                     </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Dataset Statistics</h3>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Contributors:</span>
-                      <span className="font-medium">{selectedDataset.contributorCount}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Data Points:</span>
-                      <span className="font-medium">{selectedDataset.dataPoints.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Last Updated:</span>
-                      <span className="font-medium">{new Date(selectedDataset.lastUpdated).toLocaleDateString()}</span>
-                    </div>
+                    <span className="text-sm text-gray-400">{request.price} ETH</span>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={() => setSelectedDataset(null)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-              >
-                Close
-              </button>
-              <button
-                onClick={() => handleRequestAccess(selectedDataset)}
-                className="px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600"
-              >
-                Request Access
-              </button>
+              ))}
             </div>
           </div>
         </div>

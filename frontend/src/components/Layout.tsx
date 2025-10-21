@@ -2,6 +2,7 @@ import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
+import EnvioStatus from './EnvioStatus'
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation()
@@ -61,9 +62,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               ))}
             </div>
 
-            {/* Wallet Connection */}
-            <div className="flex items-center">
-              {isConnected ? (
+              {/* Wallet Connection */}
+              <div className="flex items-center space-x-4">
+                {/* Envio Status */}
+                <EnvioStatus className="text-sm" />
+                
+                {isConnected ? (
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-2 bg-green-500/20 px-3 py-2 rounded-lg border border-green-500/30">
                     <div className="relative">
