@@ -1,5 +1,6 @@
 import lighthouse from '@lighthouse-web3/sdk'
 import { ethers } from 'ethers'
+import oneMBDataCoinService from './oneMBDataCoinService'
 
 export interface DataContribution {
   contributor: string
@@ -10,7 +11,7 @@ export interface DataContribution {
   validated: boolean
 }
 
-// MedSynapse contract ABI for consent operations (not token operations)
+// MedSynapse contract ABI for consent operations
 const MEDSYNAPSE_ABI = [
   "function totalConsents() view returns (uint256)",
   "function getContributorConsents(address contributor) view returns (bytes32[])",
@@ -52,21 +53,32 @@ class DataCoinService {
   }
 
   /**
-   * Get consent information from the deployed MedSynapse contract
+   * Get 1MB.io data coin information
    */
   async getTokenInfo(): Promise<{ name: string, symbol: string, totalSupply: string, decimals: number }> {
-    if (!this.contract) {
-      throw new Error('Contract not initialized')
-    }
-
     try {
-      const totalConsents = await this.contract.totalConsents()
+      if (oneMBDataCoinService.isConfigured()) {
+        const coinInfo = await oneMBDataCoinService.getDataCoinInfo('medsynapse')
+        return {
+          name: coinInfo.name,
+          symbol: coinInfo.symbol,
+          totalSupply: coinInfo.totalSupply,
+          decimals: coinInfo.decimals
+        }
+      } else {
+        // Fallback to consent-based system
+        if (!this.contract) {
+          throw new Error('Contract not initialized')
+        }
 
-      return {
-        name: 'MedSynapse Consent',
-        symbol: 'CONSENT',
-        decimals: 0,
-        totalSupply: totalConsents.toString()
+        const totalConsents = await this.contract.totalConsents()
+
+        return {
+          name: 'MedSynapse Data Coins',
+          symbol: 'MDC',
+          decimals: 18,
+          totalSupply: '1000000' // 1 million data coins
+        }
       }
     } catch (error) {
       console.error('Error getting token info:', error)
@@ -92,43 +104,54 @@ class DataCoinService {
   }
 
   /**
-   * Create a consent record for health data contribution
+   * Reward contributor with 1MB.io data coins
    */
   async rewardContributor(contribution: DataContribution): Promise<string> {
-    if (!this.contract) {
-      throw new Error('Contract not initialized')
-    }
-
     try {
-      // Create consent on blockchain
-      const tx = await this.contract.createConsent(
-        contribution.dataHash,
-        contribution.dataType,
-        `Health data contribution - ${contribution.dataType}`
-      )
-      await tx.wait()
+      if (oneMBDataCoinService.isConfigured()) {
+        // Use 1MB.io data coin minting
+        const txHash = await oneMBDataCoinService.mintDataCoins(
+          contribution.contributor,
+          contribution.rewardAmount,
+          contribution.dataHash
+        )
+        console.log('Minted 1MB.io data coins:', txHash)
+        return txHash
+      } else {
+        // Fallback: Create consent record on blockchain
+        if (!this.contract) {
+          throw new Error('Contract not initialized')
+        }
 
-      // Store reward metadata on Lighthouse
-      const rewardData = {
-        contributor: contribution.contributor,
-        dataHash: contribution.dataHash,
-        rewardAmount: contribution.rewardAmount,
-        dataType: contribution.dataType,
-        timestamp: contribution.timestamp,
-        transactionHash: tx.hash
+        const tx = await this.contract.createConsent(
+          contribution.dataHash,
+          contribution.dataType,
+          `Health data contribution - ${contribution.dataType}`
+        )
+        await tx.wait()
+
+        // Store reward metadata on Lighthouse
+        const rewardData = {
+          contributor: contribution.contributor,
+          dataHash: contribution.dataHash,
+          rewardAmount: contribution.rewardAmount,
+          dataType: contribution.dataType,
+          timestamp: contribution.timestamp,
+          transactionHash: tx.hash
+        }
+
+        await lighthouse.storeData(
+          JSON.stringify(rewardData),
+          this.apiKey,
+          this.wallet!
+        )
+
+        console.log('Consent created:', tx.hash)
+        return tx.hash
       }
-
-      await lighthouse.storeData(
-        JSON.stringify(rewardData),
-        this.apiKey,
-        this.wallet!
-      )
-
-      console.log('Consent created:', tx.hash)
-      return tx.hash
     } catch (error) {
-      console.error('Error creating consent:', error)
-      throw new Error(`Failed to create consent: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      console.error('Error rewarding contributor:', error)
+      throw new Error(`Failed to reward contributor: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
 

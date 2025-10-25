@@ -6,6 +6,11 @@ export interface ConsentRecord {
   consentId: string
   contributor: string
   dataHash: string
+  dataType?: string
+  description?: string
+  timestamp?: number
+  isActive?: boolean
+  accessCount?: number
 }
 
 export interface ResearchRequest {

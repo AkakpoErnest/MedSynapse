@@ -1,8 +1,7 @@
 import { Routes, Route, BrowserRouter } from 'react-router-dom'
-import { WagmiConfig, createConfig } from 'wagmi'
+import { WagmiConfig, createConfig, http } from 'wagmi'
 import { mainnet } from 'wagmi/chains'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
-import { http } from 'viem'
 
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -11,11 +10,11 @@ import ContributorDashboard from './pages/ContributorDashboard'
 import ResearcherDashboard from './pages/ResearcherDashboard'
 import DataUpload from './pages/DataUpload'
 import DataAnalysis from './pages/DataAnalysis'
-import DataCoinDashboard from './pages/DataCoinDashboard'
+import AIInsightsDashboard from './components/AIInsightsDashboard'
 import TailwindTest from './components/TailwindTest'
 import { AuthProvider } from './contexts/AuthContext'
 
-// Simplified wagmi configuration
+// Wagmi configuration
 const config = createConfig({
   chains: [mainnet],
   connectors: [
@@ -34,47 +33,43 @@ function App() {
           <Layout>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route 
-                path="/contributor" 
+              <Route
+                path="/contributor"
                 element={
                   <ProtectedRoute requiredRole="contributor">
                     <ContributorDashboard />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/researcher" 
+              <Route
+                path="/researcher"
                 element={
                   <ProtectedRoute requiredRole="researcher">
                     <ResearcherDashboard />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/upload" 
+              <Route
+                path="/upload"
                 element={
                   <ProtectedRoute requiredRole="contributor">
                     <DataUpload />
                   </ProtectedRoute>
-                } 
+                }
               />
-                     <Route
-                       path="/analysis"
-                       element={
-                         <ProtectedRoute requiredRole="researcher">
-                           <DataAnalysis />
-                         </ProtectedRoute>
-                       }
-                     />
-                     <Route
-                       path="/datacoin"
-                       element={
-                         <ProtectedRoute requiredRole="contributor">
-                           <DataCoinDashboard />
-                         </ProtectedRoute>
-                       }
-                     />
-                     <Route path="/test" element={<TailwindTest />} />
+              <Route
+                path="/analysis"
+                element={
+                  <ProtectedRoute requiredRole="researcher">
+                    <DataAnalysis />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/ai-dashboard"
+                element={<AIInsightsDashboard />}
+              />
+              <Route path="/test" element={<TailwindTest />} />
             </Routes>
           </Layout>
         </AuthProvider>

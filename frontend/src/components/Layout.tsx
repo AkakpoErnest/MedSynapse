@@ -21,10 +21,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     setMobileMenuOpen(false)
   }
 
-  // Base navigation items
-  const baseNavItems = [
-    { path: '/', label: 'Home' }
-  ]
+         // Base navigation items
+         const baseNavItems = [
+           { path: '/', label: 'Home' },
+           { path: '/ai-dashboard', label: 'AI Dashboard' }
+         ]
 
   // Contributor-specific navigation
   const contributorNavItems = [

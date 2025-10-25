@@ -4,6 +4,10 @@ pragma solidity ^0.8.19;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
+interface IMedSynapseToken {
+    function rewardContributor(address contributor, string memory dataHash) external;
+}
+
 contract MedSynapseConsent is Ownable, ReentrancyGuard {
     
     struct ConsentRecord {
@@ -32,10 +36,15 @@ contract MedSynapseConsent is Ownable, ReentrancyGuard {
     uint256 public totalConsents;
     uint256 public feePercentage = 5; // 5% fee for platform
     
+    // Token integration
+    IMedSynapseToken public medSynapseToken;
+    bool public tokenRewardsEnabled = true;
+    
     event ConsentCreated(bytes32 indexed consentId, address indexed contributor, string dataHash);
     event ConsentRevoked(bytes32 indexed consentId, address indexed contributor);
     event ResearchRequested(bytes32 indexed consentId, address indexed researcher, string purpose);
     event ResearchApproved(bytes32 indexed consentId, address indexed researcher);
+    event TokenRewardDistributed(address indexed contributor, uint256 amount);
     
     constructor() {
         // Initialize with some default settings
@@ -67,6 +76,15 @@ contract MedSynapseConsent is Ownable, ReentrancyGuard {
         
         contributorConsents[msg.sender].push(consentId);
         totalConsents++;
+        
+        // Reward contributor with MedSynapse tokens
+        if (tokenRewardsEnabled && address(medSynapseToken) != address(0)) {
+            try medSynapseToken.rewardContributor(msg.sender, _dataHash) {
+                emit TokenRewardDistributed(msg.sender, 10 * 10**18); // 10 MED tokens
+            } catch {
+                // Continue even if token reward fails
+            }
+        }
         
         emit ConsentCreated(consentId, msg.sender, _dataHash);
         return consentId;
@@ -165,5 +183,17 @@ contract MedSynapseConsent is Ownable, ReentrancyGuard {
     function setFeePercentage(uint256 _newFee) external onlyOwner {
         require(_newFee <= 10, "Fee too high"); // Max 10%
         feePercentage = _newFee;
+    }
+    
+    function setMedSynapseToken(address _tokenAddress) external onlyOwner {
+        medSynapseToken = IMedSynapseToken(_tokenAddress);
+    }
+    
+    function setTokenRewardsEnabled(bool _enabled) external onlyOwner {
+        tokenRewardsEnabled = _enabled;
+    }
+    
+    function getTokenAddress() external view returns (address) {
+        return address(medSynapseToken);
     }
 }
