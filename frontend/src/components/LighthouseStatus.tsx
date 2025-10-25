@@ -1,5 +1,5 @@
 import React from 'react'
-import { Shield, ShieldCheck, ShieldX } from 'lucide-react'
+import { Shield, ShieldCheck, ShieldAlert } from 'lucide-react'
 import lighthouseService from '../services/lighthouseService'
 
 const LighthouseStatus: React.FC = () => {
@@ -14,7 +14,7 @@ const LighthouseStatus: React.FC = () => {
         </>
       ) : (
         <>
-          <ShieldX className="w-4 h-4 text-yellow-400" />
+          <ShieldAlert className="w-4 h-4 text-yellow-400" />
           <span className="text-sm text-yellow-400">Lighthouse Not Configured</span>
         </>
       )}
