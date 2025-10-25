@@ -1,9 +1,9 @@
 // Envio HyperSync Configuration
 export const ENVIO_CONFIG = {
-  // Envio GraphQL endpoint for MedSynapse
-  endpoint: import.meta.env.VITE_ENVIO_ENDPOINT || 'https://api.envio.dev/v1/graphql',
+  // Local Envio GraphQL endpoint
+  endpoint: import.meta.env.VITE_ENVIO_ENDPOINT || 'http://localhost:8080/v1/graphql',
   
-  // API Key for authentication
+  // API Key for authentication (not needed for local)
   apiKey: import.meta.env.VITE_ENVIO_API_KEY || '',
   
   // Network configurations
@@ -48,13 +48,12 @@ export const ENVIO_CONFIG = {
 export const MEDSYNAPSE_QUERIES = {
   // Get all consent created events for a contributor
   getContributorConsents: `
-    query GetContributorConsents($contributor: String!, $first: Int, $skip: Int) {
-      medSynapseConsent_ConsentCreateds(
-        where: { contributor: $contributor }
-        first: $first
-        skip: $skip
-        orderBy: id
-        orderDirection: desc
+    query GetContributorConsents($contributor: String!, $limit: Int, $offset: Int) {
+      MedSynapseConsent_ConsentCreated(
+        where: { contributor: { _eq: $contributor } }
+        limit: $limit
+        offset: $offset
+        order_by: { id: desc }
       ) {
         id
         consentId
@@ -66,12 +65,11 @@ export const MEDSYNAPSE_QUERIES = {
   
   // Get research requests
   getResearchRequests: `
-    query GetResearchRequests($first: Int, $skip: Int) {
-      medSynapseConsent_ResearchRequesteds(
-        first: $first
-        skip: $skip
-        orderBy: id
-        orderDirection: desc
+    query GetResearchRequests($limit: Int, $offset: Int) {
+      MedSynapseConsent_ResearchRequested(
+        limit: $limit
+        offset: $offset
+        order_by: { id: desc }
       ) {
         id
         consentId
@@ -83,13 +81,12 @@ export const MEDSYNAPSE_QUERIES = {
   
   // Get data access records
   getDataAccessRecords: `
-    query GetDataAccessRecords($consentId: String!, $first: Int, $skip: Int) {
-      medSynapseConsent_ResearchApproveds(
-        where: { consentId: $consentId }
-        first: $first
-        skip: $skip
-        orderBy: id
-        orderDirection: desc
+    query GetDataAccessRecords($consentId: String!, $limit: Int, $offset: Int) {
+      MedSynapseConsent_ResearchApproved(
+        where: { consentId: { _eq: $consentId } }
+        limit: $limit
+        offset: $offset
+        order_by: { id: desc }
       ) {
         id
         consentId
@@ -101,19 +98,19 @@ export const MEDSYNAPSE_QUERIES = {
   // Get analytics data
   getAnalytics: `
     query GetAnalytics {
-      medSynapseConsent_ConsentCreateds(first: 1000) {
+      MedSynapseConsent_ConsentCreated(limit: 1000) {
         id
         consentId
         contributor
         dataHash
       }
-      medSynapseConsent_ResearchRequesteds(first: 1000) {
+      MedSynapseConsent_ResearchRequested(limit: 1000) {
         id
         consentId
         researcher
         purpose
       }
-      medSynapseConsent_ResearchApproveds(first: 1000) {
+      MedSynapseConsent_ResearchApproved(limit: 1000) {
         id
         consentId
         researcher

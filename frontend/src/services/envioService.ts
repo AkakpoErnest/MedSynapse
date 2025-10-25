@@ -55,13 +55,13 @@ class EnvioService {
   // Query Methods
   async getContributorConsents(
     contributor: string,
-    first: number = 20,
-    skip: number = 0
+    limit: number = 20,
+    offset: number = 0
   ): Promise<ConsentRecord[]> {
     try {
-      const variables = { contributor, first, skip }
+      const variables = { contributor, limit, offset }
       const response = await this.client.request(MEDSYNAPSE_QUERIES.getContributorConsents, variables)
-      return response.medSynapseConsent_ConsentCreateds || []
+      return response.MedSynapseConsent_ConsentCreated || []
     } catch (error) {
       console.error('Error fetching contributor consents:', error)
       throw new Error('Failed to fetch contributor consents')
@@ -69,13 +69,13 @@ class EnvioService {
   }
 
   async getResearchRequests(
-    first: number = 20,
-    skip: number = 0
+    limit: number = 20,
+    offset: number = 0
   ): Promise<ResearchRequest[]> {
     try {
-      const variables = { first, skip }
+      const variables = { limit, offset }
       const response = await this.client.request(MEDSYNAPSE_QUERIES.getResearchRequests, variables)
-      return response.medSynapseConsent_ResearchRequesteds || []
+      return response.MedSynapseConsent_ResearchRequested || []
     } catch (error) {
       console.error('Error fetching research requests:', error)
       throw new Error('Failed to fetch research requests')
@@ -84,13 +84,13 @@ class EnvioService {
 
   async getDataAccessRecords(
     consentId: string,
-    first: number = 20,
-    skip: number = 0
+    limit: number = 20,
+    offset: number = 0
   ): Promise<DataAccessRecord[]> {
     try {
-      const variables = { consentId, first, skip }
+      const variables = { consentId, limit, offset }
       const response = await this.client.request(MEDSYNAPSE_QUERIES.getDataAccessRecords, variables)
-      return response.medSynapseConsent_ResearchApproveds || []
+      return response.MedSynapseConsent_ResearchApproved || []
     } catch (error) {
       console.error('Error fetching data access records:', error)
       throw new Error('Failed to fetch data access records')
@@ -101,9 +101,9 @@ class EnvioService {
     try {
       const response = await this.client.request(MEDSYNAPSE_QUERIES.getAnalytics)
       
-      const consents = response.medSynapseConsent_ConsentCreateds || []
-      const requests = response.medSynapseConsent_ResearchRequesteds || []
-      const approvals = response.medSynapseConsent_ResearchApproveds || []
+      const consents = response.MedSynapseConsent_ConsentCreated || []
+      const requests = response.MedSynapseConsent_ResearchRequested || []
+      const approvals = response.MedSynapseConsent_ResearchApproved || []
       
       const analytics: Analytics = {
         totalConsents: consents.length,
