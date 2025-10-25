@@ -1,13 +1,12 @@
 # 🏥 MedSynapse
 
-> **Decentralized, AI-powered platform for secure health data sharing with Data Coin rewards**
+> **Decentralized platform for secure health data sharing with token rewards**
 
-Bridge siloed healthcare data across blockchains while maintaining complete privacy and patient control. **Qualified for Lighthouse Hackathon 2024** 🚀
+Bridge siloed healthcare data across blockchains while maintaining complete privacy and patient control.
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/status-active-success.svg)]()
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)]()
-[![Hackathon](https://img.shields.io/badge/hackathon-Lighthouse%202024-yellow.svg)](https://1MB.io/)
 
 ![MedSynapse Banner](https://via.placeholder.com/1200x400/667eea/ffffff?text=MedSynapse+Healthcare+Data+Platform)
 
@@ -37,54 +36,27 @@ Bridge siloed healthcare data across blockchains while maintaining complete priv
 - **Access Logs**: See every time your data is accessed
 - **Earn Rewards**: Get compensated for contributing data
 
-## 🚀 Lighthouse Hackathon 2024 Qualification
+## 💰 Token Rewards System
 
-**MedSynapse is qualified for the Lighthouse Hackathon 2024!** We're competing for the **Best Consumer DataCoin Created** prize ($500).
+I've implemented a token-based reward system to incentivize health data sharing. Here's how it works:
 
-### ✅ **Hackathon Requirements Met:**
+### **MEDS Token (MedSynapse Data Share)**
+- **Purpose**: Reward patients for sharing their health data with researchers
+- **Reward Rate**: 10 MEDS tokens per validated data contribution
+- **Max Supply**: 1,000,000 MEDS tokens
+- **Storage**: Encrypted on Lighthouse IPFS network
 
-1. **✅ Data Coin on 1MB.io**
-   - Created "MedSynapse Health Data Coin" (MEDS)
-   - Contributors earn 10 MEDS tokens per validated health data contribution
-   - Max supply: 1,000,000 MEDS tokens
+### **How Contributors Earn Tokens**
+1. **Upload Health Data**: Lab results, wearable data, surveys, etc.
+2. **Data Validation**: Files are validated using zkTLS for authenticity
+3. **Automatic Rewards**: Earn 10 MEDS tokens per contribution
+4. **Track Earnings**: View your token balance in the Data Coin dashboard
 
-2. **✅ Lighthouse Storage Integration**
-   - All health data encrypted and stored on Lighthouse
-   - API Key: `894ec5dd.bd8480d5b8004515bc7f82d31e5b600f`
-   - Files encrypted before IPFS storage
-
-3. **✅ Real-World Dataset Integration**
-   - Health data validation using zkTLS (Zero-Knowledge Transport Layer Security)
-   - Integration with Reclaim Protocol for data verification
-   - Proof-of-validation stored on blockchain
-
-4. **✅ Deployed on Supported Network**
-   - **Contract**: `0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44`
-   - **Network**: Polygon Amoy Testnet
-   - **Explorer**: [View Contract](https://amoy.polygonscan.com/address/0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44)
-
-5. **✅ Working Frontend Demo**
-   - Live demo: http://localhost:3002/
-   - Data Coin Dashboard: `/datacoin`
-   - Real-time blockchain data integration
-
-6. **✅ Open-Source GitHub Repository**
-   - Complete source code available
-   - MIT License
-   - Active development
-
-### 🎯 **Prize Category: Best Consumer DataCoin**
-- **Consumer Data**: Health data from patients (lab results, wearable data, surveys)
-- **Data Aggregation**: Via zkTLS from protocols like Reclaim Protocol
-- **Contributor Rewards**: MEDS tokens for data contributions
-- **Real-World Impact**: Enables medical research while protecting privacy
-
-### 🔗 **Key Integrations:**
-- **1MB.io**: Data coin creation and trading
-- **Lighthouse**: Encrypted file storage
-- **Reclaim Protocol**: zkTLS data validation
-- **Polygon Amoy**: Blockchain deployment
-- **Envio HyperSync**: Real-time blockchain indexing
+### **Real-World Data Integration**
+- **zkTLS Validation**: Ensures data authenticity using zero-knowledge proofs
+- **Reclaim Protocol**: Integration for verified data sources
+- **Blockchain Records**: All transactions recorded on Polygon Amoy
+- **Privacy First**: Data encrypted before storage, only metadata on-chain
 
 ## 🚀 Getting Started
 
@@ -361,15 +333,30 @@ npm run build
 - **Privacy**: No PII stored on-chain
 - **Compliance**: HIPAA-compliant architecture
 
+## 📞 Contact & Support
+
+I'm always happy to help! Feel free to reach out if you have questions or want to contribute:
+
+- **Email**: support@medsynapse.io
+- **Twitter**: [@MedSynapse](https://twitter.com/medsynapse)
+- **GitHub Issues**: [Report bugs or request features](https://github.com/yourusername/MedSynapse/issues)
+
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+I'd love to have more people working on this project! Here's how you can help:
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. **Fork the repository**
+2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
+3. **Commit your changes** (`git commit -m 'feat: add amazing feature'`)
+4. **Push to the branch** (`git push origin feature/amazing-feature`)
+5. **Open a Pull Request**
+
+I'm particularly interested in contributions for:
+- AI/ML health data analysis
+- Mobile app development
+- Security audits
+- UI/UX improvements
+- Documentation
 
 ## 📝 License
 
@@ -377,35 +364,40 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- **Envio** - For HyperSync blockchain indexing
-- **Lighthouse** - For decentralized storage
+I want to thank the amazing open-source community and these projects that made MedSynapse possible:
+
+- **Envio** - For HyperSync blockchain indexing (makes real-time data so much easier!)
+- **Lighthouse** - For decentralized storage and encryption
 - **OpenZeppelin** - For secure smart contract libraries
 - **Polygon** - For scalable blockchain infrastructure
-- **The Open Source Community** - For amazing tools and libraries
-
-## 📞 Contact & Support
-
-- **Website**: [medsynapse.io](https://medsynapse.io)
-- **Email**: support@medsynapse.io
-- **Twitter**: [@MedSynapse](https://twitter.com/medsynapse)
-- **Discord**: [Join our community](https://discord.gg/medsynapse)
+- **The React Community** - For amazing tools and libraries
+- **All Contributors** - For helping make healthcare data more accessible
 
 ## 🗺️ Roadmap
 
-- [x] Smart contract development
-- [x] Frontend MVP
-- [x] Backend API
-- [x] Wallet integration
-- [x] Contract deployment to Polygon Amoy
-- [x] Lighthouse integration
-- [x] Envio HyperSync integration
-- [x] Data Coin creation (1MB.io)
-- [x] Lighthouse Hackathon 2024 qualification
-- [ ] AI analysis tools
-- [ ] Mobile app (React Native)
-- [ ] Multi-chain support
-- [ ] DAO governance
-- [ ] Token incentives
+Here's what I've built so far and what's coming next:
+
+### ✅ **Completed Features**
+- [x] Smart contract development and deployment
+- [x] Frontend MVP with React and TypeScript
+- [x] Backend API with Express
+- [x] Wallet integration (MetaMask)
+- [x] Contract deployed to Polygon Amoy testnet
+- [x] Lighthouse integration for encrypted file storage
+- [x] Envio HyperSync for real-time blockchain data
+- [x] Token rewards system (MEDS tokens)
+- [x] Data validation with zkTLS
+
+### 🚧 **In Progress**
+- [ ] AI analysis tools for health data insights
+- [ ] Mobile app development (React Native)
+- [ ] Multi-chain support (Ethereum, Base, etc.)
+
+### 🔮 **Future Plans**
+- [ ] DAO governance for platform decisions
+- [ ] Advanced token economics
+- [ ] Integration with more health data sources
+- [ ] Machine learning models for health predictions
 
 ---
 
