@@ -1,9 +1,10 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useAccount } from 'wagmi'
-import { Upload, FileText, AlertCircle, CheckCircle, Shield } from 'lucide-react'
+import { Upload, FileText, AlertCircle, CheckCircle, Shield, Coins, TrendingUp } from 'lucide-react'
 import { useDataUpload } from '../hooks/useMedSynapse'
 import { validateFileType, formatFileSize, validateDataDescription } from '../utils/helpers'
 import lighthouseService from '../services/lighthouseService'
+import dataCoinService from '../services/dataCoinService'
 
 const DataUpload: React.FC = () => {
   const { address, isConnected } = useAccount()
@@ -15,6 +16,8 @@ const DataUpload: React.FC = () => {
   const [description, setDescription] = useState('')
   const [uploadSuccess, setUploadSuccess] = useState(false)
   const [validationErrors, setValidationErrors] = useState<string[]>([])
+  const [userPoints, setUserPoints] = useState<string>('0')
+  const [pointsLoading, setPointsLoading] = useState(false)
 
   const allowedFileTypes = ['csv', 'json', 'txt', 'pdf', 'xlsx']
   const dataTypes = [
@@ -24,6 +27,28 @@ const DataUpload: React.FC = () => {
     { value: 'imaging_data', label: 'Imaging Data', icon: '📷' },
     { value: 'genetic_data', label: 'Genetic Data', icon: '🧬' }
   ]
+
+  const fetchUserPoints = async () => {
+    if (!address || !dataCoinService.isConfigured()) return
+    
+    try {
+      setPointsLoading(true)
+      const balance = await dataCoinService.getContributorBalance(address)
+      setUserPoints(balance)
+    } catch (error) {
+      console.error('Error fetching user points:', error)
+      setUserPoints('0')
+    } finally {
+      setPointsLoading(false)
+    }
+  }
+
+  // Fetch user points when component loads
+  useEffect(() => {
+    if (isConnected && address) {
+      fetchUserPoints()
+    }
+  }, [isConnected, address])
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -65,6 +90,9 @@ const DataUpload: React.FC = () => {
       const result = await uploadData(selectedFile, dataType, description)
       setUploadSuccess(true)
       
+      // Fetch updated user points after successful upload
+      await fetchUserPoints()
+      
       // Reset form after successful upload
       setTimeout(() => {
         setSelectedFile(null)
@@ -73,7 +101,7 @@ const DataUpload: React.FC = () => {
         if (fileInputRef.current) {
           fileInputRef.current.value = ''
         }
-      }, 3000)
+      }, 5000) // Increased timeout to 5 seconds to show success longer
       
     } catch (err) {
       setValidationErrors([err instanceof Error ? err.message : 'Upload failed'])
@@ -102,13 +130,63 @@ const DataUpload: React.FC = () => {
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Upload Health Data</h1>
       
       {uploadSuccess ? (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-          <div className="flex items-center">
-            <CheckCircle className="w-6 h-6 text-green-600 mr-3" />
-            <div>
-              <h3 className="text-lg font-medium text-green-800">Upload Successful!</h3>
-              <p className="text-green-700">Your health data has been encrypted and stored securely on Lighthouse, with consent recorded on the blockchain.</p>
+        <div className="space-y-6">
+          {/* Success Message */}
+          <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+            <div className="flex items-center mb-4">
+              <CheckCircle className="w-6 h-6 text-green-600 mr-3" />
+              <div>
+                <h3 className="text-lg font-medium text-green-800">Upload Successful!</h3>
+                <p className="text-green-700">Your health data has been encrypted and stored securely on Lighthouse, with consent recorded on the blockchain.</p>
+              </div>
             </div>
+            
+            {/* MedSynapse Points Display */}
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Coins className="w-8 h-8 text-yellow-500 mr-3" />
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-800">Your MedSynapse Points</h4>
+                    <p className="text-sm text-gray-600">Real-time on-chain balance</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  {pointsLoading ? (
+                    <div className="flex items-center">
+                      <div className="w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin mr-2"></div>
+                      <span className="text-gray-600">Loading...</span>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="text-3xl font-bold text-blue-600">{userPoints}</p>
+                      <p className="text-sm text-gray-500">Consent Records</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Blockchain Verification */}
+              <div className="mt-3 pt-3 border-t border-blue-200">
+                <div className="flex items-center text-sm text-gray-600">
+                  <Shield className="w-4 h-4 text-green-500 mr-2" />
+                  <span>Verified on Polygon Amoy Testnet</span>
+                  <TrendingUp className="w-4 h-4 text-green-500 ml-2" />
+                  <span className="ml-1">Live Data</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Next Steps */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h4 className="font-medium text-blue-800 mb-2">What's Next?</h4>
+            <ul className="text-sm text-blue-700 space-y-1">
+              <li>• Your data is now available for research requests</li>
+              <li>• Researchers can request access to your anonymized data</li>
+              <li>• You'll earn more points as your data is accessed</li>
+              <li>• View your dashboard to track all your contributions</li>
+            </ul>
           </div>
         </div>
       ) : (
