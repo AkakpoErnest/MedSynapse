@@ -270,12 +270,24 @@ cd contracts
 # Deploy to local network
 npx hardhat run scripts/deploy.js
 
-# Deploy to Mumbai testnet
-npx hardhat run scripts/deploy.js --network mumbai
+# Deploy to Polygon Amoy testnet
+npx hardhat run scripts/deploy-fixed.js --network amoy
 
 # Deploy to mainnet
 npx hardhat run scripts/deploy.js --network mainnet
 ```
+
+### Current Deployment Status
+
+**✅ MedSynapseConsent Contract Deployed**
+
+- **Network**: Polygon Amoy Testnet
+- **Contract Address**: `0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44`
+- **Explorer**: [View on Amoy Polygonscan](https://amoy.polygonscan.com/address/0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44)
+- **Deployer**: `0xF9c3F6011C6C9036b99fa67Fb3ea4A7EBdcC76cB`
+- **Deployment Date**: October 25, 2024
+
+**Note**: We migrated from Mumbai testnet to Amoy as Mumbai was deprecated. The contract is now live and ready for integration with Envio HyperSync.
 
 ### Building for Production
 
@@ -334,6 +346,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [x] Frontend MVP
 - [x] Backend API
 - [x] Wallet integration
+- [x] Contract deployment to Polygon Amoy
 - [ ] Lighthouse integration
 - [ ] Envio HyperSync integration
 - [ ] AI analysis tools
