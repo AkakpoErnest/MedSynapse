@@ -1,0 +1,16 @@
+cd /Users/pablo/Downloads/MedSynapse/contracts
+"
+check();
+}
+  }
+    console.error('Error:', error.message);
+  } catch (error) {
+    console.log('Balance:', ethers.formatEther(balance), 'MATIC');
+    const balance = await provider.getBalance(wallet.address);
+    console.log('Wallet Address:', wallet.address);
+    const wallet = new ethers.Wallet('530f4f4089cccb54646670a2317e32b18d8e178e872f16ef8bbb434b1aad049f', provider);
+    const provider = new ethers.JsonRpcProvider('https://rpc-mumbai.maticvigil.com');
+  try {
+async function check() {
+const { ethers } = require('hardhat');
+node -e "
