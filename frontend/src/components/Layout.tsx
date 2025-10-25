@@ -21,17 +21,35 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     setMobileMenuOpen(false)
   }
 
-  const navItems = [
-    { path: '/', label: 'Home' },
-    { path: '/contributor', label: 'Contributor' },
-    { path: '/researcher', label: 'Researcher' },
+  // Base navigation items
+  const baseNavItems = [
+    { path: '/', label: 'Home' }
   ]
 
-  // Add Data Coin navigation for contributors only
+  // Contributor-specific navigation
   const contributorNavItems = [
-    ...navItems,
+    ...baseNavItems,
+    { path: '/contributor', label: 'Dashboard' },
+    { path: '/upload', label: 'Upload Data' },
     { path: '/datacoin', label: 'Data Coin' }
   ]
+
+  // Researcher-specific navigation
+  const researcherNavItems = [
+    ...baseNavItems,
+    { path: '/researcher', label: 'Dashboard' },
+    { path: '/analysis', label: 'Analysis' }
+  ]
+
+  // Get navigation items based on user role
+  const getNavItems = () => {
+    if (user?.role === 'contributor') {
+      return contributorNavItems
+    } else if (user?.role === 'researcher') {
+      return researcherNavItems
+    }
+    return baseNavItems
+  }
 
   return (
     <div className="min-h-screen bg-black">
@@ -56,7 +74,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              {(user?.role === 'contributor' ? contributorNavItems : navItems).map((item) => (
+              {getNavItems().map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
@@ -131,7 +149,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         {mobileMenuOpen && (
           <div className="md:hidden bg-black/95 backdrop-blur-md border-t border-blue-500/20">
             <div className="px-4 py-4 space-y-2">
-              {(user?.role === 'contributor' ? contributorNavItems : navItems).map((item) => (
+              {getNavItems().map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
