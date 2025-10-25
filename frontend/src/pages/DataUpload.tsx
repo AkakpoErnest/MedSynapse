@@ -1,8 +1,9 @@
 import React, { useState, useRef } from 'react'
 import { useAccount } from 'wagmi'
-import { Upload, FileText, AlertCircle, CheckCircle } from 'lucide-react'
+import { Upload, FileText, AlertCircle, CheckCircle, Shield } from 'lucide-react'
 import { useDataUpload } from '../hooks/useMedSynapse'
 import { validateFileType, formatFileSize, validateDataDescription } from '../utils/helpers'
+import lighthouseService from '../services/lighthouseService'
 
 const DataUpload: React.FC = () => {
   const { address, isConnected } = useAccount()
@@ -54,8 +55,23 @@ const DataUpload: React.FC = () => {
       return
     }
 
+    if (!lighthouseService.isConfigured()) {
+      setValidationErrors(['Lighthouse storage not configured. Please add VITE_LIGHTHOUSE_API_KEY to your environment variables.'])
+      return
+    }
+
     try {
-      const result = await uploadData(selectedFile, dataType, description)
+      // Upload file to Lighthouse first
+      const lighthouseResult = await lighthouseService.uploadFile(selectedFile, {
+        name: selectedFile.name,
+        type: selectedFile.type,
+        size: selectedFile.size,
+        description,
+        dataType: dataType as any
+      })
+
+      // Then create blockchain consent record
+      const result = await uploadData(selectedFile, dataType, description, lighthouseResult.hash)
       setUploadSuccess(true)
       
       // Reset form after successful upload
@@ -100,7 +116,7 @@ const DataUpload: React.FC = () => {
             <CheckCircle className="w-6 h-6 text-green-600 mr-3" />
             <div>
               <h3 className="text-lg font-medium text-green-800">Upload Successful!</h3>
-              <p className="text-green-700">Your health data has been uploaded and encrypted.</p>
+              <p className="text-green-700">Your health data has been encrypted and stored securely on Lighthouse, with consent recorded on the blockchain.</p>
             </div>
           </div>
         </div>
@@ -185,7 +201,21 @@ const DataUpload: React.FC = () => {
               </div>
             </div>
 
-            {/* Validation Errors */}
+            {/* Lighthouse Status */}
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center">
+                <Shield className="w-5 h-5 text-blue-600 mr-2" />
+                <div>
+                  <h4 className="text-sm font-medium text-blue-800">Encrypted Storage</h4>
+                  <p className="text-sm text-blue-700">
+                    {lighthouseService.isConfigured() 
+                      ? 'Files will be encrypted and stored securely on Lighthouse'
+                      : 'Lighthouse not configured - add VITE_LIGHTHOUSE_API_KEY to enable encrypted storage'
+                    }
+                  </p>
+                </div>
+              </div>
+            </div>
             {validationErrors.length > 0 && (
               <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
                 <div className="flex items-center">
