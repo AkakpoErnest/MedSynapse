@@ -38,6 +38,24 @@ export const useDataUpload = () => {
       console.log('Lighthouse upload successful:', lighthouseResult)
       setUploadProgress(75)
       
+      // Save upload data locally as fallback
+      const uploadData = {
+        dataHash: lighthouseResult.hash,
+        dataType: dataType,
+        description: description,
+        fileName: file.name,
+        fileSize: file.size,
+        timestamp: Date.now(),
+        lighthouseUrl: lighthouseResult.url
+      }
+      
+      // Store in localStorage for this address
+      const existingUploads = localStorage.getItem(`medsynapse_uploads_${address}`)
+      const uploads = existingUploads ? JSON.parse(existingUploads) : []
+      uploads.push(uploadData)
+      localStorage.setItem(`medsynapse_uploads_${address}`, JSON.stringify(uploads))
+      console.log('Upload data saved locally:', uploadData)
+      
       // Create consent on blockchain using the actual contract
       console.log('Creating consent on blockchain with hash:', lighthouseResult.hash)
       
@@ -100,12 +118,68 @@ export const useContributorData = () => {
       setLoading(true)
       setError(null)
       try {
-        // Fetch real data from Envio HyperSync
-        const consents = await envioService.getContributorConsents(address)
-        setConsents(consents)
+        // Try to fetch from Envio first
+        const envioConsents = await envioService.getContributorConsents(address)
+        console.log('Envio consents:', envioConsents)
+        
+        if (envioConsents.length > 0) {
+          setConsents(envioConsents)
+        } else {
+          // Fallback: Check localStorage for uploaded files
+          const localUploads = localStorage.getItem(`medsynapse_uploads_${address}`)
+          if (localUploads) {
+            try {
+              const uploads = JSON.parse(localUploads)
+              console.log('Local uploads found:', uploads)
+              
+              // Convert local uploads to consent format
+              const mockConsents = uploads.map((upload: any, index: number) => ({
+                id: `local_${index}`,
+                consentId: upload.dataHash,
+                contributor: address,
+                dataHash: upload.dataHash,
+                dataType: upload.dataType,
+                description: upload.description,
+                timestamp: upload.timestamp,
+                isActive: true,
+                accessCount: 0
+              }))
+              
+              setConsents(mockConsents)
+            } catch (parseError) {
+              console.error('Error parsing local uploads:', parseError)
+              setConsents([])
+            }
+          } else {
+            setConsents([])
+          }
+        }
       } catch (err) {
-        setError('Failed to fetch consents.')
         console.error('Error fetching consents:', err)
+        setError('Failed to fetch consents.')
+        
+        // Fallback to localStorage even on error
+        const localUploads = localStorage.getItem(`medsynapse_uploads_${address}`)
+        if (localUploads) {
+          try {
+            const uploads = JSON.parse(localUploads)
+            const mockConsents = uploads.map((upload: any, index: number) => ({
+              id: `local_${index}`,
+              consentId: upload.dataHash,
+              contributor: address,
+              dataHash: upload.dataHash,
+              dataType: upload.dataType,
+              description: upload.description,
+              timestamp: upload.timestamp,
+              isActive: true,
+              accessCount: 0
+            }))
+            setConsents(mockConsents)
+            setError(null) // Clear error if we have local data
+          } catch (parseError) {
+            console.error('Error parsing local uploads:', parseError)
+          }
+        }
       } finally {
         setLoading(false)
       }
