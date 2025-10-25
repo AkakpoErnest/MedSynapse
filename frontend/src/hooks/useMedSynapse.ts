@@ -1,39 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAccount } from 'wagmi'
-
-// Mock data for demonstration
-const MOCK_CONSENTS = [
-  {
-    id: '0x123abc',
-    type: 'lab_results',
-    description: 'Comprehensive blood panel from 2023',
-    date: '2023-01-15T10:00:00Z',
-    status: 'Active',
-    requests: 3,
-    accessCount: 1,
-    researchers: ['0xResearcher1', '0xResearcher2']
-  },
-  {
-    id: '0x456def',
-    type: 'wearable_data',
-    description: 'Heart rate and sleep data from Q2 2023',
-    date: '2023-04-20T14:30:00Z',
-    status: 'Active',
-    requests: 5,
-    accessCount: 2,
-    researchers: ['0xResearcher3']
-  },
-  {
-    id: '0x789ghi',
-    type: 'genetic_data',
-    description: 'Anonymized genetic markers for disease research',
-    date: '2023-07-01T09:10:00Z',
-    status: 'Inactive',
-    requests: 0,
-    accessCount: 0,
-    researchers: []
-  },
-]
+import envioService from '../services/envioService'
 
 export const useDataUpload = () => {
   const { address, isConnected } = useAccount()
@@ -109,14 +76,9 @@ export const useContributorData = () => {
       setLoading(true)
       setError(null)
       try {
-        // In a real application, this would fetch data from:
-        // 1. Smart contract (e.g., MedSynapseConsent.getContributorConsents(address))
-        // 2. Envio HyperSync (for real-time indexed data)
-        // 3. Potentially a backend API that aggregates this data
-
-        // For now, return mock data
-        await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
-        setConsents(MOCK_CONSENTS)
+        // Fetch real data from Envio HyperSync
+        const consents = await envioService.getContributorConsents(address)
+        setConsents(consents)
       } catch (err) {
         setError('Failed to fetch consents.')
         console.error('Error fetching consents:', err)

@@ -22,7 +22,7 @@ const DataCoinDashboard: React.FC = () => {
       const [stats, history, userBalance] = await Promise.all([
         dataCoinService.getDataCoinStats(),
         dataCoinService.getContributorHistory(address!),
-        dataCoinService.getDataCoinBalance(address!)
+        dataCoinService.getContributorBalance(address!)
       ])
       
       setDataCoinStats(stats)
@@ -35,14 +35,8 @@ const DataCoinDashboard: React.FC = () => {
     }
   }
 
-  const handleCreateDataCoin = async () => {
-    try {
-      const dataCoinAddress = await dataCoinService.createMedSynapseDataCoin()
-      alert(`Data coin created successfully! Address: ${dataCoinAddress}`)
-      loadDataCoinData()
-    } catch (error) {
-      alert(`Error creating data coin: ${error instanceof Error ? error.message : 'Unknown error'}`)
-    }
+  const handleRefreshData = async () => {
+    await loadDataCoinData()
   }
 
   if (!isConnected) {
@@ -80,7 +74,7 @@ const DataCoinDashboard: React.FC = () => {
         <div className="mt-4">
           <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
             <CheckCircle className="w-4 h-4 mr-1" />
-            Lighthouse Hackathon Qualified
+            Contract Deployed
           </span>
         </div>
       </div>
@@ -130,23 +124,30 @@ const DataCoinDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Data Coin Actions */}
+      {/* Contract Information */}
       <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-lg p-6">
-        <h2 className="text-xl font-bold text-white mb-4">Data Coin Actions</h2>
+        <h2 className="text-xl font-bold text-white mb-4">MedSynapse Contract</h2>
         <div className="space-y-4">
+          <div className="bg-gray-800/50 p-4 rounded-lg">
+            <p className="text-sm text-gray-400 mb-2">Contract Address:</p>
+            <p className="text-white font-mono text-sm break-all">
+              {dataCoinStats?.dataCoinAddress || 'Loading...'}
+            </p>
+          </div>
+          
           <button
-            onClick={handleCreateDataCoin}
-            className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-white px-6 py-3 rounded-lg font-medium hover:from-yellow-600 hover:to-yellow-700 transition-all duration-300 flex items-center justify-center"
+            onClick={handleRefreshData}
+            className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 flex items-center justify-center"
           >
             <Coins className="w-5 h-5 mr-2" />
-            Create MedSynapse Data Coin (1MB.io)
+            Refresh Contract Data
           </button>
           
           <div className="text-sm text-gray-400">
-            <p>• Data coin will be created on Polygon Amoy (hackathon requirement)</p>
-            <p>• Contributors earn 10 MEDS tokens per validated health data contribution</p>
+            <p>• Contract deployed on Polygon Amoy testnet</p>
+            <p>• Contributors earn tokens for validated health data contributions</p>
             <p>• Uses Lighthouse storage and encryption for data security</p>
-            <p>• Integrates zkTLS for real-world data validation</p>
+            <p>• Real blockchain data integration with Envio HyperSync</p>
           </div>
         </div>
       </div>
@@ -184,32 +185,6 @@ const DataCoinDashboard: React.FC = () => {
         )}
       </div>
 
-      {/* Hackathon Qualification Status */}
-      <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-6">
-        <h2 className="text-xl font-bold text-green-400 mb-4">🚀 Lighthouse Hackathon Qualification</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <h3 className="font-semibold text-white mb-2">✅ Requirements Met:</h3>
-            <ul className="text-sm text-gray-300 space-y-1">
-              <li>• Data coin created on 1MB.io</li>
-              <li>• Lighthouse storage integration</li>
-              <li>• Real-world health data validation</li>
-              <li>• Deployed on Polygon Amoy</li>
-              <li>• Working frontend demo</li>
-              <li>• Open-source GitHub repository</li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-semibold text-white mb-2">🎯 Prize Categories:</h3>
-            <ul className="text-sm text-gray-300 space-y-1">
-              <li>• Best Consumer DataCoin ($500)</li>
-              <li>• Health data aggregation</li>
-              <li>• zkTLS validation integration</li>
-              <li>• Contributor reward system</li>
-            </ul>
-          </div>
-        </div>
-      </div>
     </div>
   )
 }

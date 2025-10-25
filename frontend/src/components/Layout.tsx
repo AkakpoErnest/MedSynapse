@@ -2,8 +2,6 @@ import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
-import EnvioStatus from './EnvioStatus'
-import LighthouseStatus from './LighthouseStatus'
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation()
@@ -66,12 +64,6 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
               {/* Wallet Connection */}
               <div className="flex items-center space-x-4">
-                {/* Service Status */}
-                <div className="flex items-center space-x-3">
-                  <EnvioStatus className="text-sm" />
-                  <LighthouseStatus />
-                </div>
-                
                 {isConnected ? (
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-2 bg-green-500/20 px-3 py-2 rounded-lg border border-green-500/30">
