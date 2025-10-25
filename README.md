@@ -1,12 +1,13 @@
 # 🏥 MedSynapse
 
-> **Decentralized, AI-powered platform for secure health data sharing**
+> **Decentralized, AI-powered platform for secure health data sharing with Data Coin rewards**
 
-Bridge siloed healthcare data across blockchains while maintaining complete privacy and patient control.
+Bridge siloed healthcare data across blockchains while maintaining complete privacy and patient control. **Qualified for Lighthouse Hackathon 2024** 🚀
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/status-active-success.svg)]()
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)]()
+[![Hackathon](https://img.shields.io/badge/hackathon-Lighthouse%202024-yellow.svg)](https://1MB.io/)
 
 ![MedSynapse Banner](https://via.placeholder.com/1200x400/667eea/ffffff?text=MedSynapse+Healthcare+Data+Platform)
 
@@ -35,6 +36,55 @@ Bridge siloed healthcare data across blockchains while maintaining complete priv
 - **Revocable Consent**: Take back permissions anytime
 - **Access Logs**: See every time your data is accessed
 - **Earn Rewards**: Get compensated for contributing data
+
+## 🚀 Lighthouse Hackathon 2024 Qualification
+
+**MedSynapse is qualified for the Lighthouse Hackathon 2024!** We're competing for the **Best Consumer DataCoin Created** prize ($500).
+
+### ✅ **Hackathon Requirements Met:**
+
+1. **✅ Data Coin on 1MB.io**
+   - Created "MedSynapse Health Data Coin" (MEDS)
+   - Contributors earn 10 MEDS tokens per validated health data contribution
+   - Max supply: 1,000,000 MEDS tokens
+
+2. **✅ Lighthouse Storage Integration**
+   - All health data encrypted and stored on Lighthouse
+   - API Key: `894ec5dd.bd8480d5b8004515bc7f82d31e5b600f`
+   - Files encrypted before IPFS storage
+
+3. **✅ Real-World Dataset Integration**
+   - Health data validation using zkTLS (Zero-Knowledge Transport Layer Security)
+   - Integration with Reclaim Protocol for data verification
+   - Proof-of-validation stored on blockchain
+
+4. **✅ Deployed on Supported Network**
+   - **Contract**: `0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44`
+   - **Network**: Polygon Amoy Testnet
+   - **Explorer**: [View Contract](https://amoy.polygonscan.com/address/0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44)
+
+5. **✅ Working Frontend Demo**
+   - Live demo: http://localhost:3002/
+   - Data Coin Dashboard: `/datacoin`
+   - Real-time blockchain data integration
+
+6. **✅ Open-Source GitHub Repository**
+   - Complete source code available
+   - MIT License
+   - Active development
+
+### 🎯 **Prize Category: Best Consumer DataCoin**
+- **Consumer Data**: Health data from patients (lab results, wearable data, surveys)
+- **Data Aggregation**: Via zkTLS from protocols like Reclaim Protocol
+- **Contributor Rewards**: MEDS tokens for data contributions
+- **Real-World Impact**: Enables medical research while protecting privacy
+
+### 🔗 **Key Integrations:**
+- **1MB.io**: Data coin creation and trading
+- **Lighthouse**: Encrypted file storage
+- **Reclaim Protocol**: zkTLS data validation
+- **Polygon Amoy**: Blockchain deployment
+- **Envio HyperSync**: Real-time blockchain indexing
 
 ## 🚀 Getting Started
 
@@ -347,8 +397,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [x] Backend API
 - [x] Wallet integration
 - [x] Contract deployment to Polygon Amoy
-- [ ] Lighthouse integration
-- [ ] Envio HyperSync integration
+- [x] Lighthouse integration
+- [x] Envio HyperSync integration
+- [x] Data Coin creation (1MB.io)
+- [x] Lighthouse Hackathon 2024 qualification
 - [ ] AI analysis tools
 - [ ] Mobile app (React Native)
 - [ ] Multi-chain support

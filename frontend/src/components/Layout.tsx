@@ -17,6 +17,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     { path: '/', label: 'Home' },
     { path: '/contributor', label: 'Contributor' },
     { path: '/researcher', label: 'Researcher' },
+    { path: '/datacoin', label: 'Data Coin' },
   ]
 
   return (

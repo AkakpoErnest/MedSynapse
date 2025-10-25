@@ -10,6 +10,7 @@ import ContributorDashboard from './pages/ContributorDashboard'
 import ResearcherDashboard from './pages/ResearcherDashboard'
 import DataUpload from './pages/DataUpload'
 import DataAnalysis from './pages/DataAnalysis'
+import DataCoinDashboard from './pages/DataCoinDashboard'
 import TailwindTest from './components/TailwindTest'
 
 // Simplified wagmi configuration
@@ -34,6 +35,7 @@ function App() {
             <Route path="/researcher" element={<ResearcherDashboard />} />
             <Route path="/upload" element={<DataUpload />} />
             <Route path="/analysis" element={<DataAnalysis />} />
+            <Route path="/datacoin" element={<DataCoinDashboard />} />
             <Route path="/test" element={<TailwindTest />} />
           </Routes>
         </Layout>
