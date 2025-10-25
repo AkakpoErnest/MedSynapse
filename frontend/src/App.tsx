@@ -11,6 +11,7 @@ import ContributorDashboard from './pages/ContributorDashboard'
 import ResearcherDashboard from './pages/ResearcherDashboard'
 import DataUpload from './pages/DataUpload'
 import DataAnalysis from './pages/DataAnalysis'
+import DataCoinDashboard from './pages/DataCoinDashboard'
 import TailwindTest from './components/TailwindTest'
 import { AuthProvider } from './contexts/AuthContext'
 
@@ -57,15 +58,23 @@ function App() {
                   </ProtectedRoute>
                 } 
               />
-              <Route 
-                path="/analysis" 
-                element={
-                  <ProtectedRoute requiredRole="researcher">
-                    <DataAnalysis />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route path="/test" element={<TailwindTest />} />
+                     <Route
+                       path="/analysis"
+                       element={
+                         <ProtectedRoute requiredRole="researcher">
+                           <DataAnalysis />
+                         </ProtectedRoute>
+                       }
+                     />
+                     <Route
+                       path="/datacoin"
+                       element={
+                         <ProtectedRoute requiredRole="contributor">
+                           <DataCoinDashboard />
+                         </ProtectedRoute>
+                       }
+                     />
+                     <Route path="/test" element={<TailwindTest />} />
             </Routes>
           </Layout>
         </AuthProvider>

@@ -27,6 +27,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     { path: '/researcher', label: 'Researcher' },
   ]
 
+  // Add Data Coin navigation for contributors only
+  const contributorNavItems = [
+    ...navItems,
+    { path: '/datacoin', label: 'Data Coin' }
+  ]
+
   return (
     <div className="min-h-screen bg-black">
       {/* Navigation */}
@@ -50,7 +56,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              {navItems.map((item) => (
+              {(user?.role === 'contributor' ? contributorNavItems : navItems).map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
@@ -125,7 +131,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         {mobileMenuOpen && (
           <div className="md:hidden bg-black/95 backdrop-blur-md border-t border-blue-500/20">
             <div className="px-4 py-4 space-y-2">
-              {navItems.map((item) => (
+              {(user?.role === 'contributor' ? contributorNavItems : navItems).map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
