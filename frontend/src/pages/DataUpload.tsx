@@ -61,17 +61,8 @@ const DataUpload: React.FC = () => {
     }
 
     try {
-      // Upload file to Lighthouse first
-      const lighthouseResult = await lighthouseService.uploadFile(selectedFile, {
-        name: selectedFile.name,
-        type: selectedFile.type,
-        size: selectedFile.size,
-        description,
-        dataType: dataType as any
-      })
-
-      // Then create blockchain consent record
-      const result = await uploadData(selectedFile, dataType, description, lighthouseResult.hash)
+      // Upload file using the hook (which handles Lighthouse and blockchain)
+      const result = await uploadData(selectedFile, dataType, description)
       setUploadSuccess(true)
       
       // Reset form after successful upload

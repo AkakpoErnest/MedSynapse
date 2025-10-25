@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAccount } from 'wagmi'
 import envioService from '../services/envioService'
+import lighthouseService from '../services/lighthouseService'
 
 export const useDataUpload = () => {
   const { address, isConnected } = useAccount()
@@ -8,26 +9,13 @@ export const useDataUpload = () => {
   const [uploadProgress, setUploadProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
 
-  // Placeholder for Lighthouse upload
-  const uploadToLighthouse = async (file: File) => {
-    return new Promise<string>((resolve) => {
-      setUploadProgress(0)
-      let progress = 0
-      const interval = setInterval(() => {
-        progress += 10
-        setUploadProgress(progress)
-        if (progress >= 100) {
-          clearInterval(interval)
-          // Simulate Lighthouse hash
-          resolve(`Qm${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`)
-        }
-      }, 100)
-    })
-  }
-
   const uploadData = async (file: File, dataType: string, description: string) => {
     if (!isConnected || !address) {
       throw new Error('Wallet not connected.')
+    }
+
+    if (!lighthouseService.isConfigured()) {
+      throw new Error('Lighthouse storage not configured.')
     }
 
     setUploading(true)
@@ -35,18 +23,26 @@ export const useDataUpload = () => {
     setUploadProgress(0)
 
     try {
-      // 1. Upload to Lighthouse (simulated)
-      const dataHash = await uploadToLighthouse(file)
-      console.log('Uploaded to Lighthouse, hash:', dataHash)
+      // Upload to Lighthouse
+      setUploadProgress(25)
+      const lighthouseResult = await lighthouseService.uploadFile(file, {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        description,
+        dataType: dataType as any
+      })
 
-      // 2. Create consent on-chain (simulated)
-      console.log('Simulating on-chain consent creation...')
-      await new Promise(resolve => setTimeout(resolve, 2000)) // Simulate transaction time
-      console.log('Consent created on-chain (simulated)')
-
-      setUploading(false)
+      setUploadProgress(75)
+      
+      // Create consent on blockchain (simulated for now)
+      console.log('Creating consent on blockchain with hash:', lighthouseResult.hash)
+      await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate transaction time
+      
       setUploadProgress(100)
-      return { success: true, dataHash }
+      setUploading(false)
+      
+      return { success: true, dataHash: lighthouseResult.hash }
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred during upload.')

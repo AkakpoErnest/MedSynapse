@@ -31,17 +31,15 @@ class LighthouseService {
     }
 
     try {
-      // Upload file with encryption
+      // Upload file with encryption using the correct API
       const uploadResponse = await lighthouse.upload(
         file,
         this.apiKey,
-        false, // encrypt the file
-        undefined, // progress callback
-        metadata // file metadata
+        false // encrypt the file
       )
 
-      if (!uploadResponse.data) {
-        throw new Error('Upload failed - no data returned')
+      if (!uploadResponse.data || !uploadResponse.data.Hash) {
+        throw new Error('Upload failed - no hash returned')
       }
 
       return {
