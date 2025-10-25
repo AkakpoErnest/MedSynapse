@@ -166,10 +166,10 @@ const Home: React.FC = () => {
                 
                 <div className="space-y-4">
                   <p className="text-2xl text-gray-300 leading-relaxed">
-                    The world's first <span className="font-semibold text-blue-400">decentralized, AI-powered</span> platform for secure health data sharing
+                    A <span className="font-semibold text-blue-400">blockchain-based platform</span> where patients can securely share their health data with medical researchers
                   </p>
                   <p className="text-lg text-gray-400">
-                    Bridge siloed healthcare data across blockchains while maintaining complete privacy and patient control
+                    Patients upload encrypted health data, researchers request access for studies, and patients approve or deny each request. All transactions are recorded on the blockchain for transparency.
                   </p>
                 </div>
               </div>
@@ -226,10 +226,10 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center space-y-4 mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-white">
-              Why Choose MedSynapse?
+              How MedSynapse Works
             </h2>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-              We combine cutting-edge blockchain technology with AI to create the most secure and efficient health data platform
+              A simple 3-step process that connects patients with researchers while keeping data secure and private
             </p>
           </div>
 
@@ -247,10 +247,10 @@ const Home: React.FC = () => {
                 </div>
               </div>
               <h3 className="text-xl font-bold text-white mb-4">
-                Decentralized Storage
+                Step 1: Upload Health Data
               </h3>
               <p className="text-gray-400 leading-relaxed">
-                Your health data is encrypted and stored across multiple blockchain networks for maximum security and availability
+                Patients upload their health data (lab results, wearable data, surveys) which gets encrypted and stored securely on the blockchain
               </p>
             </div>
 
@@ -267,10 +267,10 @@ const Home: React.FC = () => {
                 </div>
               </div>
               <h3 className="text-xl font-bold text-white mb-4">
-                Real-Time Processing
+                Step 2: Researchers Request Access
               </h3>
               <p className="text-gray-400 leading-relaxed">
-                Lightning-fast data processing and analysis using advanced AI algorithms for instant insights
+                Medical researchers browse available datasets and request access for their studies, explaining their research purpose
               </p>
             </div>
 
@@ -287,10 +287,10 @@ const Home: React.FC = () => {
                 </div>
               </div>
               <h3 className="text-xl font-bold text-white mb-4">
-                Privacy First
+                Step 3: Patients Control Access
               </h3>
               <p className="text-gray-400 leading-relaxed">
-                Complete patient control with granular consent management and anonymization protocols
+                Patients review each request and decide whether to approve or deny access. They can revoke access at any time
               </p>
             </div>
           </div>
