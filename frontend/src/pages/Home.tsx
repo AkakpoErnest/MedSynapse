@@ -210,20 +210,6 @@ const Home: React.FC = () => {
                 </div>
               </div>
               
-              {/* Floating Stats */}
-              <div className="absolute -top-4 -right-4 bg-blue-500/90 backdrop-blur-sm rounded-xl p-4 border border-blue-400/30">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-white">10K+</div>
-                  <div className="text-xs text-blue-200">Contributors</div>
-                </div>
-              </div>
-              
-              <div className="absolute -bottom-4 -left-4 bg-green-500/90 backdrop-blur-sm rounded-xl p-4 border border-green-400/30">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-white">50M+</div>
-                  <div className="text-xs text-green-200">Data Points</div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
