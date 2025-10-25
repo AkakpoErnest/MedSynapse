@@ -144,53 +144,53 @@ const Home: React.FC = () => {
 
         {/* Content */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left Content */}
-            <div className="space-y-8">
+            <div className="space-y-6 sm:space-y-8">
               {/* Logo and Brand */}
-              <div className="space-y-6">
-                <div className="flex items-center space-x-4">
+              <div className="space-y-4 sm:space-y-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
                   <div className="relative">
-                    <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl flex items-center justify-center shadow-2xl border border-blue-400/30">
-                      <img src="/logo.png" alt="MedSynapse Logo" className="w-14 h-14 object-contain" />
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl flex items-center justify-center shadow-2xl border border-blue-400/30">
+                      <img src="/logo.png" alt="MedSynapse Logo" className="w-10 h-10 sm:w-14 sm:h-14 object-contain" />
                     </div>
                     <div className="absolute inset-0 rounded-2xl bg-blue-400/20 animate-pulse"></div>
                   </div>
                   <div>
-                    <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
                       MedSynapse
                     </h1>
-                    <div className="h-1 w-32 bg-gradient-to-r from-blue-500 to-blue-400 rounded-full mt-2"></div>
+                    <div className="h-1 w-24 sm:w-32 bg-gradient-to-r from-blue-500 to-blue-400 rounded-full mt-2"></div>
                   </div>
                 </div>
                 
-                <div className="space-y-4">
-                  <p className="text-2xl text-gray-300 leading-relaxed">
+                <div className="space-y-3 sm:space-y-4">
+                  <p className="text-lg sm:text-xl md:text-2xl text-gray-300 leading-relaxed">
                     A <span className="font-semibold text-blue-400">blockchain-based platform</span> where patients can securely share their health data with medical researchers
                   </p>
-                  <p className="text-lg text-gray-400">
+                  <p className="text-base sm:text-lg text-gray-400">
                     Patients upload encrypted health data, researchers request access for studies, and patients approve or deny each request. All transactions are recorded on the blockchain for transparency.
                   </p>
                 </div>
               </div>
               
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Link
                   to="/contributor"
-                  className="group relative bg-gradient-to-r from-blue-500 to-blue-600 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105 hover:from-blue-600 hover:to-blue-700 inline-flex items-center justify-center border border-blue-400/30"
+                  className="group relative bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold shadow-lg hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105 hover:from-blue-600 hover:to-blue-700 inline-flex items-center justify-center border border-blue-400/30 text-sm sm:text-base"
                 >
-                  <Heart className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
+                  <Heart className="w-4 h-4 sm:w-5 sm:h-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
                   I'm a Contributor
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                 </Link>
                 <Link
                   to="/researcher"
-                  className="group relative bg-transparent border-2 border-blue-500 text-blue-400 px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105 hover:bg-blue-500/10 inline-flex items-center justify-center"
+                  className="group relative bg-transparent border-2 border-blue-500 text-blue-400 px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold shadow-lg hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105 hover:bg-blue-500/10 inline-flex items-center justify-center text-sm sm:text-base"
                 >
-                  <Brain className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
+                  <Brain className="w-4 h-4 sm:w-5 sm:h-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
                   I'm a Researcher
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                 </Link>
               </div>
             </div>

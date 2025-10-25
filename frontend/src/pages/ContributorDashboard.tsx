@@ -75,32 +75,32 @@ const ContributorDashboard: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white">Contributor Dashboard</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Contributor Dashboard</h1>
           <div className="flex items-center mt-2">
             {isChecking ? (
               <div className="flex items-center text-gray-400">
                 <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin mr-2"></div>
-                Checking Envio connection...
+                <span className="text-sm">Checking Envio connection...</span>
               </div>
             ) : envioConnected ? (
               <div className="flex items-center text-green-400">
                 <Wifi className="w-4 h-4 mr-2" />
-                Envio HyperSync Connected
+                <span className="text-sm">Envio HyperSync Connected</span>
               </div>
             ) : (
               <div className="flex items-center text-red-400">
                 <WifiOff className="w-4 h-4 mr-2" />
-                Envio HyperSync Disconnected
+                <span className="text-sm">Envio HyperSync Disconnected</span>
               </div>
             )}
           </div>
         </div>
         <Link
           to="/upload"
-          className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 flex items-center border border-blue-400/30"
+          className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 flex items-center border border-blue-400/30 text-sm sm:text-base"
         >
           <Upload className="w-4 h-4 mr-2" />
           Upload Data
@@ -108,42 +108,42 @@ const ContributorDashboard: React.FC = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 p-6 rounded-lg hover:border-blue-400/40 transition-all duration-300">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
+        <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 p-4 sm:p-6 rounded-lg hover:border-blue-400/40 transition-all duration-300">
           <div className="flex items-center">
-            <FileText className="w-8 h-8 text-blue-400" />
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-400">Total Datasets</p>
-              <p className="text-2xl font-bold text-white">{consents.length}</p>
+            <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
+            <div className="ml-3 sm:ml-4">
+              <p className="text-xs sm:text-sm font-medium text-gray-400">Total Datasets</p>
+              <p className="text-xl sm:text-2xl font-bold text-white">{consents.length}</p>
             </div>
           </div>
         </div>
-        <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 p-6 rounded-lg hover:border-blue-400/40 transition-all duration-300">
+        <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 p-4 sm:p-6 rounded-lg hover:border-blue-400/40 transition-all duration-300">
           <div className="flex items-center">
-            <Shield className="w-8 h-8 text-green-400" />
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-400">Active Consents</p>
-              <p className="text-2xl font-bold text-white">{consents.filter(c => c.isActive).length}</p>
+            <Shield className="w-6 h-6 sm:w-8 sm:h-8 text-green-400" />
+            <div className="ml-3 sm:ml-4">
+              <p className="text-xs sm:text-sm font-medium text-gray-400">Active Consents</p>
+              <p className="text-xl sm:text-2xl font-bold text-white">{consents.filter(c => c.isActive).length}</p>
             </div>
           </div>
         </div>
-        <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 p-6 rounded-lg hover:border-blue-400/40 transition-all duration-300">
+        <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 p-4 sm:p-6 rounded-lg hover:border-blue-400/40 transition-all duration-300">
           <div className="flex items-center">
-            <Eye className="w-8 h-8 text-purple-400" />
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-400">Total Access</p>
-              <p className="text-2xl font-bold text-white">{consents.reduce((sum, c) => sum + (c.accessCount || 0), 0)}</p>
+            <Eye className="w-6 h-6 sm:w-8 sm:h-8 text-purple-400" />
+            <div className="ml-3 sm:ml-4">
+              <p className="text-xs sm:text-sm font-medium text-gray-400">Total Access</p>
+              <p className="text-xl sm:text-2xl font-bold text-white">{consents.reduce((sum, c) => sum + (c.accessCount || 0), 0)}</p>
             </div>
           </div>
         </div>
-        <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 p-6 rounded-lg hover:border-blue-400/40 transition-all duration-300">
+        <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 p-4 sm:p-6 rounded-lg hover:border-blue-400/40 transition-all duration-300">
           <div className="flex items-center">
-            <Coins className="w-8 h-8 text-yellow-400" />
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-400">Consent Balance</p>
-              <p className="text-2xl font-bold text-white">
+            <Coins className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400" />
+            <div className="ml-3 sm:ml-4">
+              <p className="text-xs sm:text-sm font-medium text-gray-400">Consent Balance</p>
+              <p className="text-xl sm:text-2xl font-bold text-white">
                 {dataCoinLoading ? (
-                  <div className="w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 sm:w-6 sm:h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
                 ) : (
                   contributorBalance
                 )}

@@ -5,12 +5,14 @@ import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
 import { http } from 'viem'
 
 import Layout from './components/Layout'
+import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
 import ContributorDashboard from './pages/ContributorDashboard'
 import ResearcherDashboard from './pages/ResearcherDashboard'
 import DataUpload from './pages/DataUpload'
 import DataAnalysis from './pages/DataAnalysis'
 import TailwindTest from './components/TailwindTest'
+import { AuthProvider } from './contexts/AuthContext'
 
 // Simplified wagmi configuration
 const config = createConfig({
@@ -27,16 +29,46 @@ function App() {
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <WagmiConfig config={config}>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/contributor" element={<ContributorDashboard />} />
-            <Route path="/researcher" element={<ResearcherDashboard />} />
-            <Route path="/upload" element={<DataUpload />} />
-            <Route path="/analysis" element={<DataAnalysis />} />
-            <Route path="/test" element={<TailwindTest />} />
-          </Routes>
-        </Layout>
+        <AuthProvider>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route 
+                path="/contributor" 
+                element={
+                  <ProtectedRoute requiredRole="contributor">
+                    <ContributorDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/researcher" 
+                element={
+                  <ProtectedRoute requiredRole="researcher">
+                    <ResearcherDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/upload" 
+                element={
+                  <ProtectedRoute requiredRole="contributor">
+                    <DataUpload />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/analysis" 
+                element={
+                  <ProtectedRoute requiredRole="researcher">
+                    <DataAnalysis />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route path="/test" element={<TailwindTest />} />
+            </Routes>
+          </Layout>
+        </AuthProvider>
       </WagmiConfig>
     </BrowserRouter>
   )
