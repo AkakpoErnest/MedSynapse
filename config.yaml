@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=./node_modules/envio/evm.schema.json
+name: envio-indexer
+networks:
+- id: 80002
+  start_block: 0
+  contracts:
+  - name: MedSynapseConsent
+    address:
+    - 0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44
+    handler: src/EventHandlers.ts
+    events:
+    - event: ConsentCreated(bytes32 indexed consentId, address indexed contributor, string dataHash)
+    - event: ConsentRevoked(bytes32 indexed consentId, address indexed contributor)
+    - event: OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
+    - event: ResearchApproved(bytes32 indexed consentId, address indexed researcher)
+    - event: ResearchRequested(bytes32 indexed consentId, address indexed researcher, string purpose)
+unordered_multichain_mode: true
+preload_handlers: true

@@ -18,16 +18,16 @@ export const ENVIO_CONFIG = {
       name: 'Polygon',
       rpcUrl: 'https://polygon-rpc.com'
     },
-    mumbai: {
-      chainId: 80001,
-      name: 'Mumbai Testnet',
-      rpcUrl: 'https://rpc-mumbai.maticvigil.com'
+    amoy: {
+      chainId: 80002,
+      name: 'Polygon Amoy Testnet',
+      rpcUrl: 'https://rpc-amoy.polygon.technology'
     }
   },
   
   // MedSynapse contract addresses
   contracts: {
-    medSynapseConsent: process.env.REACT_APP_MEDSYNAPSE_CONTRACT || '0x...',
+    medSynapseConsent: process.env.REACT_APP_MEDSYNAPSE_CONTRACT || '0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44',
     dataValidator: process.env.REACT_APP_DATA_VALIDATOR_CONTRACT || '0x...'
   },
   
@@ -46,27 +46,20 @@ export const ENVIO_CONFIG = {
 
 // GraphQL Queries for MedSynapse
 export const MEDSYNAPSE_QUERIES = {
-  // Get all consent records for a contributor
+  // Get all consent created events for a contributor
   getContributorConsents: `
     query GetContributorConsents($contributor: String!, $first: Int, $skip: Int) {
-      consentRecords(
+      medSynapseConsent_ConsentCreateds(
         where: { contributor: $contributor }
         first: $first
         skip: $skip
-        orderBy: timestamp
+        orderBy: id
         orderDirection: desc
       ) {
         id
+        consentId
         contributor
-        dataType
-        description
-        timestamp
-        isActive
-        accessCount
-        authorizedResearchers {
-          researcher
-          approvedAt
-        }
+        dataHash
       }
     }
   `,
@@ -74,24 +67,16 @@ export const MEDSYNAPSE_QUERIES = {
   // Get research requests
   getResearchRequests: `
     query GetResearchRequests($first: Int, $skip: Int) {
-      researchRequests(
+      medSynapseConsent_ResearchRequesteds(
         first: $first
         skip: $skip
-        orderBy: timestamp
+        orderBy: id
         orderDirection: desc
       ) {
         id
-        datasetId
+        consentId
         researcher
         purpose
-        timestamp
-        status
-        price
-        consentRecord {
-          id
-          dataType
-          description
-        }
       }
     }
   `,
@@ -99,19 +84,16 @@ export const MEDSYNAPSE_QUERIES = {
   // Get data access records
   getDataAccessRecords: `
     query GetDataAccessRecords($consentId: String!, $first: Int, $skip: Int) {
-      dataAccessRecords(
+      medSynapseConsent_ResearchApproveds(
         where: { consentId: $consentId }
         first: $first
         skip: $skip
-        orderBy: timestamp
+        orderBy: id
         orderDirection: desc
       ) {
         id
         consentId
         researcher
-        timestamp
-        dataHash
-        purpose
       }
     }
   `,
@@ -119,18 +101,22 @@ export const MEDSYNAPSE_QUERIES = {
   // Get analytics data
   getAnalytics: `
     query GetAnalytics {
-      consentRecords(first: 1000) {
+      medSynapseConsent_ConsentCreateds(first: 1000) {
         id
-        dataType
-        timestamp
-        isActive
-        accessCount
+        consentId
+        contributor
+        dataHash
       }
-      researchRequests(first: 1000) {
+      medSynapseConsent_ResearchRequesteds(first: 1000) {
         id
-        status
-        timestamp
-        price
+        consentId
+        researcher
+        purpose
+      }
+      medSynapseConsent_ResearchApproveds(first: 1000) {
+        id
+        consentId
+        researcher
       }
     }
   `

@@ -1,0 +1,32 @@
+type MedSynapseConsent_ConsentCreated {
+  id: ID!
+  consentId: String!
+  contributor: String!
+  dataHash: String!
+}
+
+type MedSynapseConsent_ConsentRevoked {
+  id: ID!
+  consentId: String!
+  contributor: String!
+}
+
+type MedSynapseConsent_OwnershipTransferred {
+  id: ID!
+  previousOwner: String!
+  newOwner: String!
+}
+
+type MedSynapseConsent_ResearchApproved {
+  id: ID!
+  consentId: String!
+  researcher: String!
+}
+
+type MedSynapseConsent_ResearchRequested {
+  id: ID!
+  consentId: String!
+  researcher: String!
+  purpose: String!
+}
+

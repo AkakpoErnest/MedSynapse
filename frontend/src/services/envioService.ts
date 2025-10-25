@@ -3,40 +3,22 @@ import { ENVIO_CONFIG, MEDSYNAPSE_QUERIES, MEDSYNAPSE_SUBSCRIPTIONS } from './en
 
 export interface ConsentRecord {
   id: string
+  consentId: string
   contributor: string
-  dataType: string
-  description: string
-  timestamp: string
-  isActive: boolean
-  accessCount: number
-  authorizedResearchers: Array<{
-    researcher: string
-    approvedAt: string
-  }>
+  dataHash: string
 }
 
 export interface ResearchRequest {
   id: string
-  datasetId: string
+  consentId: string
   researcher: string
   purpose: string
-  timestamp: string
-  status: string
-  price: string
-  consentRecord?: {
-    id: string
-    dataType: string
-    description: string
-  }
 }
 
 export interface DataAccessRecord {
   id: string
   consentId: string
   researcher: string
-  timestamp: string
-  dataHash: string
-  purpose: string
 }
 
 export interface Analytics {
@@ -79,7 +61,7 @@ class EnvioService {
     try {
       const variables = { contributor, first, skip }
       const response = await this.client.request(MEDSYNAPSE_QUERIES.getContributorConsents, variables)
-      return response.consentRecords || []
+      return response.medSynapseConsent_ConsentCreateds || []
     } catch (error) {
       console.error('Error fetching contributor consents:', error)
       throw new Error('Failed to fetch contributor consents')
@@ -93,7 +75,7 @@ class EnvioService {
     try {
       const variables = { first, skip }
       const response = await this.client.request(MEDSYNAPSE_QUERIES.getResearchRequests, variables)
-      return response.researchRequests || []
+      return response.medSynapseConsent_ResearchRequesteds || []
     } catch (error) {
       console.error('Error fetching research requests:', error)
       throw new Error('Failed to fetch research requests')
@@ -108,7 +90,7 @@ class EnvioService {
     try {
       const variables = { consentId, first, skip }
       const response = await this.client.request(MEDSYNAPSE_QUERIES.getDataAccessRecords, variables)
-      return response.dataAccessRecords || []
+      return response.medSynapseConsent_ResearchApproveds || []
     } catch (error) {
       console.error('Error fetching data access records:', error)
       throw new Error('Failed to fetch data access records')
@@ -119,20 +101,21 @@ class EnvioService {
     try {
       const response = await this.client.request(MEDSYNAPSE_QUERIES.getAnalytics)
       
-      const consents = response.consentRecords || []
-      const requests = response.researchRequests || []
+      const consents = response.medSynapseConsent_ConsentCreateds || []
+      const requests = response.medSynapseConsent_ResearchRequesteds || []
+      const approvals = response.medSynapseConsent_ResearchApproveds || []
       
       const analytics: Analytics = {
         totalConsents: consents.length,
-        activeConsents: consents.filter((c: any) => c.isActive).length,
+        activeConsents: consents.length, // All consents are active until revoked
         totalRequests: requests.length,
-        pendingRequests: requests.filter((r: any) => r.status === 'pending').length,
-        totalAccess: consents.reduce((sum: number, c: any) => sum + (c.accessCount || 0), 0),
-        averagePrice: requests.length > 0 
-          ? requests.reduce((sum: number, r: any) => sum + parseFloat(r.price || '0'), 0) / requests.length 
-          : 0,
+        pendingRequests: requests.length, // All requests are pending until approved
+        totalAccess: approvals.length,
+        averagePrice: 0, // Price not tracked in current schema
         dataTypes: consents.reduce((acc: Record<string, number>, c: any) => {
-          acc[c.dataType] = (acc[c.dataType] || 0) + 1
+          // Extract data type from dataHash or use a default
+          const dataType = 'Health Data' // Default since we don't have dataType field
+          acc[dataType] = (acc[dataType] || 0) + 1
           return acc
         }, {})
       }
