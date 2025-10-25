@@ -10,20 +10,20 @@ export interface DataContribution {
   validated: boolean
 }
 
-// MedSynapse contract ABI for token operations
+// MedSynapse contract ABI for consent operations (not token operations)
 const MEDSYNAPSE_ABI = [
-  "function name() view returns (string)",
-  "function symbol() view returns (string)",
-  "function decimals() view returns (uint8)",
-  "function totalSupply() view returns (uint256)",
-  "function balanceOf(address owner) view returns (uint256)",
-  "function transfer(address to, uint256 amount) returns (bool)",
-  "function mint(address to, uint256 amount) returns (bool)",
-  "function getContributorBalance(address contributor) view returns (uint256)",
-  "function rewardContributor(address contributor, uint256 amount) returns (bool)",
-  "event Transfer(address indexed from, address indexed to, uint256 value)",
-  "event Mint(address indexed to, uint256 amount)",
-  "event Reward(address indexed contributor, uint256 amount)"
+  "function totalConsents() view returns (uint256)",
+  "function getContributorConsents(address contributor) view returns (bytes32[])",
+  "function getConsentInfo(bytes32 consentId) view returns (address, string, string, string, uint256, bool, uint256)",
+  "function createConsent(string dataHash, string dataType, string description) returns (bytes32)",
+  "function requestDataAccess(bytes32 consentId, string purpose)",
+  "function approveResearchRequest(bytes32 consentId, uint256 requestIndex)",
+  "function revokeConsent(bytes32 consentId)",
+  "function isAuthorized(bytes32 consentId, address researcher) view returns (bool)",
+  "function recordDataAccess(bytes32 consentId)",
+  "event ConsentCreated(bytes32 indexed consentId, address indexed contributor, string dataHash)",
+  "event ResearchRequested(bytes32 indexed consentId, address indexed researcher, string purpose)",
+  "event ResearchApproved(bytes32 indexed consentId, address indexed researcher)"
 ]
 
 class DataCoinService {
@@ -52,7 +52,7 @@ class DataCoinService {
   }
 
   /**
-   * Get token information from the deployed MedSynapse contract
+   * Get consent information from the deployed MedSynapse contract
    */
   async getTokenInfo(): Promise<{ name: string, symbol: string, totalSupply: string, decimals: number }> {
     if (!this.contract) {
@@ -60,18 +60,13 @@ class DataCoinService {
     }
 
     try {
-      const [name, symbol, decimals, totalSupply] = await Promise.all([
-        this.contract.name(),
-        this.contract.symbol(),
-        this.contract.decimals(),
-        this.contract.totalSupply()
-      ])
+      const totalConsents = await this.contract.totalConsents()
 
       return {
-        name,
-        symbol,
-        decimals,
-        totalSupply: ethers.formatUnits(totalSupply, decimals)
+        name: 'MedSynapse Consent',
+        symbol: 'CONSENT',
+        decimals: 0,
+        totalSupply: totalConsents.toString()
       }
     } catch (error) {
       console.error('Error getting token info:', error)
@@ -80,7 +75,7 @@ class DataCoinService {
   }
 
   /**
-   * Get balance for a contributor from the deployed contract
+   * Get consent count for a contributor from the deployed contract
    */
   async getContributorBalance(contributorAddress: string): Promise<string> {
     if (!this.contract) {
@@ -88,9 +83,8 @@ class DataCoinService {
     }
 
     try {
-      const balance = await this.contract.balanceOf(contributorAddress)
-      const decimals = await this.contract.decimals()
-      return ethers.formatUnits(balance, decimals)
+      const consentIds = await this.contract.getContributorConsents(contributorAddress)
+      return consentIds.length.toString()
     } catch (error) {
       console.error('Error getting contributor balance:', error)
       throw new Error(`Failed to get contributor balance: ${error instanceof Error ? error.message : 'Unknown error'}`)
@@ -98,7 +92,7 @@ class DataCoinService {
   }
 
   /**
-   * Reward a contributor with tokens for health data contribution
+   * Create a consent record for health data contribution
    */
   async rewardContributor(contribution: DataContribution): Promise<string> {
     if (!this.contract) {
@@ -106,10 +100,12 @@ class DataCoinService {
     }
 
     try {
-      const rewardAmount = ethers.parseUnits(contribution.rewardAmount, await this.contract.decimals())
-      
-      // Call the contract's rewardContributor function
-      const tx = await this.contract.rewardContributor(contribution.contributor, rewardAmount)
+      // Create consent on blockchain
+      const tx = await this.contract.createConsent(
+        contribution.dataHash,
+        contribution.dataType,
+        `Health data contribution - ${contribution.dataType}`
+      )
       await tx.wait()
 
       // Store reward metadata on Lighthouse
@@ -128,11 +124,11 @@ class DataCoinService {
         this.wallet!
       )
 
-      console.log('Contributor rewarded:', tx.hash)
+      console.log('Consent created:', tx.hash)
       return tx.hash
     } catch (error) {
-      console.error('Error rewarding contributor:', error)
-      throw new Error(`Failed to reward contributor: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      console.error('Error creating consent:', error)
+      throw new Error(`Failed to create consent: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
 
@@ -212,7 +208,7 @@ class DataCoinService {
   }
 
   /**
-   * Get real data coin statistics from the deployed contract
+   * Get real consent statistics from the deployed contract
    */
   async getDataCoinStats(): Promise<{
     totalContributions: number
@@ -225,16 +221,13 @@ class DataCoinService {
     }
 
     try {
-      const [totalSupply, decimals] = await Promise.all([
-        this.contract.totalSupply(),
-        this.contract.decimals()
-      ])
+      const totalConsents = await this.contract.totalConsents()
 
       // For now, return basic stats. In a real implementation, you'd track these in events
       return {
-        totalContributions: 0, // Would need to track from events
-        totalRewardsDistributed: ethers.formatUnits(totalSupply, decimals),
-        activeContributors: 0, // Would need to track from events
+        totalContributions: Number(totalConsents),
+        totalRewardsDistributed: totalConsents.toString(),
+        activeContributors: Number(totalConsents), // Simplified - would need to track unique contributors
         dataCoinAddress: this.contractAddress
       }
     } catch (error) {
