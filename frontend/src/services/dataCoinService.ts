@@ -22,13 +22,22 @@ export interface DataContribution {
 class DataCoinService {
   private apiKey: string
   private provider: ethers.JsonRpcProvider
-  private wallet: ethers.Wallet
+  private wallet?: ethers.Wallet
 
   constructor() {
     this.apiKey = import.meta.env.VITE_LIGHTHOUSE_API_KEY || ''
     // Use Polygon Amoy for hackathon compliance
     this.provider = new ethers.JsonRpcProvider('https://rpc-amoy.polygon.technology')
-    this.wallet = new ethers.Wallet(import.meta.env.VITE_PRIVATE_KEY || '', this.provider)
+    
+    // Only create wallet if private key is provided and valid
+    const privateKey = import.meta.env.VITE_PRIVATE_KEY
+    if (privateKey && privateKey.length === 64) {
+      try {
+        this.wallet = new ethers.Wallet(privateKey, this.provider)
+      } catch (error) {
+        console.warn('Invalid private key provided, wallet not created:', error)
+      }
+    }
   }
 
   /**
@@ -38,6 +47,10 @@ class DataCoinService {
   async createMedSynapseDataCoin(): Promise<string> {
     if (!this.apiKey) {
       throw new Error('Lighthouse API key not configured')
+    }
+
+    if (!this.wallet) {
+      throw new Error('Wallet not configured. Please add VITE_PRIVATE_KEY to environment variables.')
     }
 
     try {
@@ -69,6 +82,10 @@ class DataCoinService {
    * Reward a contributor with data coins for health data contribution
    */
   async rewardContributor(contribution: DataContribution): Promise<string> {
+    if (!this.wallet) {
+      throw new Error('Wallet not configured. Please add VITE_PRIVATE_KEY to environment variables.')
+    }
+
     try {
       const rewardData = {
         contributor: contribution.contributor,
@@ -98,6 +115,10 @@ class DataCoinService {
    * This qualifies for real-world dataset validation requirement
    */
   async validateHealthDataWithZKTLS(dataHash: string, dataType: string): Promise<boolean> {
+    if (!this.wallet) {
+      throw new Error('Wallet not configured. Please add VITE_PRIVATE_KEY to environment variables.')
+    }
+
     try {
       // Simulate zkTLS validation for health data
       // In a real implementation, this would integrate with Reclaim Protocol
@@ -175,7 +196,7 @@ class DataCoinService {
    * Check if data coin is properly configured
    */
   isConfigured(): boolean {
-    return !!this.apiKey && !!this.wallet.privateKey
+    return !!this.apiKey && !!this.wallet
   }
 
   /**
