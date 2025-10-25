@@ -59,12 +59,27 @@ class EnvioService {
     offset: number = 0
   ): Promise<ConsentRecord[]> {
     try {
+      console.log('EnvioService: Fetching consents for contributor:', contributor)
+      console.log('EnvioService: Using endpoint:', ENVIO_CONFIG.endpoint)
+      
       const variables = { contributor, limit, offset }
+      console.log('EnvioService: Query variables:', variables)
+      
       const response = await this.client.request(MEDSYNAPSE_QUERIES.getContributorConsents, variables)
-      return response.MedSynapseConsent_ConsentCreated || []
+      console.log('EnvioService: Raw response:', response)
+      
+      const consents = response.MedSynapseConsent_ConsentCreated || []
+      console.log('EnvioService: Processed consents:', consents)
+      
+      return consents
     } catch (error) {
-      console.error('Error fetching contributor consents:', error)
-      throw new Error('Failed to fetch contributor consents')
+      console.error('EnvioService: Error fetching contributor consents:', error)
+      console.error('EnvioService: Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        endpoint: ENVIO_CONFIG.endpoint,
+        contributor
+      })
+      throw new Error(`Failed to fetch contributor consents: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
 

@@ -13,7 +13,7 @@ const ContributorDashboard: React.FC = () => {
   const [dataCoinStats, setDataCoinStats] = useState<any>(null)
   const [contributorBalance, setContributorBalance] = useState('0')
   const [dataCoinLoading, setDataCoinLoading] = useState(true)
-  const { consents, loading, error } = useContributorConsents()
+  const { consents, loading, error, refetch: refetchConsents } = useContributorConsents()
   const { isConnected: envioConnected, isChecking } = useEnvioConnection()
 
   // Load data coin information
@@ -53,9 +53,9 @@ const ContributorDashboard: React.FC = () => {
       }
     }
 
-    // Load data regardless of consents length
+    // Only load data once on mount, not on every consents change
     loadDataCoinData()
-  }, [consents])
+  }, []) // Remove consents dependency to prevent infinite loop
 
   const handleRefreshDataCoin = async () => {
     try {
@@ -110,13 +110,27 @@ const ContributorDashboard: React.FC = () => {
             )}
           </div>
         </div>
-        <Link
-          to="/upload"
-          className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 flex items-center border border-blue-400/30 text-sm sm:text-base"
-        >
-          <Upload className="w-4 h-4 mr-2" />
-          Upload Data
-        </Link>
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <Link
+            to="/upload"
+            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 flex items-center border border-blue-400/30 text-sm sm:text-base"
+          >
+            <Upload className="w-4 h-4 mr-2" />
+            Upload Data
+          </Link>
+          <button
+            onClick={refetchConsents}
+            disabled={loading}
+            className="bg-transparent border border-blue-500 text-blue-400 px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-blue-500/10 transition-all duration-300 flex items-center text-sm sm:text-base"
+          >
+            {loading ? (
+              <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin mr-2"></div>
+            ) : (
+              <TrendingUp className="w-4 h-4 mr-2" />
+            )}
+            Refresh Data
+          </button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -153,13 +167,13 @@ const ContributorDashboard: React.FC = () => {
             <Coins className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400" />
             <div className="ml-3 sm:ml-4">
               <p className="text-xs sm:text-sm font-medium text-gray-400">Consent Balance</p>
-              <p className="text-xl sm:text-2xl font-bold text-white">
+              <div className="text-xl sm:text-2xl font-bold text-white">
                 {dataCoinLoading ? (
                   <div className="w-4 h-4 sm:w-6 sm:h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
                 ) : (
                   contributorBalance
                 )}
-              </p>
+              </div>
             </div>
           </div>
         </div>

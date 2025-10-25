@@ -19,11 +19,18 @@ export const useContributorConsents = () => {
     setError(null)
     
     try {
+      console.log('Fetching consents for address:', address)
       const data = await envioService.getContributorConsents(address)
+      console.log('Fetched consents:', data)
       setConsents(data)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch consents')
       console.error('Error fetching consents:', err)
+      setError(err instanceof Error ? err.message : 'Failed to fetch consents')
+      
+      // Fallback: Check if it's a connection error and provide helpful message
+      if (err instanceof Error && err.message.includes('fetch')) {
+        setError('Cannot connect to Envio indexer. Please ensure the local indexer is running.')
+      }
     } finally {
       setLoading(false)
     }
