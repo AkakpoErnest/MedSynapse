@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useAccount } from 'wagmi'
-import { User, GraduationCap, AlertCircle } from 'lucide-react'
+import { Stethoscope, Microscope, Shield, Activity, Database, Users, AlertCircle } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
 const RoleSelection: React.FC = () => {
@@ -21,14 +21,14 @@ const RoleSelection: React.FC = () => {
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="max-w-md mx-auto p-6">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+          <div className="bg-amber-50/10 backdrop-blur-sm border border-amber-500/30 rounded-xl p-6">
             <div className="flex items-center">
-              <AlertCircle className="w-6 h-6 text-yellow-600 mr-3" />
+              <AlertCircle className="w-6 h-6 text-amber-400 mr-3" />
               <div>
-                <h3 className="text-lg font-medium text-yellow-800">Wallet Not Connected</h3>
-                <p className="text-yellow-700">Please connect your wallet to access MedSynapse.</p>
+                <h3 className="text-lg font-medium text-amber-200">Wallet Not Connected</h3>
+                <p className="text-amber-300/80">Please connect your wallet to access MedSynapse.</p>
               </div>
             </div>
           </div>
@@ -38,69 +38,134 @@ const RoleSelection: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
-      <div className="max-w-2xl mx-auto w-full">
-        <div className="text-center mb-6 sm:mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3 sm:mb-4">Welcome to MedSynapse</h1>
-          <p className="text-gray-400 text-base sm:text-lg">
-            Choose your role to access the platform
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+      <div className="max-w-4xl mx-auto w-full">
+        {/* Header */}
+        <div className="text-center mb-8 sm:mb-12">
+          <div className="flex items-center justify-center mb-6">
+            <div className="relative">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-2xl border border-emerald-400/30">
+                <Stethoscope className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+              </div>
+              <div className="absolute inset-0 rounded-2xl bg-emerald-400/20 animate-pulse"></div>
+            </div>
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
+            <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+              MedSynapse
+            </span>
+          </h1>
+          <p className="text-slate-300 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
+            Choose your role to access our secure medical data platform
           </p>
         </div>
 
-        <div className="bg-gray-900/50 backdrop-blur-sm border border-blue-500/20 rounded-lg p-6 sm:p-8">
-          <div className="mb-6">
-            <h2 className="text-lg sm:text-xl font-semibold text-white mb-4">Select Your Role</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-              <button
-                onClick={() => handleRoleSelect('contributor')}
-                disabled={isSelecting}
-                className="p-6 sm:p-8 rounded-lg border-2 border-blue-500/30 hover:border-blue-500 hover:bg-blue-500/10 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <div className="flex flex-col items-center text-center">
-                  <User className="w-12 h-12 sm:w-16 sm:h-16 text-blue-400 mb-3 sm:mb-4" />
-                  <h3 className="text-xl sm:text-2xl font-semibold text-white mb-2 sm:mb-3">Contributor</h3>
-                  <p className="text-gray-400 mb-3 sm:mb-4 text-sm sm:text-base">
-                    Share your health data for research and earn MedSynapse points
-                  </p>
-                  <div className="text-xs sm:text-sm text-blue-400">
-                    ✓ Upload health data<br/>
-                    ✓ Earn rewards<br/>
-                    ✓ Control your privacy
-                  </div>
-                </div>
-              </button>
-
-              <button
-                onClick={() => handleRoleSelect('researcher')}
-                disabled={isSelecting}
-                className="p-6 sm:p-8 rounded-lg border-2 border-purple-500/30 hover:border-purple-500 hover:bg-purple-500/10 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <div className="flex flex-col items-center text-center">
-                  <GraduationCap className="w-12 h-12 sm:w-16 sm:h-16 text-purple-400 mb-3 sm:mb-4" />
-                  <h3 className="text-xl sm:text-2xl font-semibold text-white mb-2 sm:mb-3">Researcher</h3>
-                  <p className="text-gray-400 mb-3 sm:mb-4 text-sm sm:text-base">
-                    Access anonymized health data for medical research
-                  </p>
-                  <div className="text-xs sm:text-sm text-purple-400">
-                    ✓ Request data access<br/>
-                    ✓ Analyze health trends<br/>
-                    ✓ Advance medical research
-                  </div>
-                </div>
-              </button>
+        {/* Role Selection Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+          {/* Contributor Card */}
+          <button
+            onClick={() => handleRoleSelect('contributor')}
+            disabled={isSelecting}
+            className="group relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-emerald-500/30 hover:border-emerald-400 hover:shadow-emerald-500/20 transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl p-8 sm:p-10 overflow-hidden"
+          >
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-5">
+              <div className="absolute top-4 right-4 w-32 h-32 bg-emerald-400 rounded-full blur-3xl"></div>
+              <div className="absolute bottom-4 left-4 w-24 h-24 bg-teal-400 rounded-full blur-2xl"></div>
             </div>
+            
+            <div className="relative z-10">
+              <div className="flex items-center justify-center mb-6">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-emerald-500/50 transition-all duration-300 group-hover:scale-110">
+                  <Activity className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                </div>
+              </div>
+              
+              <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4 group-hover:text-emerald-300 transition-colors">
+                Data Contributor
+              </h3>
+              
+              <p className="text-slate-300 mb-6 text-base sm:text-lg leading-relaxed">
+                Share your anonymized health data securely and earn rewards for contributing to medical research.
+              </p>
+              
+              <div className="space-y-3">
+                <div className="flex items-center text-emerald-400">
+                  <Database className="w-5 h-5 mr-3" />
+                  <span className="text-sm font-medium">Upload Health Records</span>
+                </div>
+                <div className="flex items-center text-emerald-400">
+                  <Shield className="w-5 h-5 mr-3" />
+                  <span className="text-sm font-medium">Control Data Privacy</span>
+                </div>
+                <div className="flex items-center text-emerald-400">
+                  <Users className="w-5 h-5 mr-3" />
+                  <span className="text-sm font-medium">Earn Contribution Rewards</span>
+                </div>
+              </div>
+            </div>
+          </button>
+
+          {/* Researcher Card */}
+          <button
+            onClick={() => handleRoleSelect('researcher')}
+            disabled={isSelecting}
+            className="group relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-blue-500/30 hover:border-blue-400 hover:shadow-blue-500/20 transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl p-8 sm:p-10 overflow-hidden"
+          >
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-5">
+              <div className="absolute top-4 right-4 w-32 h-32 bg-blue-400 rounded-full blur-3xl"></div>
+              <div className="absolute bottom-4 left-4 w-24 h-24 bg-indigo-400 rounded-full blur-2xl"></div>
+            </div>
+            
+            <div className="relative z-10">
+              <div className="flex items-center justify-center mb-6">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-blue-500/50 transition-all duration-300 group-hover:scale-110">
+                  <Microscope className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                </div>
+              </div>
+              
+              <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4 group-hover:text-blue-300 transition-colors">
+                Medical Researcher
+              </h3>
+              
+              <p className="text-slate-300 mb-6 text-base sm:text-lg leading-relaxed">
+                Access anonymized health data for medical research and contribute to advancing healthcare.
+              </p>
+              
+              <div className="space-y-3">
+                <div className="flex items-center text-blue-400">
+                  <Database className="w-5 h-5 mr-3" />
+                  <span className="text-sm font-medium">Request Data Access</span>
+                </div>
+                <div className="flex items-center text-blue-400">
+                  <Microscope className="w-5 h-5 mr-3" />
+                  <span className="text-sm font-medium">Analyze Health Trends</span>
+                </div>
+                <div className="flex items-center text-blue-400">
+                  <Activity className="w-5 h-5 mr-3" />
+                  <span className="text-sm font-medium">Advance Medical Research</span>
+                </div>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        {/* Loading State */}
+        {isSelecting && (
+          <div className="text-center mt-8">
+            <div className="w-12 h-12 border-3 border-emerald-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-slate-300 text-lg">Setting up your account...</p>
+            <p className="text-slate-400 text-sm mt-2">Please wait while we configure your access</p>
           </div>
+        )}
 
-          {isSelecting && (
-            <div className="text-center">
-              <div className="w-8 h-8 border-2 border-blue-400 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-              <p className="text-gray-400">Setting up your account...</p>
-            </div>
-          )}
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500">
-              Connected as: <span className="text-blue-400 font-mono">{address?.slice(0, 6)}...{address?.slice(-4)}</span>
+        {/* Wallet Info */}
+        <div className="mt-8 text-center">
+          <div className="inline-flex items-center bg-slate-800/50 backdrop-blur-sm border border-slate-600/30 rounded-xl px-6 py-3">
+            <Shield className="w-5 h-5 text-emerald-400 mr-3" />
+            <p className="text-slate-300 text-sm">
+              Connected as: <span className="text-emerald-400 font-mono font-medium">{address?.slice(0, 6)}...{address?.slice(-4)}</span>
             </p>
           </div>
         </div>

@@ -38,11 +38,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (savedUser) {
           try {
             const userData = JSON.parse(savedUser)
-            setUser(userData)
+            // Verify the saved user data is still valid
+            if (userData.address === address && userData.role) {
+              setUser(userData)
+              console.log('Restored user session:', userData)
+            } else {
+              // Clear invalid saved data
+              localStorage.removeItem(`medsynapse_user_${address}`)
+              setUser(null)
+            }
           } catch (error) {
             console.error('Error parsing saved user data:', error)
             localStorage.removeItem(`medsynapse_user_${address}`)
+            setUser(null)
           }
+        } else {
+          setUser(null)
         }
       } else {
         setUser(null)
@@ -66,11 +77,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     setUser(userData)
     localStorage.setItem(`medsynapse_user_${address}`, JSON.stringify(userData))
+    console.log('User role set and saved:', userData)
   }
 
   const logout = () => {
     if (address) {
       localStorage.removeItem(`medsynapse_user_${address}`)
+      console.log('User logged out and data cleared')
     }
     setUser(null)
   }
