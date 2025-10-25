@@ -1,16 +1,66 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Upload, FileText, Shield, Eye, MoreVertical, Trash2, Eye as ViewIcon, Wifi, WifiOff } from 'lucide-react'
+import { Upload, FileText, Shield, Eye, MoreVertical, Trash2, Eye as ViewIcon, Wifi, WifiOff, Coins, TrendingUp, Users, Award } from 'lucide-react'
 import { useContributorConsents, useEnvioConnection } from '../hooks/useEnvio'
 import { formatDate, getDataTypeIcon, getStatusColor } from '../utils/helpers'
 import ConsentDetails from '../components/ConsentDetails'
+import dataCoinService from '../services/dataCoinService'
 
 const ContributorDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview')
   const [showActions, setShowActions] = useState<string | null>(null)
   const [selectedConsent, setSelectedConsent] = useState<any>(null)
+  const [dataCoinStats, setDataCoinStats] = useState<any>(null)
+  const [contributorBalance, setContributorBalance] = useState('0')
+  const [dataCoinLoading, setDataCoinLoading] = useState(true)
   const { consents, loading, error } = useContributorConsents()
   const { isConnected: envioConnected, isChecking } = useEnvioConnection()
+
+  // Load data coin information
+  useEffect(() => {
+    const loadDataCoinData = async () => {
+      if (!dataCoinService.isConfigured()) {
+        setDataCoinLoading(false)
+        return
+      }
+
+      try {
+        setDataCoinLoading(true)
+        const [stats, balance] = await Promise.all([
+          dataCoinService.getDataCoinStats(),
+          dataCoinService.getContributorBalance(consents[0]?.contributor || '')
+        ])
+        
+        setDataCoinStats(stats)
+        setContributorBalance(balance)
+      } catch (error) {
+        console.error('Error loading data coin data:', error)
+      } finally {
+        setDataCoinLoading(false)
+      }
+    }
+
+    if (consents.length > 0) {
+      loadDataCoinData()
+    }
+  }, [consents])
+
+  const handleRefreshDataCoin = async () => {
+    try {
+      setDataCoinLoading(true)
+      const [stats, balance] = await Promise.all([
+        dataCoinService.getDataCoinStats(),
+        dataCoinService.getContributorBalance(consents[0]?.contributor || '')
+      ])
+      
+      setDataCoinStats(stats)
+      setContributorBalance(balance)
+    } catch (error) {
+      console.error('Error refreshing data coin data:', error)
+    } finally {
+      setDataCoinLoading(false)
+    }
+  }
 
   const handleRevokeConsent = (consentId: string) => {
     // In a real app, this would call the smart contract
@@ -88,12 +138,16 @@ const ContributorDashboard: React.FC = () => {
         </div>
         <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 p-6 rounded-lg hover:border-blue-400/40 transition-all duration-300">
           <div className="flex items-center">
-            <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center">
-              <span className="text-blue-400 font-bold">$</span>
-            </div>
+            <Coins className="w-8 h-8 text-yellow-400" />
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-400">Earnings</p>
-              <p className="text-2xl font-bold text-white">$0.00</p>
+              <p className="text-sm font-medium text-gray-400">Consent Balance</p>
+              <p className="text-2xl font-bold text-white">
+                {dataCoinLoading ? (
+                  <div className="w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  contributorBalance
+                )}
+              </p>
             </div>
           </div>
         </div>
@@ -208,6 +262,57 @@ const ContributorDashboard: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Data Coin Information */}
+      {dataCoinStats && (
+        <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-lg hover:border-blue-400/40 transition-all duration-300">
+          <div className="px-6 py-4 border-b border-blue-500/20 flex justify-between items-center">
+            <h2 className="text-lg font-semibold text-white flex items-center">
+              <Coins className="w-5 h-5 text-yellow-400 mr-2" />
+              MedSynapse Contract Status
+            </h2>
+            <button
+              onClick={handleRefreshDataCoin}
+              disabled={dataCoinLoading}
+              className="text-blue-400 hover:text-blue-300 text-sm flex items-center"
+            >
+              {dataCoinLoading ? (
+                <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin mr-1"></div>
+              ) : (
+                <TrendingUp className="w-4 h-4 mr-1" />
+              )}
+              Refresh
+            </button>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Users className="w-6 h-6 text-blue-400" />
+                </div>
+                <p className="text-sm text-gray-400">Total Consents</p>
+                <p className="text-2xl font-bold text-white">{dataCoinStats.totalContributions}</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Award className="w-6 h-6 text-green-400" />
+                </div>
+                <p className="text-sm text-gray-400">Active Contributors</p>
+                <p className="text-2xl font-bold text-white">{dataCoinStats.activeContributors}</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Shield className="w-6 h-6 text-purple-400" />
+                </div>
+                <p className="text-sm text-gray-400">Contract Address</p>
+                <p className="text-xs text-gray-400 font-mono break-all">
+                  {dataCoinStats.dataCoinAddress}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Consent Details Modal */}
       {selectedConsent && (

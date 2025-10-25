@@ -25,6 +25,7 @@ export const useDataUpload = () => {
     try {
       // Upload to Lighthouse
       setUploadProgress(25)
+      console.log('Starting Lighthouse upload...')
       const lighthouseResult = await lighthouseService.uploadFile(file, {
         name: file.name,
         type: file.type,
@@ -33,6 +34,7 @@ export const useDataUpload = () => {
         dataType: dataType as any
       })
 
+      console.log('Lighthouse upload successful:', lighthouseResult)
       setUploadProgress(75)
       
       // Create consent on blockchain (simulated for now)
@@ -42,9 +44,11 @@ export const useDataUpload = () => {
       setUploadProgress(100)
       setUploading(false)
       
+      console.log('Upload process completed successfully')
       return { success: true, dataHash: lighthouseResult.hash }
 
     } catch (err) {
+      console.error('Upload error:', err)
       setError(err instanceof Error ? err.message : 'An unknown error occurred during upload.')
       setUploading(false)
       setUploadProgress(0)
