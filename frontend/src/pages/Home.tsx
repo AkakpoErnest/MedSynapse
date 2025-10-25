@@ -123,11 +123,21 @@ const Home: React.FC = () => {
     <div className="min-h-screen bg-black text-white">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0">
+          <img 
+            src="/medsynapse-hero.jpg" 
+            alt="Medical Technology" 
+            className="w-full h-full object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-black/70"></div>
+        </div>
+
         {/* Animated Sphere Background */}
         <div className="absolute inset-0">
           <canvas
             ref={canvasRef}
-            className="w-full h-full opacity-60"
+            className="w-full h-full opacity-40"
             style={{ background: 'transparent' }}
           />
         </div>
@@ -185,43 +195,33 @@ const Home: React.FC = () => {
               </div>
             </div>
             
-            {/* Right Content - Features */}
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 gap-6">
-                <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-xl p-6 hover:border-blue-400/40 transition-all duration-300">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                      <Shield className="w-6 h-6 text-blue-400" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-white">Military-Grade Security</h3>
-                      <p className="text-gray-400 text-sm">AES-256 encryption with blockchain-verified consent</p>
-                    </div>
-                  </div>
+            {/* Right Content - Hero Image */}
+            <div className="relative">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-blue-400/30">
+                <img 
+                  src="/chemist.jpg" 
+                  alt="Medical Research" 
+                  className="w-full h-96 object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                <div className="absolute bottom-6 left-6 right-6">
+                  <h3 className="text-xl font-bold text-white mb-2">Advanced Medical Research</h3>
+                  <p className="text-gray-300 text-sm">Cutting-edge technology meets healthcare innovation</p>
                 </div>
-
-                <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-xl p-6 hover:border-blue-400/40 transition-all duration-300">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                      <Brain className="w-6 h-6 text-blue-400" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-white">AI-Powered Insights</h3>
-                      <p className="text-gray-400 text-sm">Advanced ML algorithms for medical discoveries</p>
-                    </div>
-                  </div>
+              </div>
+              
+              {/* Floating Stats */}
+              <div className="absolute -top-4 -right-4 bg-blue-500/90 backdrop-blur-sm rounded-xl p-4 border border-blue-400/30">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white">10K+</div>
+                  <div className="text-xs text-blue-200">Contributors</div>
                 </div>
-
-                <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-xl p-6 hover:border-blue-400/40 transition-all duration-300">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                      <Globe className="w-6 h-6 text-blue-400" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-white">Global Network</h3>
-                      <p className="text-gray-400 text-sm">Worldwide researcher access to diverse datasets</p>
-                    </div>
-                  </div>
+              </div>
+              
+              <div className="absolute -bottom-4 -left-4 bg-green-500/90 backdrop-blur-sm rounded-xl p-4 border border-green-400/30">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white">50M+</div>
+                  <div className="text-xs text-green-200">Data Points</div>
                 </div>
               </div>
             </div>
@@ -248,9 +248,17 @@ const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-8 hover:border-blue-400/40 transition-all duration-300">
-              <div className="w-16 h-16 bg-blue-500/20 rounded-xl flex items-center justify-center mb-6">
-                <Database className="w-8 h-8 text-blue-400" />
+            <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-8 hover:border-blue-400/40 transition-all duration-300 group">
+              <div className="relative mb-6">
+                <img 
+                  src="/blockchain.jpg" 
+                  alt="Blockchain Technology" 
+                  className="w-full h-32 object-cover rounded-xl opacity-60 group-hover:opacity-80 transition-opacity duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-xl"></div>
+                <div className="absolute top-4 right-4 w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
+                  <Database className="w-6 h-6 text-blue-400" />
+                </div>
               </div>
               <h3 className="text-xl font-bold text-white mb-4">
                 Decentralized Storage
@@ -260,9 +268,17 @@ const Home: React.FC = () => {
               </p>
             </div>
 
-            <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-8 hover:border-blue-400/40 transition-all duration-300">
-              <div className="w-16 h-16 bg-blue-500/20 rounded-xl flex items-center justify-center mb-6">
-                <Zap className="w-8 h-8 text-blue-400" />
+            <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-8 hover:border-blue-400/40 transition-all duration-300 group">
+              <div className="relative mb-6">
+                <img 
+                  src="/telehealth.jpg" 
+                  alt="Telehealth Technology" 
+                  className="w-full h-32 object-cover rounded-xl opacity-60 group-hover:opacity-80 transition-opacity duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-xl"></div>
+                <div className="absolute top-4 right-4 w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
+                  <Zap className="w-6 h-6 text-blue-400" />
+                </div>
               </div>
               <h3 className="text-xl font-bold text-white mb-4">
                 Real-Time Processing
@@ -272,9 +288,17 @@ const Home: React.FC = () => {
               </p>
             </div>
 
-            <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-8 hover:border-blue-400/40 transition-all duration-300">
-              <div className="w-16 h-16 bg-blue-500/20 rounded-xl flex items-center justify-center mb-6">
-                <Shield className="w-8 h-8 text-blue-400" />
+            <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-8 hover:border-blue-400/40 transition-all duration-300 group">
+              <div className="relative mb-6">
+                <img 
+                  src="/medical-tech.jpg" 
+                  alt="Medical Technology" 
+                  className="w-full h-32 object-cover rounded-xl opacity-60 group-hover:opacity-80 transition-opacity duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-xl"></div>
+                <div className="absolute top-4 right-4 w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
+                  <Shield className="w-6 h-6 text-blue-400" />
+                </div>
               </div>
               <h3 className="text-xl font-bold text-white mb-4">
                 Privacy First

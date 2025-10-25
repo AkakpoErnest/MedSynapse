@@ -1,10 +1,10 @@
 // Envio HyperSync Configuration
 export const ENVIO_CONFIG = {
   // Envio GraphQL endpoint for MedSynapse
-  endpoint: process.env.REACT_APP_ENVIO_ENDPOINT || 'https://api.envio.dev/v1/graphql',
+  endpoint: import.meta.env.VITE_ENVIO_ENDPOINT || 'https://api.envio.dev/v1/graphql',
   
   // API Key for authentication
-  apiKey: process.env.REACT_APP_ENVIO_API_KEY || '',
+  apiKey: import.meta.env.VITE_ENVIO_API_KEY || '',
   
   // Network configurations
   networks: {
@@ -27,8 +27,8 @@ export const ENVIO_CONFIG = {
   
   // MedSynapse contract addresses
   contracts: {
-    medSynapseConsent: process.env.REACT_APP_MEDSYNAPSE_CONTRACT || '0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44',
-    dataValidator: process.env.REACT_APP_DATA_VALIDATOR_CONTRACT || '0x...'
+    medSynapseConsent: import.meta.env.VITE_MEDSYNAPSE_CONTRACT || '0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44',
+    dataValidator: import.meta.env.VITE_DATA_VALIDATOR_CONTRACT || '0x...'
   },
   
   // Query configurations

@@ -1,5 +1,5 @@
 import { GraphQLClient } from 'graphql-request'
-import { ENVIO_CONFIG, MEDSYNAPSE_QUERIES, MEDSYNAPSE_SUBSCRIPTIONS } from './envio'
+import { ENVIO_CONFIG, MEDSYNAPSE_QUERIES, MEDSYNAPSE_SUBSCRIPTIONS } from '../config/envio'
 
 export interface ConsentRecord {
   id: string
