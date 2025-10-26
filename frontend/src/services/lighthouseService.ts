@@ -28,20 +28,35 @@ class LighthouseService {
     try {
       console.log('Uploading file to Lighthouse using SDK:', file.name, file.size, 'Type:', file.type)
       
-      // Use the Lighthouse SDK upload function
-      // The SDK expects an array of files
-      const uploadResponse = await lighthouse.upload(
-        [file], // Pass file as array
-        this.apiKey
-      )
-
-      console.log('Lighthouse upload response:', uploadResponse)
+      // Convert File to FileList-like structure for Lighthouse SDK
+      const data = new FormData()
+      data.append('file', file)
       
-      // Check if the response has the hash
-      const hash = uploadResponse.data?.Hash || uploadResponse.Hash || uploadResponse
+      // Use fetch with FormData to upload to Lighthouse
+      const response = await fetch('https://node.lighthouse.storage/api/v0/upload?provider=w3s', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+        },
+        body: data
+      })
+
+      console.log('Upload response status:', response.status)
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Upload failed:', errorText)
+        throw new Error(`Upload failed: ${response.status} - ${errorText}`)
+      }
+
+      const result = await response.json()
+      console.log('Lighthouse upload response:', result)
+      
+      // Extract hash from response
+      const hash = result.data?.Hash || result.Hash || result.data?.hash
       
       if (!hash || typeof hash !== 'string') {
-        console.error('Invalid upload response:', uploadResponse)
+        console.error('Invalid upload response:', result)
         throw new Error('Upload failed - no hash returned from Lighthouse')
       }
 
