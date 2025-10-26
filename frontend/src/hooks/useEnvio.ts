@@ -132,6 +132,38 @@ export const useContributorConsents = () => {
   return { consents, loading, error, refetch: fetchConsents }
 }
 
+// Hook for available datasets (all consents for researchers to browse)
+export const useAvailableDatasets = () => {
+  const [datasets, setDatasets] = useState<ConsentRecord[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchDatasets = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    
+    try {
+      const data = await envioService.getAvailableConsents()
+      setDatasets(data)
+    } catch (err) {
+      console.error('Error fetching datasets:', err)
+      setError(err instanceof Error ? err.message : 'Failed to fetch datasets')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchDatasets()
+    
+    // Refresh every 10 seconds to get new datasets
+    const interval = setInterval(fetchDatasets, 10000)
+    return () => clearInterval(interval)
+  }, [fetchDatasets])
+
+  return { datasets, loading, error, refetch: fetchDatasets }
+}
+
 // Hook for research requests
 export const useResearchRequests = () => {
   const [requests, setRequests] = useState<ResearchRequest[]>([])

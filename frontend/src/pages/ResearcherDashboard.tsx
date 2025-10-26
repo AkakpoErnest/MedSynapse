@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, Filter, BarChart3, Eye, Clock, Users, TrendingUp, Wifi, WifiOff } from 'lucide-react'
 import { useAccount, usePublicClient, useWalletClient } from 'wagmi'
-import { useResearchRequests, useAnalytics, useEnvioConnection } from '../hooks/useEnvio'
+import { useAvailableDatasets, useResearchRequests, useAnalytics, useEnvioConnection } from '../hooks/useEnvio'
 
 const ResearcherDashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('')
@@ -18,14 +18,31 @@ const ResearcherDashboard: React.FC = () => {
   const { data: walletClient } = useWalletClient()
   
   // Use Envio hooks for real-time data
+  const { datasets, loading: datasetsLoading, error: datasetsError } = useAvailableDatasets()
   const { requests, loading: requestsLoading, error: requestsError } = useResearchRequests()
   const { analytics, loading: analyticsLoading } = useAnalytics()
   const { isConnected: envioConnected, isChecking } = useEnvioConnection()
 
-  const filteredRequests = requests.filter(request => {
-    const matchesSearch = request.purpose.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         (request.consentRecord?.description || '').toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesFilter = selectedFilter === 'all' || request.consentRecord?.dataType === selectedFilter
+  // Convert datasets to displayable format
+  const displayDatasets = datasets.map(dataset => ({
+    id: dataset.id,
+    consentId: dataset.consentId,
+    contributor: dataset.contributor,
+    dataHash: dataset.dataHash,
+    dataType: 'lab_results', // Default since schema doesn't have this
+    description: 'Health data contribution',
+    timestamp: Date.now(),
+    price: '0',
+    status: 'available',
+    consentRecord: {
+      dataType: 'lab_results',
+      description: 'Health data contribution'
+    }
+  }))
+
+  const filteredRequests = displayDatasets.filter(request => {
+    const matchesSearch = request.description.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesFilter = selectedFilter === 'all' || request.dataType === selectedFilter
     return matchesSearch && matchesFilter
   })
 
@@ -250,16 +267,16 @@ const ResearcherDashboard: React.FC = () => {
           <h2 className="text-lg font-semibold text-white">Available Datasets</h2>
         </div>
         <div className="p-6">
-          {requestsLoading ? (
+          {datasetsLoading ? (
             <div className="flex items-center justify-center py-12">
               <div className="flex items-center text-gray-400">
                 <div className="w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin mr-3"></div>
                 Loading datasets from blockchain...
               </div>
             </div>
-          ) : requestsError ? (
+          ) : datasetsError ? (
             <div className="text-center py-12">
-              <p className="text-red-400 mb-4">Error loading datasets: {requestsError}</p>
+              <p className="text-red-400 mb-4">Error loading datasets: {datasetsError}</p>
               <button 
                 onClick={() => window.location.reload()}
                 className="text-blue-400 hover:text-blue-300"

@@ -95,6 +95,20 @@ class EnvioService {
     }
   }
 
+  async getAvailableConsents(
+    limit: number = 20,
+    offset: number = 0
+  ): Promise<ConsentRecord[]> {
+    try {
+      const variables = { limit, offset }
+      const response = await this.client.request(MEDSYNAPSE_QUERIES.getAvailableConsents, variables)
+      return response.MedSynapseConsent_ConsentCreated || []
+    } catch (error) {
+      console.error('Error fetching available consents:', error)
+      throw new Error('Failed to fetch available consents')
+    }
+  }
+
   async getResearchRequests(
     limit: number = 20,
     offset: number = 0

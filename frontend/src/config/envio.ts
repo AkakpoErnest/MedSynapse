@@ -73,6 +73,22 @@ export const MEDSYNAPSE_QUERIES = {
     }
   `,
   
+  // Get all available consents (datasets for researchers)
+  getAvailableConsents: `
+    query GetAvailableConsents($limit: Int, $offset: Int) {
+      MedSynapseConsent_ConsentCreated(
+        limit: $limit
+        offset: $offset
+        order_by: { id: desc }
+      ) {
+        id
+        consentId
+        contributor
+        dataHash
+      }
+    }
+  `,
+
   // Get research requests
   getResearchRequests: `
     query GetResearchRequests($limit: Int, $offset: Int) {
