@@ -44,6 +44,7 @@ contract MedSynapseConsent is Ownable, ReentrancyGuard {
     event ConsentRevoked(bytes32 indexed consentId, address indexed contributor);
     event ResearchRequested(bytes32 indexed consentId, address indexed researcher, string purpose);
     event ResearchApproved(bytes32 indexed consentId, address indexed researcher);
+    event DataAccessed(bytes32 indexed consentId, address indexed researcher, uint256 newAccessCount);
     event TokenRewardDistributed(address indexed contributor, uint256 amount);
     
     constructor() {
@@ -169,6 +170,8 @@ contract MedSynapseConsent is Ownable, ReentrancyGuard {
         require(consent.authorizedResearchers[msg.sender], "Not authorized");
         
         consent.accessCount++;
+        
+        emit DataAccessed(_consentId, msg.sender, consent.accessCount);
     }
     
     function getContributorConsents(address _contributor) external view returns (bytes32[] memory) {

@@ -131,6 +131,41 @@ const ResearcherDashboard: React.FC = () => {
     }
 
     try {
+      // Record the data access on blockchain to increment access count
+      try {
+        const MEDSYNAPSE_CONTRACT = '0xeaDEaAFE440283aEaC909CD58ec367735BfE712f' // Sepolia
+        const MEDSYNAPSE_ABI = [
+          {
+            inputs: [
+              { internalType: 'bytes32', name: '_consentId', type: 'bytes32' }
+            ],
+            name: 'recordDataAccess',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function'
+          }
+        ] as const
+
+        console.log('Recording data access for consent:', request.consentId)
+        const hash = await walletClient.writeContract({
+          address: MEDSYNAPSE_CONTRACT as `0x${string}`,
+          abi: MEDSYNAPSE_ABI,
+          functionName: 'recordDataAccess',
+          args: [request.consentId as `0x${string}`],
+          gas: 100000n
+        })
+        
+        console.log('Access recorded, transaction:', hash)
+        
+        if (publicClient) {
+          const receipt = await publicClient.waitForTransactionReceipt({ hash })
+          console.log('Access confirmed:', receipt)
+        }
+      } catch (accessError) {
+        console.warn('Failed to record access on blockchain:', accessError)
+        // Continue with download anyway
+      }
+
       // Fetch data hash from the consent
       const dataHash = request.consentRecord?.dataHash || request.dataHash
       
