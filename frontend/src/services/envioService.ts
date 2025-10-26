@@ -138,6 +138,17 @@ class EnvioService {
     }
   }
 
+  async getResearchApprovals(researcherAddress: string): Promise<any[]> {
+    try {
+      const variables = { researcher: researcherAddress }
+      const response = await this.client.request(MEDSYNAPSE_QUERIES.getResearchApprovals, variables)
+      return response.MedSynapseConsent_ResearchApproved || []
+    } catch (error) {
+      console.error('Error fetching research approvals:', error)
+      return []
+    }
+  }
+
   async getAnalytics(): Promise<Analytics> {
     try {
       const response = await this.client.request(MEDSYNAPSE_QUERIES.getAnalytics)
