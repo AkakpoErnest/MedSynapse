@@ -351,8 +351,8 @@ MedSynapse/
 
 **MedSynapseConsent Contract**
 - **Network**: Ethereum Sepolia Testnet (Migrated from Polygon Amoy)
-- **Address**: `TBD - Deploy with: npx hardhat run scripts/deploy-sepolia.js --network sepolia`
-- **Explorer**: View on Etherscan after deployment
+- **Address**: `0xeaDEaAFE440283aEaC909CD58ec367735BfE712f`
+- **Explorer**: [View on Etherscan](https://sepolia.etherscan.io/address/0xeaDEaAFE440283aEaC909CD58ec367735BfE712f)
 
 **Why We Migrated to Sepolia:**
 We redeployed from Polygon Amoy to Ethereum Sepolia to enable **1MB.io data coin integration**. 1MB.io supports Sepolia testnet, allowing us to:

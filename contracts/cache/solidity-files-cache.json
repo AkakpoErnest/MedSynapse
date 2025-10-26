@@ -406,6 +406,43 @@
       "artifacts": [
         "MedSynapseTokenSimple"
       ]
+    },
+    "/Users/pablo/Downloads/MedSynapse/contracts/contracts/MedSynapseTokenMinimal.sol": {
+      "lastModificationDate": 1761429017398,
+      "contentHash": "1bd13309cda43fb3e43d1ddfd32a8f4a",
+      "sourceName": "contracts/MedSynapseTokenMinimal.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC20/ERC20.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "MedSynapseTokenMinimal"
+      ]
     }
   }
 }
