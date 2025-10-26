@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAccount } from 'wagmi'
-import envioService from '../services/envioService'
 import envioService, { ConsentRecord, ResearchRequest, DataAccessRecord, Analytics } from '../services/envioService'
 
 // Hook for contributor consents
