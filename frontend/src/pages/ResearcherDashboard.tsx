@@ -29,14 +29,17 @@ const ResearcherDashboard: React.FC = () => {
     consentId: dataset.consentId,
     contributor: dataset.contributor,
     dataHash: dataset.dataHash,
-    dataType: 'lab_results', // Default since schema doesn't have this
-    description: 'Health data contribution',
-    timestamp: Date.now(),
+    dataType: dataset.dataType || 'unknown',
+    description: dataset.description || 'No description',
+    timestamp: dataset.timestamp || Date.now(),
     price: '0',
     status: (dataset as any).isApproved ? 'approved' : 'available',
+    fileName: (dataset as any).fileName,
+    fileSize: (dataset as any).fileSize,
     consentRecord: {
-      dataType: 'lab_results',
-      description: 'Health data contribution'
+      dataType: dataset.dataType || 'unknown',
+      description: dataset.description || 'No description',
+      dataHash: dataset.dataHash
     }
   }))
 
@@ -346,36 +349,64 @@ const ResearcherDashboard: React.FC = () => {
               <p className="text-gray-400">No datasets available at the moment.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {sortedRequests.map((request) => (
-                <div key={request.id} className="bg-black/30 border border-blue-500/20 rounded-lg p-6 hover:border-blue-400/40 transition-all duration-300">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center">
-                      <span className="text-2xl mr-3">
-                        {getDataTypeIcon(request.consentRecord?.dataType || 'unknown')}
+                <div key={request.id} className="bg-black/30 border border-blue-500/20 rounded-lg p-4 hover:border-blue-400/40 transition-all duration-300">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center flex-1">
+                      <span className="text-2xl mr-2">
+                        {getDataTypeIcon(request.dataType || 'unknown')}
                       </span>
-                      <div>
-                        <h3 className="text-lg font-semibold text-white">
-                          {request.consentRecord?.description || 'Unknown Dataset'}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base font-semibold text-white truncate">
+                          {request.description || 'No description available'}
                         </h3>
-                        <p className="text-sm text-gray-400 capitalize">
-                          {request.consentRecord?.dataType?.replace('_', ' ') || 'Unknown Type'}
+                        <p className="text-xs text-gray-400 capitalize">
+                          {request.dataType?.replace('_', ' ') || 'Unknown Type'}
                         </p>
                       </div>
                     </div>
-                    <span className={`px-2 py-1 text-xs font-semibold rounded-full border ${getStatusColor(request.status || 'pending')}`}>
+                    <span className={`px-2 py-1 text-xs font-semibold rounded-full border shrink-0 ml-2 ${getStatusColor(request.status || 'pending')}`}>
                       {request.status || 'pending'}
                     </span>
                   </div>
                   
-                  <p className="text-gray-300 text-sm mb-4 line-clamp-2">
-                    {request.purpose}
-                  </p>
+                  {/* File info */}
+                  {request.fileName && (
+                    <div className="text-xs text-gray-500 mb-2">
+                      <span className="font-medium">File:</span> {request.fileName}
+                      {request.fileSize && (
+                        <span className="ml-2">({(request.fileSize / 1024).toFixed(1)} KB)</span>
+                      )}
+                    </div>
+                  )}
                   
-                  <div className="flex items-center justify-between text-sm text-gray-400 mb-4">
-                    <span>Price: {request.price || '0'} ETH</span>
-                    <span>{(request.timestamp ? new Date(request.timestamp) : new Date()).toLocaleDateString()}</span>
+                  <div className="flex items-center justify-between text-xs text-gray-400 mb-3">
+                    <span>{request.timestamp ? new Date(request.timestamp).toLocaleDateString() : 'Unknown date'}</span>
                   </div>
+
+                  {/* Show consent ID and contributor info (collapsible) */}
+                  <details className="mb-3 text-xs">
+                    <summary className="text-gray-400 cursor-pointer hover:text-gray-300">Show Details</summary>
+                    <div className="mt-2 space-y-1 text-gray-500">
+                      <div className="flex items-start">
+                        <span className="font-medium mr-1">Consent ID:</span>
+                        <span className="font-mono break-all">{request.consentId || 'N/A'}</span>
+                      </div>
+                      {request.contributor && (
+                        <div className="flex items-start">
+                          <span className="font-medium mr-1">Contributor:</span>
+                          <span className="font-mono">{request.contributor.substring(0, 6)}...{request.contributor.substring(38, 42)}</span>
+                        </div>
+                      )}
+                      {request.dataHash && (
+                        <div className="flex items-start">
+                          <span className="font-medium mr-1">Data Hash:</span>
+                          <span className="font-mono text-xs break-all">{request.dataHash}</span>
+                        </div>
+                      )}
+                    </div>
+                  </details>
                   
                   {request.status === 'approved' ? (
                     <button

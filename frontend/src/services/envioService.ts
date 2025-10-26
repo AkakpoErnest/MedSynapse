@@ -96,7 +96,7 @@ class EnvioService {
   }
 
   async getAvailableConsents(
-    limit: number = 20,
+    limit: number = 100,
     offset: number = 0
   ): Promise<ConsentRecord[]> {
     try {

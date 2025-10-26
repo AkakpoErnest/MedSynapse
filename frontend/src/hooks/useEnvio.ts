@@ -146,20 +146,60 @@ export const useAvailableDatasets = () => {
     try {
       const data = await envioService.getAvailableConsents()
       
+      // Create a map of all uploads from all contributors' local storage
+      const allUploadsMap = new Map<string, any>()
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (key?.startsWith('medsynapse_uploads_')) {
+          try {
+            const uploads = JSON.parse(localStorage.getItem(key) || '[]')
+            uploads.forEach((upload: any) => {
+              if (upload.dataHash) {
+                allUploadsMap.set(upload.dataHash, upload)
+              }
+            })
+          } catch (e) {
+            console.error('Error parsing localStorage:', e)
+          }
+        }
+      }
+      
+      // Enrich datasets with local storage metadata
+      const enrichedData = data.map(dataset => {
+        const localData = allUploadsMap.get(dataset.dataHash)
+        
+        console.log('Dataset from Envio:', {
+          consentId: dataset.consentId,
+          dataHash: dataset.dataHash,
+          foundInLocalStorage: !!localData,
+          availableKeys: Array.from(allUploadsMap.keys()).slice(0, 3)
+        })
+        
+        return {
+          ...dataset,
+          dataType: localData?.dataType || 'unknown',
+          description: localData?.description || 'No description available',
+          fileName: localData?.fileName,
+          fileSize: localData?.fileSize,
+          timestamp: localData?.timestamp || Date.now(),
+          isApproved: false
+        }
+      })
+      
       // If researcher is connected, fetch their approvals and merge
       if (isConnected && address) {
         const approvals = await envioService.getResearchApprovals(address)
         const approvalConsentIds = new Set(approvals.map(a => a.consentId))
         
         // Mark datasets as approved if researcher has access
-        const enrichedData = data.map(dataset => ({
+        const finalData = enrichedData.map(dataset => ({
           ...dataset,
           isApproved: approvalConsentIds.has(dataset.consentId)
         }))
         
-        setDatasets(enrichedData)
+        setDatasets(finalData)
       } else {
-        setDatasets(data)
+        setDatasets(enrichedData)
       }
     } catch (err) {
       console.error('Error fetching datasets:', err)
