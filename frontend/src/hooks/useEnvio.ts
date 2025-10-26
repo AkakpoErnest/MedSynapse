@@ -311,10 +311,13 @@ export const useContributorResearchRequests = (contributorAddress: string) => {
       // Filter requests for consents owned by this contributor
       // We need to match request consentId with contributor's consents
       const contributorConsents = await envioService.getContributorConsents(contributorAddress)
+      console.log('Contributor consents:', contributorConsents)
       const consentIds = new Set(contributorConsents.map(c => c.consentId))
+      console.log('Contributor consent IDs:', Array.from(consentIds))
+      console.log('Request consent IDs:', allRequests.map(r => r.consentId))
       
       const filteredRequests = allRequests.filter(req => consentIds.has(req.consentId))
-      console.log('Filtered requests for contributor:', filteredRequests)
+      console.log('Filtered requests for contributor:', filteredRequests, 'Count:', filteredRequests.length)
       
       // Also fetch approved requests to mark status
       try {
