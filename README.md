@@ -41,7 +41,7 @@ I've been working on a bunch of improvements lately:
 The app wasn't deploying to Vercel because of TypeScript errors and Wagmi version conflicts. I spent time fixing all of that - updated to Wagmi v2, fixed TypeScript definitions, and got everything compiling properly.
 
 ### Token Rewards System
-Implemented a proper token rewards system. Now when someone uploads health data and gets approval, they automatically earn 10 MEDS tokens. The contract tracks everything on-chain so it's transparent.
+Consents are tracked as "data coins" on-chain. Each upload creates a consent record on the blockchain, and the contributor's balance is tracked via their consent count. Token rewards (10 MEDS tokens) are planned but not yet implemented - we're focusing on the core consent management and data access workflows first.
 
 ### Authentication & Roles
 Added a proper login system where you connect your wallet, choose your role (contributor or researcher), and the interface adapts based on what you are. Contributors see upload tools and consent management. Researchers see data browsing and analysis tools.
