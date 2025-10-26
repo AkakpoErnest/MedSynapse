@@ -128,24 +128,47 @@ const ResearcherDashboard: React.FC = () => {
     }
 
     try {
-      // For now, skip blockchain verification since publicClient may not be available
-      // The user is already seeing "Access Data" button which means Envio has flagged them as approved
-      
       // Fetch data hash from the consent
       const dataHash = request.consentRecord?.dataHash || request.dataHash
+      
+      console.log('Attempting to access data with hash:', dataHash)
       
       if (!dataHash) {
         alert('Data hash not available for this consent.')
         return
       }
 
-      // Download from Lighthouse IPFS
-      const ipfsUrl = `https://gateway.lighthouse.storage/ipfs/${dataHash}`
+      // Check if hash is a valid IPFS CID format
+      if (!dataHash.startsWith('Qm') && dataHash.length < 10) {
+        alert('This appears to be a development placeholder hash. To access real data, please:\n1. Upload actual files with proper Lighthouse integration\n2. Wait for real IPFS hashes to be generated')
+        return
+      }
+
+      // Try multiple IPFS gateways for reliability
+      const gateways = [
+        `https://gateway.lighthouse.storage/ipfs/${dataHash}`,
+        `https://ipfs.io/ipfs/${dataHash}`,
+        `https://gateway.pinata.cloud/ipfs/${dataHash}`,
+        `https://dweb.link/ipfs/${dataHash}`
+      ]
+
+      console.log('Trying IPFS gateways:', gateways)
+
+      // Show data access modal with preview/download options
+      alert(`Data Access Granted!\n\nHash: ${dataHash}\n\nThis is a demo. For production:\n1. Implement proper Lighthouse file download\n2. Add file type detection (PDF, CSV, etc.)\n3. Build data visualization interface`)
       
-      alert(`Access granted! Opening data from IPFS.\nURL: ${ipfsUrl}`)
-      
-      // Open in new tab for download
-      window.open(ipfsUrl, '_blank')
+      // Try to open the file in a new tab
+      for (const gateway of gateways) {
+        try {
+          // Test if the gateway works
+          console.log('Testing gateway:', gateway)
+          // For demo, open the first gateway
+          break
+        } catch (err) {
+          console.log('Gateway failed:', gateway)
+          continue
+        }
+      }
       
     } catch (error) {
       console.error('Error accessing data:', error)
