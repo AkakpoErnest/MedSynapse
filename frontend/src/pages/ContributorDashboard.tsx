@@ -37,10 +37,15 @@ const ContributorDashboard: React.FC = () => {
         const stats = await dataCoinService.getDataCoinStats()
         setDataCoinStats(stats)
         
-        // Get balance - use a default address if no consents yet
-        const contributorAddress = consents[0]?.contributor || '0x0000000000000000000000000000000000000000'
-        const balance = await dataCoinService.getContributorBalance(contributorAddress)
-        setContributorBalance(balance)
+        // Get balance - use current connected address
+        const contributorAddress = address || '0x0000000000000000000000000000000000000000'
+        
+        // For fallback, just use the consent count from Envio
+        // The contract-based balance is not necessary for the consent balance display
+        const consentCount = consents.length.toString()
+        setContributorBalance(consentCount)
+        
+        console.log('Contributor balance updated:', consentCount, 'for address:', contributorAddress)
         
         console.log('Data coin data loaded:', { stats, balance })
       } catch (error) {
@@ -58,9 +63,9 @@ const ContributorDashboard: React.FC = () => {
       }
     }
 
-    // Only load data once on mount, not on every consents change
+    // Load data when consents change or on mount
     loadDataCoinData()
-  }, []) // Remove consents dependency to prevent infinite loop
+  }, [consents.length, address]) // Refresh when consents change or address changes
 
   const handleRefreshDataCoin = async () => {
     try {
