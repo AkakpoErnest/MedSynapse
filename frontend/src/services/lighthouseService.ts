@@ -26,40 +26,26 @@ class LighthouseService {
     }
 
     try {
-      console.log('Uploading file to Lighthouse using SDK:', file.name, file.size, 'Type:', file.type)
+      console.log('Uploading file to Lighthouse:', file.name, file.size, 'Type:', file.type)
       
-      // Convert File to FileList-like structure for Lighthouse SDK
-      const data = new FormData()
-      data.append('file', file)
+      // Use Lighthouse SDK correctly - create a FileList from the File
+      const fileArray = [file]
       
-      // Use fetch with FormData to upload to Lighthouse
-      const response = await fetch('https://node.lighthouse.storage/api/v0/upload?provider=w3s', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-        },
-        body: data
-      })
+      // Call the SDK upload function
+      const uploadResponse = await lighthouse.upload(
+        fileArray,
+        this.apiKey
+      )
 
-      console.log('Upload response status:', response.status)
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('Upload failed:', errorText)
-        throw new Error(`Upload failed: ${response.status} - ${errorText}`)
-      }
-
-      const result = await response.json()
-      console.log('Lighthouse upload response:', result)
+      console.log('Lighthouse upload response:', uploadResponse)
       
-      // Extract hash from response
-      const hash = result.data?.Hash || result.Hash || result.data?.hash
-      
-      if (!hash || typeof hash !== 'string') {
-        console.error('Invalid upload response:', result)
+      // The SDK returns {data: {Hash: string, ...}}
+      if (!uploadResponse || !uploadResponse.data || !uploadResponse.data.Hash) {
+        console.error('Invalid upload response:', uploadResponse)
         throw new Error('Upload failed - no hash returned from Lighthouse')
       }
 
+      const hash = uploadResponse.data.Hash
       console.log('Successfully uploaded to IPFS. Hash:', hash)
 
       return {
