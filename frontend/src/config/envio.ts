@@ -34,6 +34,7 @@ export const ENVIO_CONFIG = {
   // MedSynapse contract addresses (Sepolia)
   contracts: {
     medSynapseConsent: import.meta.env.VITE_MEDSYNAPSE_CONTRACT || '0xeaDEaAFE440283aEaC909CD58ec367735BfE712f',
+    medSynapseToken: import.meta.env.VITE_MEDSYNAPSE_TOKEN || '0xb6F34abCfF466A26691161c867c9c82936F05f11', // MED token
     dataValidator: import.meta.env.VITE_DATA_VALIDATOR_CONTRACT || '0x...',
     oneMBDataCoin: '0xC7Bc3432B0CcfeFb4237172340Cd8935f95f2990', // 1MB.io pre-deployed on Sepolia
     usdc: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238', // Sepolia USDC
