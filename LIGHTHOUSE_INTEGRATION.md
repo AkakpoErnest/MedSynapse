@@ -30,3 +30,15 @@ Lighthouse handles the complete encrypted file upload process - from file select
 - **IPFS Gateways** - Multiple fallback gateways for reliable access
 - **Decentralized Storage** - Files stored on IPFS, not centralized servers
 
+## Integration Benefits
+
+**Why Lighthouse works well for MedSynapse:**
+- Zero-knowledge encryption - Files encrypted on user's device before upload
+- No single point of failure - Decentralized IPFS storage
+- Cost-effective - Pay only for storage, not bandwidth
+- GDPR compliant - Medical data stays private and encrypted
+- Simple integration - SDK is straightforward to implement
+
+**Feedback:**
+Lighthouse was the perfect choice for storing sensitive health data. The client-side encryption means even Lighthouse can't see the file contents, which is crucial for medical data privacy. The SDK is well-documented and the upload process is straightforward. The only challenge we faced was handling the array parameter requirement (`[file]` instead of `file`), but once resolved it worked flawlessly.
+
