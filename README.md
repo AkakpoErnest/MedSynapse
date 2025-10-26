@@ -350,11 +350,24 @@ MedSynapse/
 ## Deployed Contracts
 
 **MedSynapseConsent Contract**
-- **Network**: Polygon Amoy Testnet
-- **Address**: `0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44`
-- **Explorer**: [View on Polygonscan](https://amoy.polygonscan.com/address/0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44)
+- **Network**: Ethereum Sepolia Testnet (Migrated from Polygon Amoy)
+- **Address**: `TBD - Deploy with: npx hardhat run scripts/deploy-sepolia.js --network sepolia`
+- **Explorer**: View on Etherscan after deployment
 
-I deployed this contract to handle all the consent management. It tracks who owns data, who's requesting it, and who has approved access. Everything is transparent and auditable.
+**Why We Migrated to Sepolia:**
+We redeployed from Polygon Amoy to Ethereum Sepolia to enable **1MB.io data coin integration**. 1MB.io supports Sepolia testnet, allowing us to:
+- Launch data coins without using mainnet funds
+- Better integrate with Envio's data infrastructure
+- Access more testnet resources and faucets
+- Meet all bounty qualification requirements
+
+The migration uses the same private key, same contract code, and same functionality - just a different network that works with 1MB.io.
+
+**Previous Deployment (Amoy):**
+- Address: `0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44`
+- Explorer: [View on Polygonscan](https://amoy.polygonscan.com/address/0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44)
+
+I deployed these contracts to handle consent management. They track who owns data, who's requesting it, and who has approved access. Everything is transparent and auditable.
 
 ## How to Run It Locally
 
