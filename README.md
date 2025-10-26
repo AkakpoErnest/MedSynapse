@@ -363,6 +363,11 @@ We redeployed from Polygon Amoy to Ethereum Sepolia to enable **1MB.io data coin
 
 The migration uses the same private key, same contract code, and same functionality - just a different network that works with 1MB.io.
 
+**Note on 1MB.io Integration:**
+During the data coin launch process on 1MB.io, I encountered an issue where the platform attempted to transfer USDC from my wallet address (`0xF9c3F6011C6C9036b99fa67Fb3ea4A7EBdcC76cB`) to their deployed contract (`0xC7Bc3432B0CcfeFb4237172340Cd8935f95f2990`), but the transaction reverted with "ERC20: transfer amount exceeds balance". This indicates I didn't have sufficient USDC/WETH testnet tokens in my wallet to complete the data coin creation transaction on their platform.
+
+To proceed with the integration demonstration, I'm using the pre-deployed 1MB.io smart contract at `0xC7Bc3432B0CcfeFb4237172340Cd8935f95f2990` on Sepolia that was provided by their team, while my MedSynapseConsent contract (`0xeaDEaAFE440283aEaC909CD58ec367735BfE712f`) handles the consent management layer that integrates with their data coin system.
+
 **Previous Deployment (Amoy):**
 - Address: `0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44`
 - Explorer: [View on Polygonscan](https://amoy.polygonscan.com/address/0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44)
