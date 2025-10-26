@@ -9,7 +9,7 @@ networks:
     - 0xeaDEaAFE440283aEaC909CD58ec367735BfE712f
     handler: src/EventHandlers.ts
     events:
-    - event: ConsentCreated(bytes32 indexed consentId, address indexed contributor, string dataHash)
+    - event: ConsentCreated(bytes32 indexed consentId, address indexed contributor, string dataHash, string dataType, string description)
     - event: ConsentRevoked(bytes32 indexed consentId, address indexed contributor)
     - event: OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
     - event: ResearchApproved(bytes32 indexed consentId, address indexed researcher)

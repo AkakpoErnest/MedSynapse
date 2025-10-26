@@ -85,6 +85,8 @@ export const MEDSYNAPSE_QUERIES = {
         consentId
         contributor
         dataHash
+        dataType
+        description
       }
     }
   `,

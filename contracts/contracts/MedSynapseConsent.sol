@@ -40,7 +40,7 @@ contract MedSynapseConsent is Ownable, ReentrancyGuard {
     IMedSynapseToken public medSynapseToken;
     bool public tokenRewardsEnabled = true;
     
-    event ConsentCreated(bytes32 indexed consentId, address indexed contributor, string dataHash);
+    event ConsentCreated(bytes32 indexed consentId, address indexed contributor, string dataHash, string dataType, string description);
     event ConsentRevoked(bytes32 indexed consentId, address indexed contributor);
     event ResearchRequested(bytes32 indexed consentId, address indexed researcher, string purpose);
     event ResearchApproved(bytes32 indexed consentId, address indexed researcher);
@@ -87,7 +87,7 @@ contract MedSynapseConsent is Ownable, ReentrancyGuard {
             }
         }
         
-        emit ConsentCreated(consentId, msg.sender, _dataHash);
+        emit ConsentCreated(consentId, msg.sender, _dataHash, _dataType, _description);
         return consentId;
     }
     
