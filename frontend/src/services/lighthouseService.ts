@@ -29,18 +29,22 @@ class LighthouseService {
       console.log('Uploading file to Lighthouse using SDK:', file.name, file.size, 'Type:', file.type)
       
       // Use the Lighthouse SDK upload function
+      // The SDK expects an array of files
       const uploadResponse = await lighthouse.upload(
-        file,
+        [file], // Pass file as array
         this.apiKey
       )
 
       console.log('Lighthouse upload response:', uploadResponse)
       
-      if (!uploadResponse.data || !uploadResponse.data.Hash) {
+      // Check if the response has the hash
+      const hash = uploadResponse.data?.Hash || uploadResponse.Hash || uploadResponse
+      
+      if (!hash || typeof hash !== 'string') {
+        console.error('Invalid upload response:', uploadResponse)
         throw new Error('Upload failed - no hash returned from Lighthouse')
       }
 
-      const hash = uploadResponse.data.Hash
       console.log('Successfully uploaded to IPFS. Hash:', hash)
 
       return {
