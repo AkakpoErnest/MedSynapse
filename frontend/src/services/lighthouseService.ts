@@ -24,45 +24,76 @@ class LighthouseService {
     }
 
     try {
-      console.log('Uploading file to Lighthouse:', file.name, file.size)
+      console.log('Uploading file to Lighthouse:', file.name, file.size, 'Type:', file.type)
       
-      // Use the Lighthouse API to upload file
+      // Try using Lighthouse SDK approach
       const formData = new FormData()
       formData.append('file', file)
       
-      // Upload to Lighthouse using their upload endpoint
-      const uploadResponse = await fetch('https://node.lighthouse.storage/api/v0/add', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-        },
-        body: formData
-      })
+      // Try multiple endpoints to handle CORS
+      const endpoints = [
+        `https://node.lighthouse.storage/api/v0/add?provider=w3s`,
+        `https://node.lighthouse.storage/api/v0/upload`,
+        `https://node.lighthouse.storage/api/v0/ipfs/add`
+      ]
 
-      if (!uploadResponse.ok) {
-        const errorText = await uploadResponse.text()
-        console.error('Lighthouse upload failed:', uploadResponse.status, errorText)
-        throw new Error(`Lighthouse upload failed: ${uploadResponse.status} - ${errorText}`)
-      }
-
-      const result = await uploadResponse.json()
-      console.log('Lighthouse upload response:', result)
+      let lastError: Error | null = null
       
-      if (!result.Hash) {
-        throw new Error('Upload failed - no hash returned from Lighthouse')
+      for (const endpoint of endpoints) {
+        try {
+          console.log('Trying endpoint:', endpoint)
+          
+          const uploadResponse = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${this.apiKey}`,
+            },
+            body: formData
+          })
+
+          console.log('Response status:', uploadResponse.status, uploadResponse.statusText)
+
+          if (!uploadResponse.ok) {
+            const errorText = await uploadResponse.text()
+            console.error('Lighthouse upload failed:', uploadResponse.status, errorText)
+            lastError = new Error(`Status ${uploadResponse.status}: ${errorText}`)
+            continue
+          }
+
+          const result = await uploadResponse.json()
+          console.log('Lighthouse upload response:', result)
+          
+          if (!result.Hash) {
+            throw new Error('Upload failed - no hash returned from Lighthouse')
+          }
+
+          const hash = result.Hash
+          console.log('Successfully uploaded to IPFS. Hash:', hash)
+
+          return {
+            hash: hash,
+            url: `https://gateway.lighthouse.storage/ipfs/${hash}`,
+            size: file.size,
+            name: file.name
+          }
+        } catch (error) {
+          console.error('Endpoint failed:', endpoint, error)
+          lastError = error as Error
+          continue
+        }
       }
 
-      const hash = result.Hash
-      console.log('Successfully uploaded to IPFS. Hash:', hash)
-
-      return {
-        hash: hash,
-        url: `https://gateway.lighthouse.storage/ipfs/${hash}`,
-        size: file.size,
-        name: file.name
-      }
+      // If all endpoints failed, throw the last error
+      throw lastError || new Error('All upload endpoints failed')
+      
     } catch (error) {
       console.error('Lighthouse upload error:', error)
+      
+      // Provide helpful error message
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error connecting to Lighthouse. Check your internet connection and CORS settings.')
+      }
+      
       throw new Error(`Failed to upload to Lighthouse: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
