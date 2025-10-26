@@ -16,7 +16,15 @@ export const formatFileSize = (bytes: number): string => {
 }
 
 export const formatDate = (dateString: string): string => {
-  const date = new Date(dateString)
+  // Handle both timestamp strings and ISO date strings
+  const dateValue = parseInt(dateString)
+  const date = isNaN(dateValue) ? new Date(dateString) : new Date(dateValue)
+  
+  // Check if date is valid
+  if (isNaN(date.getTime())) {
+    return 'Invalid Date'
+  }
+  
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',

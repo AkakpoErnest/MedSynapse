@@ -236,7 +236,7 @@ const ContributorDashboard: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                      {formatDate(item.timestamp?.toString() || Date.now().toString())}
+                      {formatDate(item.timestamp ? item.timestamp.toString() : new Date().toISOString())}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
