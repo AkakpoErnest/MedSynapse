@@ -15,12 +15,15 @@ import AIInsightsDashboard from './components/AIInsightsDashboard'
 import TailwindTest from './components/TailwindTest'
 import { AuthProvider } from './contexts/AuthContext'
 
+// Import Sepolia chain
+import { sepolia } from 'wagmi/chains'
+
 // Wagmi v2 configuration
 const config = createConfig({
-  chains: [mainnet],
+  chains: [sepolia], // Changed to Sepolia testnet
   connectors: [injected()],
   transports: {
-    [mainnet.id]: http(),
+    [sepolia.id]: http(),
   },
 })
 
