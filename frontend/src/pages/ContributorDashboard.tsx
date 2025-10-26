@@ -14,6 +14,7 @@ const ContributorDashboard: React.FC = () => {
   const [dataCoinStats, setDataCoinStats] = useState<any>(null)
   const [contributorBalance, setContributorBalance] = useState('0')
   const [dataCoinLoading, setDataCoinLoading] = useState(true)
+  const [approvalSuccess, setApprovalSuccess] = useState<string | null>(null)
   const { address, isConnected } = useAccount()
   const { data: publicClient } = usePublicClient()
   const { data: walletClient } = useWalletClient()
@@ -137,7 +138,8 @@ const ContributorDashboard: React.FC = () => {
       if (publicClient) {
         const receipt = await publicClient.waitForTransactionReceipt({ hash })
         console.log('Approval confirmed:', receipt)
-        alert('Research request approved successfully!')
+        setApprovalSuccess('Congratulations! You have successfully approved the research request. The researcher can now access this data.')
+        setTimeout(() => setApprovalSuccess(null), 5000)
       }
       
       // Refresh data
@@ -154,6 +156,14 @@ const ContributorDashboard: React.FC = () => {
 
   return (
     <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+      {/* Success Message */}
+      {approvalSuccess && (
+        <div className="bg-green-500/20 border-2 border-green-500/50 rounded-lg p-4 flex items-center animate-fade-in">
+          <CheckCircle className="w-6 h-6 text-green-400 mr-3" />
+          <p className="text-white font-medium">{approvalSuccess}</p>
+        </div>
+      )}
+      
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white">Contributor Dashboard</h1>
