@@ -65,7 +65,11 @@ function App() {
               />
               <Route
                 path="/ai-dashboard"
-                element={<AIInsightsDashboard />}
+                element={
+                  <ProtectedRoute>
+                    <AIInsightsDashboard />
+                  </ProtectedRoute>
+                }
               />
               <Route path="/test" element={<TailwindTest />} />
             </Routes>

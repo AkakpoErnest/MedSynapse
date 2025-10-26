@@ -23,10 +23,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     setMobileMenuOpen(false)
   }
 
-         // Base navigation items
+         // Base navigation items (only when logged in)
          const baseNavItems = [
-           { path: '/', label: 'Home' },
-           { path: '/ai-dashboard', label: 'AI Dashboard' }
+           { path: '/', label: 'Home' }
          ]
 
   // Contributor-specific navigation
@@ -34,6 +33,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     ...baseNavItems,
     { path: '/contributor', label: 'Dashboard' },
     { path: '/upload', label: 'Upload Data' },
+    { path: '/ai-dashboard', label: 'AI Dashboard' },
     { path: '/datacoin', label: 'Data Coin' }
   ]
 
@@ -41,14 +41,18 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const researcherNavItems = [
     ...baseNavItems,
     { path: '/researcher', label: 'Dashboard' },
-    { path: '/analysis', label: 'Analysis' }
+    { path: '/analysis', label: 'Analysis' },
+    { path: '/ai-dashboard', label: 'AI Dashboard' }
   ]
 
   // Get navigation items based on user role
   const getNavItems = () => {
-    if (user?.role === 'contributor') {
+    if (!isConnected || !user) {
+      return [{ path: '/', label: 'Home' }] // Only Home when not logged in
+    }
+    if (user.role === 'contributor') {
       return contributorNavItems
-    } else if (user?.role === 'researcher') {
+    } else if (user.role === 'researcher') {
       return researcherNavItems
     }
     return baseNavItems
