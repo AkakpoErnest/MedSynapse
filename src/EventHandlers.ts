@@ -11,11 +11,22 @@ import {
 } from "generated";
 
 MedSynapseConsent.ConsentCreated.handler(async ({ event, context }) => {
+  // Fetch additional on-chain data from the contract
+  const contractCall = await context.contractCall({
+    contract: event.srcAddress,
+    data: context.MedSynapseConsent_ConsentCreated_Query.getConsentInfo(event.params.consentId),
+  });
+
   const entity: MedSynapseConsent_ConsentCreated = {
     id: `${event.chainId}_${event.block.number}_${event.logIndex}`,
     consentId: event.params.consentId,
     contributor: event.params.contributor,
     dataHash: event.params.dataHash,
+    dataType: contractCall?.dataType || '',
+    description: contractCall?.description || '',
+    timestamp: BigInt(event.block.timestamp),
+    isActive: contractCall?.isActive || true,
+    accessCount: contractCall?.accessCount || BigInt(0),
   };
 
   context.MedSynapseConsent_ConsentCreated.set(entity);
