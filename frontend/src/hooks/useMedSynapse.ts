@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAccount, usePublicClient, useWriteContract } from 'wagmi'
 import { sepolia } from 'wagmi/chains'
-import { waitForTransactionReceipt } from '@wagmi/core'
 import envioService from '../services/envioService'
 import lighthouseService from '../services/lighthouseService'
 import { parseEther } from 'viem'
