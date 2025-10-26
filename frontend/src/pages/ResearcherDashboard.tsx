@@ -128,9 +128,54 @@ const ResearcherDashboard: React.FC = () => {
     }
 
     try {
-      // Fetch data using Lighthouse hash
-      alert(`Accessing data for consent: ${request.consentId}\nThis will download the data if approved.`)
-      // TODO: Implement actual data download from Lighthouse
+      // Verify approval on blockchain
+      const MEDSYNAPSE_CONTRACT = '0xeaDEaAFE440283aEaC909CD58ec367735BfE712f' // Sepolia
+      const MEDSYNAPSE_ABI = [
+        {
+          inputs: [
+            { internalType: 'bytes32', name: '_consentId', type: 'bytes32' },
+            { internalType: 'address', name: '_researcher', type: 'address' }
+          ],
+          name: 'isAuthorized',
+          outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+          stateMutability: 'view',
+          type: 'function'
+        }
+      ] as const
+
+      if (!publicClient) {
+        alert('Public client not available')
+        return
+      }
+
+      const authorized = await publicClient.readContract({
+        address: MEDSYNAPSE_CONTRACT as `0x${string}`,
+        abi: MEDSYNAPSE_ABI,
+        functionName: 'isAuthorized',
+        args: [request.consentId, address]
+      })
+
+      if (!authorized) {
+        alert('You are not authorized to access this data. Approval required.')
+        return
+      }
+
+      // Fetch data hash from the consent
+      const dataHash = request.consentRecord?.dataHash || request.dataHash
+      
+      if (!dataHash) {
+        alert('Data hash not available for this consent.')
+        return
+      }
+
+      // Download from Lighthouse IPFS
+      const ipfsUrl = `https://gateway.lighthouse.storage/ipfs/${dataHash}`
+      
+      alert(`Access granted! Downloading data from IPFS.\nURL: ${ipfsUrl}`)
+      
+      // Open in new tab for download
+      window.open(ipfsUrl, '_blank')
+      
     } catch (error) {
       console.error('Error accessing data:', error)
       alert('Failed to access data: ' + (error instanceof Error ? error.message : 'Unknown error'))
