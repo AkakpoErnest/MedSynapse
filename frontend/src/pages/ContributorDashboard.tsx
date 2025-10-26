@@ -377,15 +377,24 @@ const ContributorDashboard: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {researchRequests.map((request, index) => (
+              {researchRequests.map((request, index) => {
+                // Check if this request has been approved by querying Envio
+                const isApproved = false // TODO: Query approval status from Envio
+                const status = isApproved ? 'approved' : 'pending'
+                
+                return (
                 <div key={request.id} className="bg-black/30 border border-blue-500/20 rounded-lg p-4 hover:border-blue-400/40 transition-all">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center mb-2">
                         <User className="w-5 h-5 text-blue-400 mr-2" />
                         <span className="text-sm font-medium text-white">Request #{index + 1}</span>
-                        <span className="ml-3 px-2 py-1 text-xs font-semibold rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
-                          Pending
+                        <span className={`ml-3 px-2 py-1 text-xs font-semibold rounded-full ${
+                          isApproved 
+                            ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                            : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                        }`}>
+                          {isApproved ? 'Approved' : 'Pending'}
                         </span>
                       </div>
                       <p className="text-gray-300 text-sm mb-2">{request.purpose}</p>
@@ -395,28 +404,47 @@ const ContributorDashboard: React.FC = () => {
                       <p className="text-xs text-gray-500">
                         Consent ID: {request.consentId}
                       </p>
+                      {isApproved && (
+                        <p className="text-xs text-green-400 mt-1">
+                          ✓ Researcher has been granted access
+                        </p>
+                      )}
                     </div>
                     <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleApproveRequest(request.consentId, index)}
-                        className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg flex items-center transition-colors"
-                        title="Approve this research request"
-                      >
-                        <CheckCircle className="w-4 h-4 mr-2" />
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => handleDenyRequest(request.consentId, index)}
-                        className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg flex items-center transition-colors"
-                        title="Deny this research request"
-                      >
-                        <XCircle className="w-4 h-4 mr-2" />
-                        Deny
-                      </button>
+                      {!isApproved && (
+                        <>
+                          <button
+                            onClick={() => handleApproveRequest(request.consentId, index)}
+                            className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg flex items-center transition-colors"
+                            title="Approve this research request"
+                          >
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => handleDenyRequest(request.consentId, index)}
+                            className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg flex items-center transition-colors"
+                            title="Deny this research request"
+                          >
+                            <XCircle className="w-4 h-4 mr-2" />
+                            Deny
+                          </button>
+                        </>
+                      )}
+                      {isApproved && (
+                        <button
+                          disabled
+                          className="px-4 py-2 bg-gray-500 text-white rounded-lg flex items-center opacity-50 cursor-not-allowed"
+                        >
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          Approved
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
