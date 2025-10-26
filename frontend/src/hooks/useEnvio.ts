@@ -172,8 +172,8 @@ export const useAvailableDatasets = () => {
   useEffect(() => {
     fetchDatasets()
     
-    // Refresh every 10 seconds to get new datasets
-    const interval = setInterval(fetchDatasets, 10000)
+    // Refresh every 60 seconds to get new datasets
+    const interval = setInterval(fetchDatasets, 60000)
     return () => clearInterval(interval)
   }, [fetchDatasets])
 
@@ -265,8 +265,8 @@ export const useContributorResearchRequests = (contributorAddress: string) => {
   useEffect(() => {
     if (contributorAddress) {
       fetchRequests()
-      // Refresh every 10 seconds
-      const interval = setInterval(fetchRequests, 10000)
+      // Refresh every 60 seconds
+      const interval = setInterval(fetchRequests, 60000)
       return () => clearInterval(interval)
     }
   }, [contributorAddress, fetchRequests])
