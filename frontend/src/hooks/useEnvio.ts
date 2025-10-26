@@ -53,6 +53,9 @@ export const useContributorConsents = () => {
         uploadsDataMap.set(upload.dataHash, upload)
       })
       
+      // Create a map of on-chain consentIds
+      const onChainDataHashes = new Set(data.map(consent => consent.dataHash))
+      
       // Enrich consents with local storage data
       const enrichedConsents = data.map(consent => {
         const localData = uploadsDataMap.get(consent.dataHash)
@@ -76,8 +79,25 @@ export const useContributorConsents = () => {
         }
       })
       
-      console.log('Enriched consents:', enrichedConsents)
-      setConsents(enrichedConsents)
+      // Add local uploads that are NOT on-chain yet (pending uploads)
+      const localOnlyUploads = uploadsMap.filter((upload: any) => !onChainDataHashes.has(upload.dataHash))
+      const pendingConsents = localOnlyUploads.map((upload: any, index: number) => ({
+        id: `local_${index}`,
+        consentId: upload.dataHash, // Use dataHash as temporary ID
+        contributor: address,
+        dataHash: upload.dataHash,
+        dataType: upload.dataType || 'unknown',
+        description: upload.description || 'No description',
+        timestamp: upload.timestamp || Date.now(),
+        isActive: false, // Pending because not yet on-chain
+        accessCount: 0
+      }))
+      
+      const allConsents = [...enrichedConsents, ...pendingConsents]
+      
+      console.log('Enriched consents:', enrichedConsents.length, 'Pending:', pendingConsents.length)
+      console.log('All consents:', allConsents)
+      setConsents(allConsents)
     } catch (err) {
       console.error('Error fetching consents:', err)
       
