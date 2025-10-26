@@ -1,10 +1,11 @@
 [build]
-  command = "cd frontend && pnpm install && pnpm run build"
-  publish = "frontend/dist"
+  base = "frontend"
+  command = "pnpm install && pnpm run build"
+  publish = "dist"
 
 [build.environment]
   NODE_VERSION = "20"
-  PNPM_VERSION = "9.0.0"
+  PNPM_VERSION = "10.16.1"
 
 [[redirects]]
   from = "/*"

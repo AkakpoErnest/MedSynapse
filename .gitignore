@@ -40,3 +40,4 @@ build
 *.png
 frontend/node_modules/
 generated/
+frontend/dist/
