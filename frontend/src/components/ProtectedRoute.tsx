@@ -1,5 +1,5 @@
 import React from 'react'
-import { Navigate } from 'react-router-dom'
+import { useAccount } from 'wagmi'
 import { useAuth } from '../contexts/AuthContext'
 import RoleSelection from '../pages/RoleSelection'
 
@@ -10,6 +10,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole }) => {
   const { user, isAuthenticated, isLoading } = useAuth()
+  const { isConnected } = useAccount()
 
   if (isLoading) {
     return (
@@ -22,12 +23,19 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole 
     )
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/" replace />
+  // If wallet is connected but no role selected, show role selection
+  if (isConnected && !isAuthenticated) {
+    return <RoleSelection />
   }
 
+  // If wallet not connected, show role selection
+  if (!isConnected) {
+    return <RoleSelection />
+  }
+
+  // If authenticated but wrong role, show role selection
   if (requiredRole && user?.role !== requiredRole) {
-    return <Navigate to="/" replace />
+    return <RoleSelection />
   }
 
   return <>{children}</>
