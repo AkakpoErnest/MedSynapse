@@ -1,7 +1,7 @@
 import { Routes, Route, BrowserRouter } from 'react-router-dom'
 import { WagmiProvider, createConfig, http } from 'wagmi'
 import { mainnet } from 'wagmi/chains'
-import { injected } from 'wagmi/connectors'
+import { injected, metaMaskSDK } from 'wagmi/connectors'
 
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -18,10 +18,18 @@ import { AuthProvider } from './contexts/AuthContext'
 // Import Sepolia chain
 import { sepolia } from 'wagmi/chains'
 
-// Wagmi v2 configuration
+// Wagmi v2 configuration with mobile support
 const config = createConfig({
   chains: [sepolia], // Changed to Sepolia testnet
-  connectors: [injected()],
+  connectors: [
+    injected(),
+    metaMaskSDK({
+      dappMetadata: {
+        name: 'MedSynapse',
+        url: 'https://medsynapse.app'
+      }
+    })
+  ],
   transports: {
     [sepolia.id]: http(),
   },
