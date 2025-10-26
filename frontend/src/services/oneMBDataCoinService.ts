@@ -24,8 +24,8 @@ class OneMBDataCoinService {
   private contract?: ethers.Contract
 
   constructor() {
-    // 1MB.io uses Polygon mainnet
-    this.provider = new ethers.JsonRpcProvider('https://polygon-rpc.com')
+    // Use Polygon Amoy testnet for development
+    this.provider = new ethers.JsonRpcProvider('https://rpc-amoy.polygon.technology')
     this.contractAddress = import.meta.env.VITE_1MB_CONTRACT_ADDRESS || ''
     
     if (this.contractAddress) {

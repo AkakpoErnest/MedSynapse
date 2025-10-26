@@ -30,41 +30,18 @@ npm run dev
 # Then go to http://localhost:3000 and connect your wallet
 ```
 
-### Option 2: Launch on 1MB.io (Full Data Coin Integration)
+### Option 2: Launch on 1MB.io (Requires Mainnet - Use Later)
 
-If you want a real data coin on 1MB.io platform:
+**Note:** 1MB.io works on Polygon **mainnet**, not testnet. For development, stick with Option 1.
 
-**Steps:**
+If you want to launch on 1MB.io for production:
+1. Switch MetaMask to Polygon Mainnet
+2. Visit https://1MB.io/
+3. Create your data coin
+4. Copy the contract address
+5. Add to `frontend/.env` as `VITE_1MB_CONTRACT_ADDRESS`
 
-1. **Prepare your environment:**
-   ```bash
-   # Set these in frontend/.env
-   VITE_LIGHTHOUSE_API_KEY=your_lighthouse_key
-   VITE_MEDSYNAPSE_CONTRACT=0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44
-   VITE_1MB_CONTRACT_ADDRESS=  # You'll get this after launching
-   ```
-
-2. **Launch on 1MB.io:**
-   - Visit https://1MB.io/
-   - Connect your wallet (make sure you're on Polygon testnet)
-   - Create a new data coin project
-   - Name it "MedSynapse Data Share" or similar
-   - Set the symbol (e.g., "MDS")
-   - Click "Launch"
-   - Copy the contract address you receive
-
-3. **Update your environment:**
-   ```bash
-   # Add to frontend/.env
-   VITE_1MB_CONTRACT_ADDRESS=the_address_you_got_from_1mb
-   ```
-
-4. **Test the integration:**
-   ```bash
-   cd frontend
-   npm run dev
-   # Upload some data and verify tokens are minted
-   ```
+**For now, stick with the testnet setup!**
 
 ### Option 3: Deploy a Custom ERC-20 Token (More Complex)
 
