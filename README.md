@@ -281,7 +281,8 @@ frontend/src/
 - Solidity for the logic
 - OpenZeppelin for security
 - Deployed on Polygon Amoy testnet (migrated from Mumbai when it was deprecated)
-- Hardhat for development and deployment
+- 1MB.io integration available on Ethereum Sepolia testnet
+- Hardhat 3.0.0 for development, testing, and deployment
 
 **Backend & Storage:**
 - Node.js + Express API

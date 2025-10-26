@@ -13,6 +13,11 @@ module.exports = {
       gasPrice: 25000000000, // 25 gwei - minimum required
       gas: 5000000, // Reduced gas limit
       chainId: 80002
+    },
+    sepolia: {
+      url: process.env.SEPOLIA_RPC_URL || "https://sepolia.infura.io/v3/demo",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 11155111
     }
   },
   paths: {

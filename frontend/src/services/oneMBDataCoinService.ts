@@ -24,8 +24,8 @@ class OneMBDataCoinService {
   private contract?: ethers.Contract
 
   constructor() {
-    // Use Polygon Amoy testnet for development
-    this.provider = new ethers.JsonRpcProvider('https://rpc-amoy.polygon.technology')
+    // Use Ethereum Sepolia testnet for 1MB.io (they support it!)
+    this.provider = new ethers.JsonRpcProvider('https://sepolia.infura.io/v3/demo')
     this.contractAddress = import.meta.env.VITE_1MB_CONTRACT_ADDRESS || ''
     
     if (this.contractAddress) {
