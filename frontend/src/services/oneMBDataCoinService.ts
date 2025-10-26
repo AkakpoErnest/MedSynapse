@@ -24,17 +24,17 @@ class OneMBDataCoinService {
   private contract?: ethers.Contract
 
   constructor() {
-    // Use Ethereum Sepolia testnet for 1MB.io (they support it!)
-    this.provider = new ethers.JsonRpcProvider('https://sepolia.infura.io/v3/demo')
-    this.contractAddress = import.meta.env.VITE_1MB_CONTRACT_ADDRESS || ''
+    // Use Ethereum Sepolia testnet for 1MB.io
+    this.provider = new ethers.JsonRpcProvider('https://ethereum-sepolia-rpc.publicnode.com')
+    // Use the pre-deployed 1MB.io contract on Sepolia
+    this.contractAddress = '0xC7Bc3432B0CcfeFb4237172340Cd8935f95f2990'
     
-    if (this.contractAddress) {
-      this.contract = new ethers.Contract(
-        this.contractAddress,
-        this.get1MBABI(),
-        this.provider
-      )
-    }
+    // Always create the contract instance
+    this.contract = new ethers.Contract(
+      this.contractAddress,
+      this.get1MBABI(),
+      this.provider
+    )
   }
 
   private get1MBABI() {
