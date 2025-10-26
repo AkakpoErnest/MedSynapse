@@ -35,13 +35,13 @@ class DataCoinService {
   private contractAddress: string
 
   constructor() {
-    this.apiKey = import.meta.env.VITE_LIGHTHOUSE_API_KEY || ''
-    this.contractAddress = import.meta.env.VITE_MEDSYNAPSE_CONTRACT || ''
+    this.apiKey = typeof process !== 'undefined' && process.env.VITE_LIGHTHOUSE_API_KEY || ''
+    this.contractAddress = typeof process !== 'undefined' && process.env.VITE_MEDSYNAPSE_CONTRACT || ''
     // Use Polygon Amoy testnet
     this.provider = new ethers.JsonRpcProvider('https://rpc-amoy.polygon.technology')
     
     // Only create wallet if private key is provided and valid
-    const privateKey = import.meta.env.VITE_PRIVATE_KEY
+    const privateKey = typeof process !== 'undefined' && process.env.VITE_PRIVATE_KEY
     if (privateKey && privateKey.length === 64) {
       try {
         this.wallet = new ethers.Wallet(privateKey, this.provider)

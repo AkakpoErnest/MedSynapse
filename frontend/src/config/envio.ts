@@ -1,10 +1,10 @@
 // Envio HyperSync Configuration
 export const ENVIO_CONFIG = {
-  // Local Envio GraphQL endpoint
-  endpoint: import.meta.env.VITE_ENVIO_ENDPOINT || 'http://localhost:8080/v1/graphql',
+  // Envio GraphQL endpoint
+  endpoint: typeof process !== 'undefined' && process.env.VITE_ENVIO_ENDPOINT || 'http://localhost:8080/v1/graphql',
   
-  // API Key for authentication (not needed for local)
-  apiKey: import.meta.env.VITE_ENVIO_API_KEY || '',
+  // API Key for authentication
+  apiKey: typeof process !== 'undefined' && process.env.VITE_ENVIO_API_KEY || '',
   
   // Network configurations
   networks: {
@@ -27,8 +27,8 @@ export const ENVIO_CONFIG = {
   
   // MedSynapse contract addresses
   contracts: {
-    medSynapseConsent: import.meta.env.VITE_MEDSYNAPSE_CONTRACT || '0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44',
-    dataValidator: import.meta.env.VITE_DATA_VALIDATOR_CONTRACT || '0x...'
+    medSynapseConsent: typeof process !== 'undefined' && process.env.VITE_MEDSYNAPSE_CONTRACT || '0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44',
+    dataValidator: typeof process !== 'undefined' && process.env.VITE_DATA_VALIDATOR_CONTRACT || '0x...'
   },
   
   // Query configurations

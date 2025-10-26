@@ -7,25 +7,19 @@ export interface UploadResult {
   name: string
 }
 
-export interface FileMetadata {
-  name: string
-  type: string
-  size: number
-  description?: string
-  dataType: 'lab_results' | 'wearable_data' | 'survey_data' | 'imaging_data' | 'genetic_data'
-}
+// File metadata removed - using blockchain-only storage
 
 class LighthouseService {
   private apiKey: string
 
   constructor() {
-    this.apiKey = import.meta.env.VITE_LIGHTHOUSE_API_KEY || ''
+    this.apiKey = typeof process !== 'undefined' && process.env.VITE_LIGHTHOUSE_API_KEY || ''
   }
 
   /**
    * Upload a file to Lighthouse with encryption
    */
-  async uploadFile(file: File, metadata: FileMetadata): Promise<UploadResult> {
+  async uploadFile(file: File): Promise<UploadResult> {
     if (!this.apiKey) {
       throw new Error('Lighthouse API key not configured')
     }

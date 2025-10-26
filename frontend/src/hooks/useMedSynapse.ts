@@ -27,13 +27,7 @@ export const useDataUpload = () => {
       // Upload to Lighthouse
       setUploadProgress(25)
       console.log('Starting Lighthouse upload...')
-      const lighthouseResult = await lighthouseService.uploadFile(file, {
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        description,
-        dataType: dataType as any
-      })
+      const lighthouseResult = await lighthouseService.uploadFile(file)
 
       console.log('Lighthouse upload successful:', lighthouseResult)
       setUploadProgress(75)
