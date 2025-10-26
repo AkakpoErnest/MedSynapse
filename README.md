@@ -419,25 +419,52 @@ TUI_OFF=true pnpm dev # Run indexer
 
 ## What's Working Right Now
 
-✅ **Smart Contracts** - Deployed and functional on Sepolia testnet  
-✅ **Wallet Connection** - MetaMask integration works  
+✅ **Smart Contracts** - Deployed and functional on Ethereum Sepolia testnet  
+✅ **Wallet Connection** - MetaMask integration with Sepolia network  
+✅ **Blockchain Integration** - Real on-chain consent creation via MetaMask  
 ✅ **Role-Based Access** - Contributors vs Researchers have different views  
-✅ **Data Upload** - File upload with Lighthouse encryption  
-✅ **Consent Management** - Approve/deny/revoke all working  
-✅ **Token Rewards** - Automatic rewards for contributions  
+✅ **Data Upload** - File upload with Lighthouse encryption and IPFS storage  
+✅ **Consent Management** - Full blockchain-based approve/deny/revoke system  
+✅ **Data Coin Tracking** - MedSynapse consent count tracked on-chain  
+✅ **1MB.io Integration** - Using pre-deployed contract on Sepolia  
+✅ **Researcher Access Requests** - Researchers can request data access via blockchain  
 ✅ **Real-Time Updates** - Envio indexing shows live blockchain data  
-✅ **AI Dashboard** - Analytics and insights  
-✅ **Medical Animations** - ECG heartbeat waveforms and pulsing effects  
-✅ **Responsive Design** - Works on mobile and desktop  
+✅ **AI Dashboard** - Analytics and insights from indexed data  
+✅ **Medical Theme** - Professional blue and white design with medical icons  
+✅ **Responsive Design** - Works perfectly on mobile and desktop  
+✅ **Docker Support** - Envio runs locally with Docker
 
-## What I'm Still Working On
+## Recent Major Updates (Just Completed)
 
-- Making the upload process smoother with better error handling
-- Adding more AI analysis capabilities
-- Implementing the data coin system (1MB.io integration)
-- Improving the UI/UX based on user feedback
-- Adding multi-file upload support
-- Creating better visualization for the consent data
+### ✅ Blockchain Integration Complete
+- **On-chain consent creation** - Contributors now create real consent records on Sepolia via MetaMask
+- **Researcher access requests** - Researchers submit data access requests on-chain using `requestDataAccess()` function
+- **Ethereum Sepolia migration** - Moved from Polygon Amoy to Sepolia for 1MB.io compatibility
+- **MetaMask transaction flow** - Users sign transactions through their own wallet for maximum security
+
+### ✅ Data Coin System
+- **MedSynapse data coins** - Each consent is a data coin tracked on-chain
+- **Balance tracking** - Contributors see their consent count (balance) in real-time
+- **1MB.io integration** - Using contract at `0xC7Bc3432B0CcfeFb4237172340Cd8935f95f2990` on Sepolia
+- **Platform statistics** - Total consents, active contributors tracked
+
+### ✅ Researcher Workflow
+- **Browse datasets** - See all available health data on the researcher dashboard
+- **Request access** - Submit blockchain requests via MetaMask
+- **Pending approval** - Status shown in real-time via Envio
+- **Access management** - Contributors can approve/deny requests through their dashboard
+
+### ✅ Envio Integration
+- **HyperIndex** - All on-chain events indexed (consents, requests, approvals)
+- **HyperSync** - Real-time GraphQL API at `http://localhost:8080/v1/graphql`
+- **Docker support** - Envio runs locally with Docker (required for qualification)
+- **Event tracking** - ConsentCreated, ResearchRequested, ResearchApproved, ConsentRevoked
+
+## What's Next
+- Add multi-file upload support for bulk operations
+- Implement AI-powered data analysis tools
+- Create detailed visualization for consent analytics
+- Build mobile app version
 
 ## Contributing
 
