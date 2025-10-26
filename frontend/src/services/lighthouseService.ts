@@ -1,5 +1,3 @@
-import lighthouse from '@lighthouse-web3/sdk'
-
 export interface UploadResult {
   hash: string
   url: string
@@ -14,10 +12,11 @@ class LighthouseService {
 
   constructor() {
     this.apiKey = import.meta.env.VITE_LIGHTHOUSE_API_KEY || ''
+    console.log('Lighthouse API Key configured:', this.apiKey ? 'Yes' : 'No')
   }
 
   /**
-   * Upload a file to Lighthouse with encryption
+   * Upload a file to Lighthouse using their API
    */
   async uploadFile(file: File): Promise<UploadResult> {
     if (!this.apiKey) {
@@ -25,12 +24,14 @@ class LighthouseService {
     }
 
     try {
-      // Use the correct Lighthouse API endpoint
+      console.log('Uploading file to Lighthouse:', file.name, file.size)
+      
+      // Use the Lighthouse API to upload file
       const formData = new FormData()
       formData.append('file', file)
       
-      // Try the correct Lighthouse API endpoint
-      const response = await fetch('https://api.lighthouse.storage/api/v0/add', {
+      // Upload to Lighthouse using their upload endpoint
+      const uploadResponse = await fetch('https://node.lighthouse.storage/api/v0/add', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
@@ -38,47 +39,31 @@ class LighthouseService {
         body: formData
       })
 
-      if (!response.ok) {
-        // If the main API fails, try alternative approach
-        console.log('Main API failed, trying alternative approach...')
-        
-        // For now, simulate a successful upload since the API seems to have issues
-        // In production, you'd want to use the working Lighthouse API
-        const simulatedHash = `Qm${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`
-        
-        return {
-          hash: simulatedHash,
-          url: `https://gateway.lighthouse.storage/ipfs/${simulatedHash}`,
-          size: file.size,
-          name: file.name
-        }
+      if (!uploadResponse.ok) {
+        const errorText = await uploadResponse.text()
+        console.error('Lighthouse upload failed:', uploadResponse.status, errorText)
+        throw new Error(`Lighthouse upload failed: ${uploadResponse.status} - ${errorText}`)
       }
 
-      const result = await response.json()
+      const result = await uploadResponse.json()
+      console.log('Lighthouse upload response:', result)
       
       if (!result.Hash) {
-        throw new Error('Upload failed - no hash returned')
+        throw new Error('Upload failed - no hash returned from Lighthouse')
       }
 
+      const hash = result.Hash
+      console.log('Successfully uploaded to IPFS. Hash:', hash)
+
       return {
-        hash: result.Hash,
-        url: `https://gateway.lighthouse.storage/ipfs/${result.Hash}`,
+        hash: hash,
+        url: `https://gateway.lighthouse.storage/ipfs/${hash}`,
         size: file.size,
         name: file.name
       }
     } catch (error) {
       console.error('Lighthouse upload error:', error)
-      
-      // Fallback: simulate upload for development
-      console.log('Using fallback simulation for development...')
-      const simulatedHash = `Qm${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`
-      
-      return {
-        hash: simulatedHash,
-        url: `https://gateway.lighthouse.storage/ipfs/${simulatedHash}`,
-        size: file.size,
-        name: file.name
-      }
+      throw new Error(`Failed to upload to Lighthouse: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
 
