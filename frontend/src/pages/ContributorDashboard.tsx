@@ -239,23 +239,23 @@ const ContributorDashboard: React.FC = () => {
         <div className="px-6 py-4 border-b border-blue-500/20">
           <h2 className="text-lg font-semibold text-white">Your Data</h2>
         </div>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto -mx-6 px-6">
           <table className="min-w-full divide-y divide-blue-500/20">
             <thead className="bg-black/30">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider min-w-[250px]">
                   Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider min-w-[140px]">
                   Date Uploaded
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider min-w-[100px]">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider min-w-[120px]">
                   Access Count
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider min-w-[120px]">
                   Actions
                 </th>
               </tr>
@@ -279,7 +279,7 @@ const ContributorDashboard: React.FC = () => {
               ) : (
                 consents.map((item) => (
                   <tr key={item.id} className="hover:bg-black/30 transition-colors duration-200">
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-4">
                       <div className="flex items-center">
                         <span className="text-2xl mr-3">{getDataTypeIcon(item.dataType || 'unknown')}</span>
                         <div>
@@ -290,10 +290,10 @@ const ContributorDashboard: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                    <td className="px-4 py-4 text-sm text-gray-400">
                       {formatDate(item.timestamp ? item.timestamp.toString() : new Date().toISOString())}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-4">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                         item.isActive 
                           ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
@@ -302,10 +302,10 @@ const ContributorDashboard: React.FC = () => {
                         {item.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                    <td className="px-4 py-4 text-sm text-gray-400">
                       {item.accessCount || 0}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="px-4 py-4 text-sm font-medium">
                       <div className="relative">
                         <button
                           onClick={() => setShowActions(showActions === item.id ? null : item.id)}
