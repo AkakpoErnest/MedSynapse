@@ -305,9 +305,9 @@ export const useContributorResearchRequests = (contributorAddress: string) => {
       
       // Also fetch approved requests to mark status
       try {
-        // Get all approvals for this contributor's consents
-        const allApprovals = await envioService.getResearchApprovals(contributorAddress)
-        const approvedConsentIds = new Set(allApprovals.map(a => a.consentId))
+        // Fetch approvals for all consents owned by this contributor
+        const approvals = await envioService.getApprovalsByConsentIds(Array.from(consentIds))
+        const approvedConsentIds = new Set(approvals.map(a => a.consentId))
         setApprovedRequests(approvedConsentIds)
       } catch (err) {
         console.error('Error fetching approvals:', err)

@@ -149,6 +149,27 @@ class EnvioService {
     }
   }
 
+  async getApprovalsByConsentIds(consentIds: string[]): Promise<any[]> {
+    try {
+      const query = `
+        query GetApprovalsForConsents($consentIds: [String!]!) {
+          MedSynapseConsent_ResearchApproved(
+            where: { consentId: { _in: $consentIds } }
+          ) {
+            consentId
+            researcher
+          }
+        }
+      `
+      const variables = { consentIds }
+      const response = await this.client.request(query, variables)
+      return response.MedSynapseConsent_ResearchApproved || []
+    } catch (error) {
+      console.error('Error fetching approvals by consent IDs:', error)
+      return []
+    }
+  }
+
   async getAnalytics(): Promise<Analytics> {
     try {
       const response = await this.client.request(MEDSYNAPSE_QUERIES.getAnalytics)
