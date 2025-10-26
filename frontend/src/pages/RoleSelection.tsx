@@ -1,14 +1,16 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAccount } from 'wagmi'
-import { Stethoscope, Microscope, Shield, Activity, Database, Users, AlertCircle } from 'lucide-react'
+import { useAccount, useConnect, injected } from 'wagmi'
+import { Stethoscope, Microscope, Shield, Activity, Database, Users, AlertCircle, Wallet, Download, ExternalLink, X } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
 const RoleSelection: React.FC = () => {
   const { address, isConnected } = useAccount()
+  const { connect } = useConnect()
   const { setRole } = useAuth()
   const navigate = useNavigate()
   const [isSelecting, setIsSelecting] = useState(false)
+  const [showWalletGuide, setShowWalletGuide] = useState(false)
 
   const handleRoleSelect = async (role: 'contributor' | 'researcher') => {
     setIsSelecting(true)
@@ -27,18 +29,118 @@ const RoleSelection: React.FC = () => {
     }
   }
 
+  const handleConnect = () => {
+    connect({ connector: injected() })
+  }
+
   if (!isConnected) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="max-w-md mx-auto p-6">
-          <div className="bg-amber-50/10 backdrop-blur-sm border border-amber-500/30 rounded-xl p-6">
-            <div className="flex items-center">
-              <AlertCircle className="w-6 h-6 text-amber-400 mr-3" />
-              <div>
-                <h3 className="text-lg font-medium text-amber-200">Wallet Not Connected</h3>
-                <p className="text-amber-300/80">Please connect your wallet to access MedSynapse.</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+        <div className="max-w-2xl mx-auto w-full">
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center mb-6">
+              <div className="relative">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-2xl border border-emerald-400/30">
+                  <Stethoscope className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                </div>
+                <div className="absolute inset-0 rounded-2xl bg-emerald-400/20 animate-pulse"></div>
               </div>
             </div>
+            <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
+              <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                Welcome to MedSynapse
+              </span>
+            </h1>
+            <p className="text-slate-300 text-lg sm:text-xl max-w-xl mx-auto">
+              Connect your wallet to get started on our secure medical data platform
+            </p>
+          </div>
+
+          <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-amber-500/30 rounded-2xl p-8 space-y-6">
+            <div className="flex items-start">
+              <AlertCircle className="w-6 h-6 text-amber-400 mr-3 mt-1 flex-shrink-0" />
+              <div>
+                <h3 className="text-xl font-semibold text-amber-200 mb-2">What is a Wallet?</h3>
+                <p className="text-amber-300/90 leading-relaxed">
+                  A crypto wallet is like a secure digital wallet for your identity and transactions on the blockchain. It's your key to accessing decentralized applications like MedSynapse.
+                </p>
+              </div>
+            </div>
+
+            {!showWalletGuide && (
+              <div className="flex gap-4">
+                <button
+                  onClick={handleConnect}
+                  className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-6 py-4 rounded-xl font-semibold hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 hover:scale-105 flex items-center justify-center shadow-lg shadow-emerald-500/20"
+                >
+                  <Wallet className="w-5 h-5 mr-2" />
+                  Connect Wallet
+                </button>
+                <button
+                  onClick={() => setShowWalletGuide(true)}
+                  className="px-6 py-4 border-2 border-emerald-500/30 text-emerald-400 rounded-xl font-semibold hover:bg-emerald-500/10 transition-all duration-300 hover:scale-105 flex items-center justify-center"
+                >
+                  Need Help?
+                </button>
+              </div>
+            )}
+
+            {showWalletGuide && (
+              <div className="bg-slate-900/50 rounded-xl p-6 space-y-4 border border-emerald-500/20">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-lg font-semibold text-white">How to Create a Wallet</h4>
+                  <button
+                    onClick={() => setShowWalletGuide(false)}
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <ol className="space-y-4">
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 w-8 h-8 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center font-semibold mr-3">1</span>
+                    <div>
+                      <h5 className="text-emerald-400 font-semibold mb-1">Download MetaMask</h5>
+                      <p className="text-gray-300 text-sm">Get the free browser extension from MetaMask.io</p>
+                      <a href="https://metamask.io/download" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 text-sm inline-flex items-center mt-1">
+                        Download now <ExternalLink className="w-3 h-3 ml-1" />
+                      </a>
+                    </div>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 w-8 h-8 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center font-semibold mr-3">2</span>
+                    <div>
+                      <h5 className="text-emerald-400 font-semibold mb-1">Create Your Wallet</h5>
+                      <p className="text-gray-300 text-sm">Follow the simple setup process (takes less than 2 minutes)</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 w-8 h-8 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center font-semibold mr-3">3</span>
+                    <div>
+                      <h5 className="text-emerald-400 font-semibold mb-1">Secure Your Recovery Phrase</h5>
+                      <p className="text-gray-300 text-sm">Save your 12-word phrase somewhere safe - this is your backup</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="flex-shrink-0 w-8 h-8 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center font-semibold mr-3">4</span>
+                    <div>
+                      <h5 className="text-emerald-400 font-semibold mb-1">Connect to MedSynapse</h5>
+                      <p className="text-gray-300 text-sm">Click "Connect Wallet" and approve the connection request</p>
+                    </div>
+                  </li>
+                </ol>
+                <div className="pt-4 border-t border-slate-700">
+                  <p className="text-amber-400 text-sm font-semibold mb-3">✓ Already have MetaMask? You can skip the setup.</p>
+                  <button
+                    onClick={handleConnect}
+                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 flex items-center justify-center shadow-lg shadow-emerald-500/20"
+                  >
+                    <Wallet className="w-5 h-5 mr-2" />
+                    Connect My Wallet
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
