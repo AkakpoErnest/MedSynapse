@@ -89,6 +89,19 @@ export const MEDSYNAPSE_QUERIES = {
     }
   `,
 
+  // Get approval status for a researcher
+  getResearchApprovals: `
+    query GetResearchApprovals($researcher: String!) {
+      MedSynapseConsent_ResearchApproved(
+        where: { researcher: { _eq: $researcher } }
+      ) {
+        id
+        consentId
+        researcher
+      }
+    }
+  `,
+
   // Get research requests
   getResearchRequests: `
     query GetResearchRequests($limit: Int, $offset: Int) {

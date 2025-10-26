@@ -23,7 +23,7 @@ const ResearcherDashboard: React.FC = () => {
   const { analytics, loading: analyticsLoading } = useAnalytics()
   const { isConnected: envioConnected, isChecking } = useEnvioConnection()
 
-  // Convert datasets to displayable format
+  // Convert datasets to displayable format, check approval status
   const displayDatasets = datasets.map(dataset => ({
     id: dataset.id,
     consentId: dataset.consentId,
@@ -33,7 +33,7 @@ const ResearcherDashboard: React.FC = () => {
     description: 'Health data contribution',
     timestamp: Date.now(),
     price: '0',
-    status: 'available',
+    status: (dataset as any).isApproved ? 'approved' : 'available',
     consentRecord: {
       dataType: 'lab_results',
       description: 'Health data contribution'

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAccount } from 'wagmi'
+import envioService from '../services/envioService'
 import envioService, { ConsentRecord, ResearchRequest, DataAccessRecord, Analytics } from '../services/envioService'
 
 // Hook for contributor consents
@@ -137,6 +138,7 @@ export const useAvailableDatasets = () => {
   const [datasets, setDatasets] = useState<ConsentRecord[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { address, isConnected } = useAccount()
 
   const fetchDatasets = useCallback(async () => {
     setLoading(true)
@@ -144,14 +146,29 @@ export const useAvailableDatasets = () => {
     
     try {
       const data = await envioService.getAvailableConsents()
-      setDatasets(data)
+      
+      // If researcher is connected, fetch their approvals and merge
+      if (isConnected && address) {
+        const approvals = await envioService.getResearchApprovals(address)
+        const approvalConsentIds = new Set(approvals.map(a => a.consentId))
+        
+        // Mark datasets as approved if researcher has access
+        const enrichedData = data.map(dataset => ({
+          ...dataset,
+          isApproved: approvalConsentIds.has(dataset.consentId)
+        }))
+        
+        setDatasets(enrichedData)
+      } else {
+        setDatasets(data)
+      }
     } catch (err) {
       console.error('Error fetching datasets:', err)
       setError(err instanceof Error ? err.message : 'Failed to fetch datasets')
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [isConnected, address])
 
   useEffect(() => {
     fetchDatasets()
