@@ -16,7 +16,9 @@ export default defineConfig({
     sourcemap: false, // Disable sourcemaps for production
     minify: 'esbuild',
     rollupOptions: {
-      external: ['@safe-global/safe-apps-sdk'],
+      external: (id) => {
+        return id.includes('@safe-global') || id.includes('@safe-globalThis')
+      },
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],

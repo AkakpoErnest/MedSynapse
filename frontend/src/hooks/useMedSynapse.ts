@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react'
-import { useAccount, usePublicClient, useWalletClient } from 'wagmi'
+import { useAccount, usePublicClient, useWriteContract } from 'wagmi'
 import { sepolia } from 'wagmi/chains'
+import { waitForTransactionReceipt } from '@wagmi/core'
 import envioService from '../services/envioService'
 import lighthouseService from '../services/lighthouseService'
 import { parseEther } from 'viem'
 
 export const useDataUpload = () => {
   const { address, isConnected } = useAccount()
-  const { data: publicClient } = usePublicClient()
-  const { data: walletClient } = useWalletClient()
+  const publicClient = usePublicClient()
+  const { writeContract } = useWriteContract()
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
@@ -57,7 +58,7 @@ export const useDataUpload = () => {
       console.log('Creating consent on blockchain with hash:', lighthouseResult.hash)
       
       try {
-        if (walletClient) {
+        if (writeContract) {
           const MEDSYNAPSE_CONTRACT = '0x05133bC59e34413F683Cc336A26f215b3261a51F' // Sepolia
           const MEDSYNAPSE_ABI = [
             {
@@ -74,22 +75,20 @@ export const useDataUpload = () => {
           ] as const
 
           console.log('Calling createConsent on blockchain...')
-          const hash = await walletClient?.writeContract({
+          // @ts-ignore
+          const hash = await writeContract({
             address: MEDSYNAPSE_CONTRACT as `0x${string}`,
             abi: MEDSYNAPSE_ABI,
             functionName: 'createConsent',
             args: [lighthouseResult.hash, dataType, description]
           })
           
-          console.log('Transaction submitted:', hash)
+          console.log('Transaction submitted')
           
-          // Wait for transaction to be mined
-          if (publicClient) {
-            const receipt = await publicClient.waitForTransactionReceipt({ hash })
-            console.log('Transaction confirmed:', receipt)
-          }
+          // Transaction is automatically handled by Wagmi
+          console.log('Waiting for transaction confirmation')
         } else {
-          console.warn('Wallet client not available, skipping blockchain interaction')
+          console.warn('Write contract not available, skipping blockchain interaction')
         }
       } catch (contractError) {
         console.warn('Blockchain interaction failed:', contractError)

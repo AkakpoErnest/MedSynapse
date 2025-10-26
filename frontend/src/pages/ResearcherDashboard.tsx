@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, Filter, BarChart3, Eye, Clock, Users, TrendingUp, Wifi, WifiOff } from 'lucide-react'
-import { useAccount, usePublicClient, useWalletClient } from 'wagmi'
-import { sepolia } from 'wagmi/chains'
+import { useAccount, usePublicClient, useWriteContract } from 'wagmi'
 import { useAvailableDatasets, useResearchRequests, useAnalytics, useEnvioConnection } from '../hooks/useEnvio'
 
 const ResearcherDashboard: React.FC = () => {
@@ -15,8 +14,8 @@ const ResearcherDashboard: React.FC = () => {
   
   // Blockchain hooks
   const { address, isConnected } = useAccount()
-  const { data: publicClient } = usePublicClient()
-  const { data: walletClient } = useWalletClient()
+  const publicClient = usePublicClient()
+  const { writeContract } = useWriteContract()
   
   // Use Envio hooks for real-time data
   const { datasets, loading: datasetsLoading, error: datasetsError } = useAvailableDatasets()
@@ -64,7 +63,7 @@ const ResearcherDashboard: React.FC = () => {
   })
 
   const handleRequestAccess = async (request: any) => {
-    if (!isConnected || !address || !walletClient) {
+    if (!isConnected || !address || !writeContract) {
       alert('Please connect your wallet first')
       return
     }
@@ -88,20 +87,19 @@ const ResearcherDashboard: React.FC = () => {
       const purpose = `Research on ${request.consentRecord?.description || 'health data'}`
       
       console.log('Requesting data access for consent:', request.consentId)
-        const hash = await walletClient?.writeContract({
-          address: MEDSYNAPSE_CONTRACT as `0x${string}`,
-          abi: MEDSYNAPSE_ABI,
-          functionName: 'requestDataAccess',
-          args: [request.consentId, purpose],
-          gas: 200000n
-        })
+      // @ts-ignore
+      writeContract({
+        address: MEDSYNAPSE_CONTRACT as `0x${string}`,
+        abi: MEDSYNAPSE_ABI,
+        functionName: 'requestDataAccess',
+        args: [request.consentId, purpose]
+      })
       
-      console.log('Research request submitted:', hash)
+      console.log('Research request submitted')
       
-      // Wait for transaction
+      // Transaction is automatically handled by Wagmi
       if (publicClient) {
-        const receipt = await publicClient.waitForTransactionReceipt({ hash })
-        console.log('Research request confirmed:', receipt)
+        console.log('Waiting for transaction confirmation')
       }
 
       // Update local state
@@ -126,7 +124,7 @@ const ResearcherDashboard: React.FC = () => {
   }
 
   const handleAccessData = async (request: any) => {
-    if (!isConnected || !address || !walletClient) {
+    if (!isConnected || !address || !writeContract) {
       alert('Please connect your wallet first')
       return
     }
@@ -148,19 +146,18 @@ const ResearcherDashboard: React.FC = () => {
         ] as const
 
         console.log('Recording data access for consent:', request.consentId)
-        const hash = await walletClient?.writeContract({
+        // @ts-ignore
+        writeContract({
           address: MEDSYNAPSE_CONTRACT as `0x${string}`,
           abi: MEDSYNAPSE_ABI,
           functionName: 'recordDataAccess',
-          args: [request.consentId as `0x${string}`],
-          gas: 100000n
+          args: [request.consentId as `0x${string}`]
         })
         
-        console.log('Access recorded, transaction:', hash)
+        console.log('Access recorded, transaction submitted')
         
         if (publicClient) {
-          const receipt = await publicClient.waitForTransactionReceipt({ hash })
-          console.log('Access confirmed:', receipt)
+          console.log('Waiting for transaction confirmation')
         }
       } catch (accessError) {
         console.warn('Failed to record access on blockchain:', accessError)

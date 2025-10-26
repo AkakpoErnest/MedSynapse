@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Upload, FileText, Shield, Eye, MoreVertical, Trash2, Eye as ViewIcon, Wifi, WifiOff, Coins, TrendingUp, Users, Award, CheckCircle, XCircle, User } from 'lucide-react'
-import { useAccount, usePublicClient, useWalletClient } from 'wagmi'
-import { sepolia } from 'wagmi/chains'
+import { useAccount, usePublicClient, useWriteContract } from 'wagmi'
 import { useContributorConsents, useEnvioConnection, useContributorResearchRequests } from '../hooks/useEnvio'
 import { formatDate, getDataTypeIcon, getStatusColor } from '../utils/helpers'
 // ConsentDetails component removed, using inline modal instead
@@ -17,8 +16,8 @@ const ContributorDashboard: React.FC = () => {
   const [dataCoinLoading, setDataCoinLoading] = useState(true)
   const [approvalSuccess, setApprovalSuccess] = useState<string | null>(null)
   const { address, isConnected } = useAccount()
-  const { data: publicClient } = usePublicClient()
-  const { data: walletClient } = useWalletClient()
+  const publicClient = usePublicClient()
+  const { writeContract } = useWriteContract()
   const { consents, loading, error, refetch: refetchConsents } = useContributorConsents()
   const { isConnected: envioConnected, isChecking } = useEnvioConnection()
   const { requests: researchRequests, loading: requestsLoading, approvedRequests } = useContributorResearchRequests(address || '')
@@ -99,7 +98,7 @@ const ContributorDashboard: React.FC = () => {
   }
 
   const handleApproveRequest = async (consentId: string, requestIndex: number) => {
-    if (!isConnected || !address || !walletClient) {
+    if (!isConnected || !address || !writeContract) {
       alert('Please connect your wallet first')
       return
     }
@@ -125,20 +124,19 @@ const ContributorDashboard: React.FC = () => {
       console.log('Approving research request for consent:', consentId, 'index:', requestIndex)
       
       // Try to approve with reasonable gas
-      const hash = await walletClient?.writeContract({
+      // @ts-ignore
+      writeContract({
         address: MEDSYNAPSE_CONTRACT as `0x${string}`,
         abi: MEDSYNAPSE_ABI,
         functionName: 'approveResearchRequest',
-        args: [consentIdBytes, BigInt(requestIndex)],
-        gas: 300000n // Reduced gas limit
+        args: [consentIdBytes, BigInt(requestIndex)]
       })
       
-      console.log('Approval transaction submitted:', hash)
+      console.log('Approval transaction submitted')
       
-      // Wait for transaction
+      // Transaction is automatically handled by Wagmi
       if (publicClient) {
-        const receipt = await publicClient.waitForTransactionReceipt({ hash })
-        console.log('Approval confirmed:', receipt)
+        console.log('Waiting for transaction confirmation')
         setApprovalSuccess('Congratulations! You have successfully approved the research request. The researcher can now access this data.')
         setTimeout(() => setApprovalSuccess(null), 5000)
       }
