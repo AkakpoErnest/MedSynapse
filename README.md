@@ -442,11 +442,12 @@ TUI_OFF=true pnpm dev # Run indexer
 - **Ethereum Sepolia migration** - Moved from Polygon Amoy to Sepolia for 1MB.io compatibility
 - **MetaMask transaction flow** - Users sign transactions through their own wallet for maximum security
 
-### ✅ Data Coin System
-- **MedSynapse data coins** - Each consent is a data coin tracked on-chain
-- **Balance tracking** - Contributors see their consent count (balance) in real-time
+### ✅ Data Coin System (Conceptual)
+- **Consent tracking** - Each consent record is tracked on-chain
+- **Balance tracking** - Contributors see their consent count in real-time
 - **1MB.io integration** - Using contract at `0xC7Bc3432B0CcfeFb4237172340Cd8935f95f2990` on Sepolia
 - **Platform statistics** - Total consents, active contributors tracked
+- **Note**: MED token rewards are not yet deployed - we track "data coins" as the consent count
 
 ### ✅ Researcher Workflow
 - **Browse datasets** - See all available health data on the researcher dashboard
