@@ -16,8 +16,8 @@ MedSynapseConsent.ConsentCreated.handler(async ({ event, context }) => {
     consentId: event.params.consentId,
     contributor: event.params.contributor,
     dataHash: event.params.dataHash,
-    dataType: event.params.dataType,
-    description: event.params.description,
+    dataType: event.params.dataType || 'unknown',
+    description: event.params.description || 'No description available',
   };
 
   context.MedSynapseConsent_ConsentCreated.set(entity);
