@@ -88,7 +88,8 @@ const ResearcherDashboard: React.FC = () => {
         address: MEDSYNAPSE_CONTRACT as `0x${string}`,
         abi: MEDSYNAPSE_ABI,
         functionName: 'requestDataAccess',
-        args: [request.consentId, purpose]
+        args: [request.consentId, purpose],
+        gas: 200000n
       })
       
       console.log('Research request submitted:', hash)
@@ -117,6 +118,22 @@ const ResearcherDashboard: React.FC = () => {
     } finally {
       setRequestingAccess(false)
       setSelectedDataset(null)
+    }
+  }
+
+  const handleAccessData = async (request: any) => {
+    if (!isConnected || !address || !walletClient) {
+      alert('Please connect your wallet first')
+      return
+    }
+
+    try {
+      // Fetch data using Lighthouse hash
+      alert(`Accessing data for consent: ${request.consentId}\nThis will download the data if approved.`)
+      // TODO: Implement actual data download from Lighthouse
+    } catch (error) {
+      console.error('Error accessing data:', error)
+      alert('Failed to access data: ' + (error instanceof Error ? error.message : 'Unknown error'))
     }
   }
 
@@ -320,12 +337,22 @@ const ResearcherDashboard: React.FC = () => {
                     <span>{(request.timestamp ? new Date(request.timestamp) : new Date()).toLocaleDateString()}</span>
                   </div>
                   
-                  <button
-                    onClick={() => handleRequestAccess(request)}
-                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 px-4 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 font-medium"
-                  >
-                    Request Access
-                  </button>
+                  {request.status === 'approved' ? (
+                    <button
+                      onClick={() => handleAccessData(request)}
+                      className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-2 px-4 rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-300 font-medium"
+                    >
+                      Access Data
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleRequestAccess(request)}
+                      disabled={request.status === 'pending'}
+                      className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 px-4 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 font-medium disabled:opacity-50"
+                    >
+                      {request.status === 'pending' ? 'Request Pending' : 'Request Access'}
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
