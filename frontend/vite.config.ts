@@ -45,7 +45,11 @@ export default defineConfig({
       'viem',
       'ethers',
       'lucide-react'
-    ]
+    ],
+    exclude: ['@base-org/account'],
+    esbuildOptions: {
+      target: 'esnext'
+    }
   },
   // Environment variables
   envPrefix: 'VITE_'
