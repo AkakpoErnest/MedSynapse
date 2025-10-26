@@ -1,7 +1,7 @@
 // Envio HyperSync Configuration
 export const ENVIO_CONFIG = {
-  // Envio GraphQL endpoint - use Envio hosted service for production
-  endpoint: import.meta.env.VITE_ENVIO_ENDPOINT || 'https://indexer.base.org/v1/graphql',
+  // Envio GraphQL endpoint - use local Envio when running, fallback to hosted
+  endpoint: import.meta.env.VITE_ENVIO_ENDPOINT || 'http://localhost:8080/v1/graphql',
   
   // API Key for authentication (optional for public endpoints)
   apiKey: import.meta.env.VITE_ENVIO_API_KEY || '',
