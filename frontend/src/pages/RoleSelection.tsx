@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAccount } from 'wagmi'
 import { Stethoscope, Microscope, Shield, Activity, Database, Users, AlertCircle } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
@@ -6,12 +7,19 @@ import { useAuth } from '../contexts/AuthContext'
 const RoleSelection: React.FC = () => {
   const { address, isConnected } = useAccount()
   const { setRole } = useAuth()
+  const navigate = useNavigate()
   const [isSelecting, setIsSelecting] = useState(false)
 
   const handleRoleSelect = async (role: 'contributor' | 'researcher') => {
     setIsSelecting(true)
     try {
       setRole(role)
+      // Navigate to the appropriate dashboard
+      if (role === 'contributor') {
+        navigate('/contributor')
+      } else {
+        navigate('/researcher')
+      }
     } catch (error) {
       console.error('Error setting role:', error)
     } finally {
