@@ -186,22 +186,35 @@ export const useAvailableDatasets = () => {
       
       // Enrich datasets with local storage metadata
       const enrichedData = data.map(dataset => {
+        // Try to match by dataHash from Envio
         const localData = allUploadsMap.get(dataset.dataHash)
+        
+        // If not found, try matching by any local storage hash that might match
+        let matchedData = localData
+        if (!matchedData) {
+          // Try to find any matching data hash
+          for (const [hash, upload] of allUploadsMap.entries()) {
+            if (dataset.dataHash.includes(hash.substring(0, 10)) || hash.includes(dataset.dataHash.substring(0, 10))) {
+              matchedData = upload
+              break
+            }
+          }
+        }
         
         console.log('Dataset from Envio:', {
           consentId: dataset.consentId,
           dataHash: dataset.dataHash,
-          foundInLocalStorage: !!localData,
+          foundInLocalStorage: !!matchedData,
           availableKeys: Array.from(allUploadsMap.keys()).slice(0, 3)
         })
         
         return {
           ...dataset,
-          dataType: localData?.dataType || 'unknown',
-          description: localData?.description || 'No description available',
-          fileName: localData?.fileName,
-          fileSize: localData?.fileSize,
-          timestamp: localData?.timestamp || Date.now(),
+          dataType: matchedData?.dataType || 'unknown',
+          description: matchedData?.description || 'No description available',
+          fileName: matchedData?.fileName,
+          fileSize: matchedData?.fileSize,
+          timestamp: matchedData?.timestamp || Date.now(),
           isApproved: false
         }
       })
