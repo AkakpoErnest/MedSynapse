@@ -265,13 +265,13 @@ export const useContributorResearchRequests = (contributorAddress: string) => {
   useEffect(() => {
     if (contributorAddress) {
       fetchRequests()
-      // Refresh every 60 seconds
+      // Refresh every 60 seconds to get approval updates
       const interval = setInterval(fetchRequests, 60000)
       return () => clearInterval(interval)
     }
   }, [contributorAddress, fetchRequests])
 
-  return { requests, loading, error, refetch: fetchRequests }
+  return { requests, loading, error, approvedRequests, refetch: fetchRequests }
 }
 
 // Hook for data access records

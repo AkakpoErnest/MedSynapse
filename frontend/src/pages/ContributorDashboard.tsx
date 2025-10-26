@@ -379,7 +379,7 @@ const ContributorDashboard: React.FC = () => {
             <div className="space-y-4">
               {researchRequests.map((request, index) => {
                 // Check if this request has been approved by checking the approved requests set
-                const isApproved = approvedRequests.has(request.consentId)
+                const isApproved = approvedRequests ? approvedRequests.has(request.consentId) : false
                 const status = isApproved ? 'approved' : 'pending'
                 
                 return (
