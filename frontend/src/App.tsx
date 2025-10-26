@@ -10,6 +10,7 @@ import ContributorDashboard from './pages/ContributorDashboard'
 import ResearcherDashboard from './pages/ResearcherDashboard'
 import DataUpload from './pages/DataUpload'
 import DataAnalysis from './pages/DataAnalysis'
+import DataCoinDashboard from './pages/DataCoinDashboard'
 import AIInsightsDashboard from './components/AIInsightsDashboard'
 import TailwindTest from './components/TailwindTest'
 import { AuthProvider } from './contexts/AuthContext'
@@ -60,6 +61,14 @@ function App() {
                 element={
                   <ProtectedRoute requiredRole="researcher">
                     <DataAnalysis />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/datacoin"
+                element={
+                  <ProtectedRoute requiredRole="contributor">
+                    <DataCoinDashboard />
                   </ProtectedRoute>
                 }
               />
