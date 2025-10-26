@@ -8,15 +8,28 @@ interface EnvioStatusProps {
 }
 
 const EnvioStatus: React.FC<EnvioStatusProps> = ({ className = '', showText = true }) => {
-  // For production, Envio will be deployed and connected
-  // For development, we'll use a simplified status
-  const isConnected = true // Always show as ready for production use
+  const { isConnected, isChecking } = useEnvioConnection()
+
+  if (isChecking) {
+    return (
+      <div className={`flex items-center text-gray-400 ${className}`}>
+        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+        {showText && <span>Checking Envio...</span>}
+      </div>
+    )
+  }
 
   return (
-    <div className={`flex items-center text-green-400 ${className}`}>
-      <Wifi className="w-4 h-4 mr-2" />
+    <div className={`flex items-center ${isConnected ? 'text-green-400' : 'text-orange-400'} ${className}`}>
+      {isConnected ? (
+        <Wifi className="w-4 h-4 mr-2" />
+      ) : (
+        <WifiOff className="w-4 h-4 mr-2" />
+      )}
       {showText && (
-        <span>Envio HyperSync Ready</span>
+        <span>
+          Envio HyperSync {isConnected ? 'Connected' : 'Not Running'}
+        </span>
       )}
     </div>
   )
