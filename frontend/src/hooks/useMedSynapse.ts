@@ -55,9 +55,45 @@ export const useDataUpload = () => {
       // Create consent on blockchain using the user's MetaMask wallet
       console.log('Creating consent on blockchain with hash:', lighthouseResult.hash)
       
-      // For now, skip blockchain interaction until we fix the service
-      // TODO: Implement proper blockchain interaction with ethers.js or viem
-      console.log('Blockchain interaction temporarily disabled - using localStorage fallback')
+      try {
+        if (walletClient) {
+          const MEDSYNAPSE_CONTRACT = '0xeaDEaAFE440283aEaC909CD58ec367735BfE712f' // Sepolia
+          const MEDSYNAPSE_ABI = [
+            {
+              inputs: [
+                { internalType: 'string', name: '_dataHash', type: 'string' },
+                { internalType: 'string', name: '_dataType', type: 'string' },
+                { internalType: 'string', name: '_description', type: 'string' }
+              ],
+              name: 'createConsent',
+              outputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
+              stateMutability: 'nonpayable',
+              type: 'function'
+            }
+          ] as const
+
+          console.log('Calling createConsent on blockchain...')
+          const hash = await walletClient.writeContract({
+            address: MEDSYNAPSE_CONTRACT as `0x${string}`,
+            abi: MEDSYNAPSE_ABI,
+            functionName: 'createConsent',
+            args: [lighthouseResult.hash, dataType, description]
+          })
+          
+          console.log('Transaction submitted:', hash)
+          
+          // Wait for transaction to be mined
+          if (publicClient) {
+            const receipt = await publicClient.waitForTransactionReceipt({ hash })
+            console.log('Transaction confirmed:', receipt)
+          }
+        } else {
+          console.warn('Wallet client not available, skipping blockchain interaction')
+        }
+      } catch (contractError) {
+        console.warn('Blockchain interaction failed:', contractError)
+        // Continue with localStorage fallback
+      }
       
       setUploadProgress(100)
       setUploading(false)
