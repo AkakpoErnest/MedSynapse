@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
-import { useAccount } from 'wagmi'
+import { useAccount, usePublicClient, useWalletClient } from 'wagmi'
 import envioService from '../services/envioService'
 import lighthouseService from '../services/lighthouseService'
-import medSynapseContractService from '../services/medSynapseContractService'
+import { parseEther } from 'viem'
 
 export const useDataUpload = () => {
   const { address, isConnected } = useAccount()
+  const { data: publicClient } = usePublicClient()
+  const { data: walletClient } = useWalletClient()
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
@@ -53,23 +55,9 @@ export const useDataUpload = () => {
       // Create consent on blockchain using the user's MetaMask wallet
       console.log('Creating consent on blockchain with hash:', lighthouseResult.hash)
       
-      try {
-        const result = await medSynapseContractService.createConsent(
-          lighthouseResult.hash,
-          dataType,
-          description
-        )
-        
-        if (!result.success) {
-          console.warn('Failed to create consent on blockchain:', result.error)
-          // Continue with local storage fallback
-        } else {
-          console.log('Consent created on blockchain:', result.txHash)
-        }
-      } catch (contractError) {
-        console.warn('Contract interaction failed:', contractError)
-        // Continue with local storage fallback
-      }
+      // For now, skip blockchain interaction until we fix the service
+      // TODO: Implement proper blockchain interaction with ethers.js or viem
+      console.log('Blockchain interaction temporarily disabled - using localStorage fallback')
       
       setUploadProgress(100)
       setUploading(false)
