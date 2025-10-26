@@ -47,7 +47,7 @@ const ContributorDashboard: React.FC = () => {
         
         console.log('Contributor balance updated:', consentCount, 'for address:', contributorAddress)
         
-        console.log('Data coin data loaded:', { stats, balance })
+        console.log('Data coin data loaded:', { stats, balance: consentCount })
       } catch (error) {
         console.error('Error loading data coin data:', error)
         // Set fallback values
