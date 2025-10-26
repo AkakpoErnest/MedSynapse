@@ -1,12 +1,12 @@
 # yaml-language-server: $schema=./node_modules/envio/evm.schema.json
 name: envio-indexer
 networks:
-- id: 80002
-  start_block: 0
+- id: 11155111
+  start_block: 6000000
   contracts:
   - name: MedSynapseConsent
     address:
-    - 0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44
+    - 0xeaDEaAFE440283aEaC909CD58ec367735BfE712f
     handler: src/EventHandlers.ts
     events:
     - event: ConsentCreated(bytes32 indexed consentId, address indexed contributor, string dataHash)
