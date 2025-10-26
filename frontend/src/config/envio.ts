@@ -13,6 +13,12 @@ export const ENVIO_CONFIG = {
       name: 'Ethereum Mainnet',
       rpcUrl: 'https://eth-mainnet.g.alchemy.com/v2/demo'
     },
+    sepolia: {
+      chainId: 11155111,
+      name: 'Ethereum Sepolia Testnet',
+      rpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com'
+    },
+    // Deprecated networks (kept for reference)
     polygon: {
       chainId: 137,
       name: 'Polygon',

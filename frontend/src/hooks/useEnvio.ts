@@ -250,6 +250,6 @@ export const useEnvioConfig = () => {
   return {
     networkInfo,
     contractAddresses,
-    currentNetwork: networkInfo.amoy, // Default to Amoy testnet
+    currentNetwork: networkInfo.sepolia, // Default to Sepolia testnet
   }
 }

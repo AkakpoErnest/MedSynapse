@@ -3,11 +3,6 @@ type MedSynapseConsent_ConsentCreated {
   consentId: String!
   contributor: String!
   dataHash: String!
-  dataType: String
-  description: String
-  timestamp: BigInt
-  isActive: Boolean
-  accessCount: BigInt
 }
 
 type MedSynapseConsent_ConsentRevoked {
