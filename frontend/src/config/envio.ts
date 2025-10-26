@@ -25,10 +25,12 @@ export const ENVIO_CONFIG = {
     }
   },
   
-  // MedSynapse contract addresses
+  // MedSynapse contract addresses (Sepolia)
   contracts: {
-    medSynapseConsent: typeof process !== 'undefined' && process.env.VITE_MEDSYNAPSE_CONTRACT || '0xeaDEaAFE440283aEaC909CD58ec367735BfE712f', // Sepolia deployment
-    dataValidator: typeof process !== 'undefined' && process.env.VITE_DATA_VALIDATOR_CONTRACT || '0x...'
+    medSynapseConsent: typeof process !== 'undefined' && process.env.VITE_MEDSYNAPSE_CONTRACT || '0xeaDEaAFE440283aEaC909CD58ec367735BfE712f',
+    dataValidator: typeof process !== 'undefined' && process.env.VITE_DATA_VALIDATOR_CONTRACT || '0x...',
+    usdc: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238', // Sepolia USDC
+    weth: '0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9'  // Sepolia WETH
   },
   
   // Query configurations
