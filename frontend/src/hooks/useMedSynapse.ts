@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAccount } from 'wagmi'
 import envioService from '../services/envioService'
 import lighthouseService from '../services/lighthouseService'
-import dataCoinService from '../services/dataCoinService'
+import medSynapseContractService from '../services/medSynapseContractService'
 
 export const useDataUpload = () => {
   const { address, isConnected } = useAccount()
@@ -50,31 +50,25 @@ export const useDataUpload = () => {
       localStorage.setItem(`medsynapse_uploads_${address}`, JSON.stringify(uploads))
       console.log('Upload data saved locally:', uploadData)
       
-      // Create consent on blockchain using the actual contract
+      // Create consent on blockchain using the user's MetaMask wallet
       console.log('Creating consent on blockchain with hash:', lighthouseResult.hash)
       
-      if (dataCoinService.isConfigured()) {
-        try {
-          // Create a real consent record on the blockchain
-          const contribution = {
-            contributor: address!,
-            dataHash: lighthouseResult.hash,
-            dataType: dataType,
-            timestamp: Date.now(),
-            rewardAmount: '1', // 1 consent point for each upload
-            validated: true
-          }
-          
-          const txHash = await dataCoinService.rewardContributor(contribution)
-          console.log('Consent created on blockchain:', txHash)
-        } catch (contractError) {
-          console.warn('Contract interaction failed, using simulation:', contractError)
-          // Fallback to simulation if contract fails
-          await new Promise(resolve => setTimeout(resolve, 1000))
+      try {
+        const result = await medSynapseContractService.createConsent(
+          lighthouseResult.hash,
+          dataType,
+          description
+        )
+        
+        if (!result.success) {
+          console.warn('Failed to create consent on blockchain:', result.error)
+          // Continue with local storage fallback
+        } else {
+          console.log('Consent created on blockchain:', result.txHash)
         }
-      } else {
-        // Fallback to simulation if contract not configured
-        await new Promise(resolve => setTimeout(resolve, 1000))
+      } catch (contractError) {
+        console.warn('Contract interaction failed:', contractError)
+        // Continue with local storage fallback
       }
       
       setUploadProgress(100)
