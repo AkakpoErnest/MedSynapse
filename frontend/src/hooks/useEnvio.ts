@@ -27,6 +27,26 @@ export const useContributorConsents = () => {
       const localUploads = localStorage.getItem(`medsynapse_uploads_${address}`)
       const uploadsMap = localUploads ? JSON.parse(localUploads) : []
       
+      console.log('Local uploads from storage:', uploadsMap)
+      
+      // If no Envio data, use only local storage
+      if (data.length === 0 && uploadsMap.length > 0) {
+        const mockConsents = uploadsMap.map((upload: any, index: number) => ({
+          id: `local_${index}`,
+          consentId: upload.dataHash,
+          contributor: address,
+          dataHash: upload.dataHash,
+          dataType: upload.dataType,
+          description: upload.description,
+          timestamp: upload.timestamp,
+          isActive: true,
+          accessCount: 0
+        }))
+        console.log('Using local uploads as consents:', mockConsents)
+        setConsents(mockConsents)
+        return
+      }
+      
       // Create a map of dataHash -> upload data
       const uploadsDataMap = new Map()
       uploadsMap.forEach((upload: any) => {
