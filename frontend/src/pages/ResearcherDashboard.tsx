@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, Filter, BarChart3, Eye, Clock, Users, TrendingUp, Wifi, WifiOff } from 'lucide-react'
+import { useAccount, usePublicClient, useWalletClient } from 'wagmi'
 import { useResearchRequests, useAnalytics, useEnvioConnection } from '../hooks/useEnvio'
 
 const ResearcherDashboard: React.FC = () => {
@@ -9,6 +10,12 @@ const ResearcherDashboard: React.FC = () => {
   const [sortBy, setSortBy] = useState('date')
   const [selectedDataset, setSelectedDataset] = useState<any>(null)
   const [requestHistory, setRequestHistory] = useState<any[]>([])
+  const [requestingAccess, setRequestingAccess] = useState(false)
+  
+  // Blockchain hooks
+  const { address, isConnected } = useAccount()
+  const { data: publicClient } = usePublicClient()
+  const { data: walletClient } = useWalletClient()
   
   // Use Envio hooks for real-time data
   const { requests, loading: requestsLoading, error: requestsError } = useResearchRequests()
@@ -35,17 +42,65 @@ const ResearcherDashboard: React.FC = () => {
     }
   })
 
-  const handleRequestAccess = (request: any) => {
-    const newRequest = {
-      id: Date.now().toString(),
-      datasetId: request.datasetId,
-      datasetTitle: request.consentRecord?.description || 'Unknown Dataset',
-      requestedAt: new Date().toISOString(),
-      status: 'pending',
-      price: request.price
+  const handleRequestAccess = async (request: any) => {
+    if (!isConnected || !address || !walletClient) {
+      alert('Please connect your wallet first')
+      return
     }
-    setRequestHistory(prev => [newRequest, ...prev])
-    setSelectedDataset(null)
+
+    setRequestingAccess(true)
+    try {
+      const MEDSYNAPSE_CONTRACT = '0xeaDEaAFE440283aEaC909CD58ec367735BfE712f' // Sepolia
+      const MEDSYNAPSE_ABI = [
+        {
+          inputs: [
+            { internalType: 'bytes32', name: '_consentId', type: 'bytes32' },
+            { internalType: 'string', name: '_purpose', type: 'string' }
+          ],
+          name: 'requestDataAccess',
+          outputs: [],
+          stateMutability: 'nonpayable',
+          type: 'function'
+        }
+      ] as const
+
+      const purpose = `Research on ${request.consentRecord?.description || 'health data'}`
+      
+      console.log('Requesting data access for consent:', request.consentId)
+      const hash = await walletClient.writeContract({
+        address: MEDSYNAPSE_CONTRACT as `0x${string}`,
+        abi: MEDSYNAPSE_ABI,
+        functionName: 'requestDataAccess',
+        args: [request.consentId, purpose]
+      })
+      
+      console.log('Research request submitted:', hash)
+      
+      // Wait for transaction
+      if (publicClient) {
+        const receipt = await publicClient.waitForTransactionReceipt({ hash })
+        console.log('Research request confirmed:', receipt)
+      }
+
+      // Update local state
+      const newRequest = {
+        id: Date.now().toString(),
+        consentId: request.consentId,
+        researcher: address,
+        purpose: purpose,
+        timestamp: Date.now(),
+        status: 'pending'
+      }
+      setRequestHistory(prev => [newRequest, ...prev])
+      
+      alert('Research request submitted successfully! Waiting for contributor approval.')
+    } catch (error) {
+      console.error('Error requesting access:', error)
+      alert('Failed to submit research request: ' + (error instanceof Error ? error.message : 'Unknown error'))
+    } finally {
+      setRequestingAccess(false)
+      setSelectedDataset(null)
+    }
   }
 
   const getDataTypeIcon = (type: string) => {
