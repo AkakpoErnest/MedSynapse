@@ -13,7 +13,7 @@ class LighthouseService {
   private apiKey: string
 
   constructor() {
-    this.apiKey = typeof process !== 'undefined' && process.env.VITE_LIGHTHOUSE_API_KEY || ''
+    this.apiKey = import.meta.env.VITE_LIGHTHOUSE_API_KEY || ''
   }
 
   /**
