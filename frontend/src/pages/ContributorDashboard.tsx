@@ -112,12 +112,16 @@ const ContributorDashboard: React.FC = () => {
         }
       ] as const
 
+      // Convert string consentId to bytes32
+      const consentIdBytes = consentId as `0x${string}`
+      
       console.log('Approving research request for consent:', consentId, 'index:', requestIndex)
       const hash = await walletClient.writeContract({
         address: MEDSYNAPSE_CONTRACT as `0x${string}`,
         abi: MEDSYNAPSE_ABI,
         functionName: 'approveResearchRequest',
-        args: [consentId, requestIndex]
+        args: [consentIdBytes, BigInt(requestIndex)],
+        gas: 500000n // Set a reasonable gas limit
       })
       
       console.log('Approval transaction submitted:', hash)
