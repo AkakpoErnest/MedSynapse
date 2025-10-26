@@ -229,9 +229,9 @@ const ContributorDashboard: React.FC = () => {
                         <span className="text-2xl mr-3">{getDataTypeIcon(item.dataType || 'unknown')}</span>
                         <div>
                           <div className="text-sm font-medium text-white capitalize">
-                            {item.dataType.replace('_', ' ')}
+                            {(item.dataType || 'unknown').replace(/_/g, ' ')}
                           </div>
-                          <div className="text-sm text-gray-400">{item.description}</div>
+                          <div className="text-sm text-gray-400">{item.description || 'No description'}</div>
                         </div>
                       </div>
                     </td>

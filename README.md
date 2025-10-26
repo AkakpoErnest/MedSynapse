@@ -52,6 +52,9 @@ Created a dedicated AI insights dashboard that shows predictive analytics, data 
 ### Medical Theme Redesign
 Changed the whole color scheme to blue and white with medical icons (stethoscope, etc.) instead of generic cryptocurrency colors. Made everything look more professional and healthcare-focused.
 
+### Medical-Themed Animations
+Added immersive background animations to the homepage including ECG heartbeat waveforms that flow across the screen, pulsing heartbeat ripples emanating from the center, connected medical data nodes representing health data networks, and a heartbeat monitor line at the top. The heart icon on the contributor button now pulses with a heartbeat animation to reinforce the healthcare theme.
+
 ### Responsive Design
 Made the entire interface work properly on both mobile and desktop. The navigation, dashboards, and upload forms all adapt to different screen sizes.
 
@@ -416,7 +419,7 @@ TUI_OFF=true pnpm dev # Run indexer
 
 ## What's Working Right Now
 
-✅ **Smart Contracts** - Deployed and functional on Amoy  
+✅ **Smart Contracts** - Deployed and functional on Sepolia testnet  
 ✅ **Wallet Connection** - MetaMask integration works  
 ✅ **Role-Based Access** - Contributors vs Researchers have different views  
 ✅ **Data Upload** - File upload with Lighthouse encryption  
@@ -424,6 +427,7 @@ TUI_OFF=true pnpm dev # Run indexer
 ✅ **Token Rewards** - Automatic rewards for contributions  
 ✅ **Real-Time Updates** - Envio indexing shows live blockchain data  
 ✅ **AI Dashboard** - Analytics and insights  
+✅ **Medical Animations** - ECG heartbeat waveforms and pulsing effects  
 ✅ **Responsive Design** - Works on mobile and desktop  
 
 ## What I'm Still Working On
@@ -456,6 +460,4 @@ MIT License - use this however you want!
 <div align="center">
   <strong>Making health data accessible, secure, and patient-controlled ❤️</strong>
 </div>
-# Force redeploy
-# Removed .vercel cache
 

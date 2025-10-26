@@ -21,15 +21,70 @@ export const useContributorConsents = () => {
     try {
       console.log('Fetching consents for address:', address)
       const data = await envioService.getContributorConsents(address)
-      console.log('Fetched consents:', data)
-      setConsents(data)
+      console.log('Fetched consents from Envio:', data)
+      
+      // Merge with localStorage data to add dataType and description
+      const localUploads = localStorage.getItem(`medsynapse_uploads_${address}`)
+      const uploadsMap = localUploads ? JSON.parse(localUploads) : []
+      
+      // Create a map of dataHash -> upload data
+      const uploadsDataMap = new Map()
+      uploadsMap.forEach((upload: any) => {
+        uploadsDataMap.set(upload.dataHash, upload)
+      })
+      
+      // Enrich consents with local storage data
+      const enrichedConsents = data.map(consent => {
+        const localData = uploadsDataMap.get(consent.dataHash)
+        if (localData) {
+          return {
+            ...consent,
+            dataType: localData.dataType || 'unknown',
+            description: localData.description || 'No description',
+            timestamp: localData.timestamp || Date.now(),
+            isActive: true,
+            accessCount: 0
+          }
+        }
+        return {
+          ...consent,
+          dataType: 'unknown',
+          description: 'No description available',
+          timestamp: Date.now(),
+          isActive: true,
+          accessCount: 0
+        }
+      })
+      
+      console.log('Enriched consents:', enrichedConsents)
+      setConsents(enrichedConsents)
     } catch (err) {
       console.error('Error fetching consents:', err)
-      setError(err instanceof Error ? err.message : 'Failed to fetch consents')
       
-      // Fallback: Check if it's a connection error and provide helpful message
-      if (err instanceof Error && err.message.includes('fetch')) {
-        setError('Cannot connect to Envio indexer. Please ensure the local indexer is running.')
+      // Fallback to localStorage only
+      const localUploads = localStorage.getItem(`medsynapse_uploads_${address}`)
+      if (localUploads) {
+        try {
+          const uploads = JSON.parse(localUploads)
+          const mockConsents = uploads.map((upload: any, index: number) => ({
+            id: `local_${index}`,
+            consentId: upload.dataHash,
+            contributor: address,
+            dataHash: upload.dataHash,
+            dataType: upload.dataType,
+            description: upload.description,
+            timestamp: upload.timestamp,
+            isActive: true,
+            accessCount: 0
+          }))
+          setConsents(mockConsents)
+          setError(null)
+        } catch (parseError) {
+          console.error('Error parsing local uploads:', parseError)
+          setError('Failed to fetch consents and local data.')
+        }
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to fetch consents')
       }
     } finally {
       setLoading(false)
