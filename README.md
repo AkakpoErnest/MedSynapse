@@ -33,6 +33,15 @@ MedSynapse fixes this by giving patients complete control over their health data
 
 Everything runs on blockchain smart contracts, so there's complete transparency and auditing. No hidden data sharing. No sketchy permission changes.
 
+## Technical Integration Details
+
+Learn how each protocol is integrated into MedSynapse:
+
+- **[Hardhat Integration](HARDHAT_INTEGRATION.md)** - Smart contract development and deployment
+- **[Lighthouse Integration](LIGHTHOUSE_INTEGRATION.md)** - Encrypted IPFS storage for health data
+- **[Envio Integration](ENVIO_INTEGRATION.md)** - Real-time blockchain indexing and GraphQL API
+- **[AI Integration](AI_INTEGRATION.md)** - Machine learning and predictive analytics
+
 ## Recent Updates I Just Made
 
 I've been working on a bunch of improvements lately:
