@@ -68,7 +68,7 @@ class LighthouseService {
   }
 
   /**
-   * Download and decrypt a file from Lighthouse
+   * Download a file from Lighthouse/IPFS
    */
   async downloadFile(hash: string, apiKey?: string): Promise<Blob> {
     const key = apiKey || this.apiKey
@@ -78,10 +78,32 @@ class LighthouseService {
     }
 
     try {
-      // Note: Implement Lighthouse download if needed
-      console.log('Downloading file:', hash)
-      // Return an empty blob as a placeholder
-      return new Blob([], { type: 'application/octet-stream' })
+      console.log('Downloading file from IPFS:', hash)
+      
+      // Try multiple IPFS gateways
+      const gateways = [
+        `https://gateway.lighthouse.storage/ipfs/${hash}`,
+        `https://ipfs.io/ipfs/${hash}`,
+        `https://gateway.pinata.cloud/ipfs/${hash}`
+      ]
+
+      for (const gateway of gateways) {
+        try {
+          console.log('Trying gateway:', gateway)
+          const response = await fetch(gateway)
+          
+          if (response.ok) {
+            const blob = await response.blob()
+            console.log('Successfully downloaded file:', blob.size, 'bytes')
+            return blob
+          }
+        } catch (err) {
+          console.log('Gateway failed:', gateway, err)
+          continue
+        }
+      }
+
+      throw new Error('All IPFS gateways failed to retrieve the file')
     } catch (error) {
       console.error('Lighthouse download error:', error)
       throw new Error(`Failed to download file: ${error instanceof Error ? error.message : 'Unknown error'}`)

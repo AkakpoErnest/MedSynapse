@@ -140,34 +140,35 @@ const ResearcherDashboard: React.FC = () => {
 
       // Check if hash is a valid IPFS CID format
       if (!dataHash.startsWith('Qm') && dataHash.length < 10) {
-        alert('This appears to be a development placeholder hash. To access real data, please:\n1. Upload actual files with proper Lighthouse integration\n2. Wait for real IPFS hashes to be generated')
+        alert('This appears to be a development placeholder hash.\n\nTo access real data:\n1. Upload new files which will create valid IPFS hashes\n2. The old data uses placeholder hashes from development')
         return
       }
 
-      // Try multiple IPFS gateways for reliability
-      const gateways = [
-        `https://gateway.lighthouse.storage/ipfs/${dataHash}`,
-        `https://ipfs.io/ipfs/${dataHash}`,
-        `https://gateway.pinata.cloud/ipfs/${dataHash}`,
-        `https://dweb.link/ipfs/${dataHash}`
-      ]
-
-      console.log('Trying IPFS gateways:', gateways)
-
-      // Show data access modal with preview/download options
-      alert(`Data Access Granted!\n\nHash: ${dataHash}\n\nThis is a demo. For production:\n1. Implement proper Lighthouse file download\n2. Add file type detection (PDF, CSV, etc.)\n3. Build data visualization interface`)
-      
-      // Try to open the file in a new tab
-      for (const gateway of gateways) {
-        try {
-          // Test if the gateway works
-          console.log('Testing gateway:', gateway)
-          // For demo, open the first gateway
-          break
-        } catch (err) {
-          console.log('Gateway failed:', gateway)
-          continue
-        }
+      // Try to download from Lighthouse
+      try {
+        // Import lighthouse service
+        const { default: lighthouseService } = await import('../services/lighthouseService')
+        
+        console.log('Downloading file from IPFS:', dataHash)
+        const blob = await lighthouseService.downloadFile(dataHash)
+        
+        // Create download link
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `medsynapse_data_${dataHash.substring(0, 8)}`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+        
+        alert('Data download started!')
+      } catch (downloadError) {
+        console.error('Download failed:', downloadError)
+        // Fallback: open in new tab
+        const ipfsUrl = `https://gateway.lighthouse.storage/ipfs/${dataHash}`
+        window.open(ipfsUrl, '_blank')
+        alert(`Opening data in browser. If the file doesn't load, it may be a placeholder hash from development.`)
       }
       
     } catch (error) {
