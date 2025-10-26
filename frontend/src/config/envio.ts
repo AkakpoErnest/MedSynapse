@@ -27,7 +27,7 @@ export const ENVIO_CONFIG = {
   
   // MedSynapse contract addresses
   contracts: {
-    medSynapseConsent: typeof process !== 'undefined' && process.env.VITE_MEDSYNAPSE_CONTRACT || '0x43CdcbE93FBd8e9E6fAc33bFD6c1a48B22742e44',
+    medSynapseConsent: typeof process !== 'undefined' && process.env.VITE_MEDSYNAPSE_CONTRACT || '0xeaDEaAFE440283aEaC909CD58ec367735BfE712f', // Sepolia deployment
     dataValidator: typeof process !== 'undefined' && process.env.VITE_DATA_VALIDATOR_CONTRACT || '0x...'
   },
   

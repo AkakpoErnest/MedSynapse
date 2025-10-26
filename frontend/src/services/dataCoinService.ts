@@ -36,9 +36,9 @@ class DataCoinService {
 
   constructor() {
     this.apiKey = typeof process !== 'undefined' && process.env.VITE_LIGHTHOUSE_API_KEY || ''
-    this.contractAddress = typeof process !== 'undefined' && process.env.VITE_MEDSYNAPSE_CONTRACT || ''
-    // Use Polygon Amoy testnet
-    this.provider = new ethers.JsonRpcProvider('https://rpc-amoy.polygon.technology')
+    this.contractAddress = typeof process !== 'undefined' && process.env.VITE_MEDSYNAPSE_CONTRACT || '0xeaDEaAFE440283aEaC909CD58ec367735BfE712f'
+    // Use Ethereum Sepolia testnet (migrated from Amoy for 1MB.io support)
+    this.provider = new ethers.JsonRpcProvider('https://ethereum-sepolia-rpc.publicnode.com')
     
     // Only create wallet if private key is provided and valid
     const privateKey = typeof process !== 'undefined' && process.env.VITE_PRIVATE_KEY
