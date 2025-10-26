@@ -19,11 +19,6 @@
   "env": {
     "NODE_ENV": "production"
   },
-  "functions": {
-    "frontend/dist/**": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "headers": [
     {
       "source": "/(.*)",
