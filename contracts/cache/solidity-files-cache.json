@@ -37,8 +37,8 @@
       ]
     },
     "/Users/pablo/Downloads/MedSynapse/contracts/contracts/MedSynapseConsent.sol": {
-      "lastModificationDate": 1761423401433,
-      "contentHash": "1fae0c260f89bab306effaa8959f157d",
+      "lastModificationDate": 1761482664586,
+      "contentHash": "c50dbb877ebe505cf2c33ea4bf25b91b",
       "sourceName": "contracts/MedSynapseConsent.sol",
       "solcConfig": {
         "version": "0.8.19",

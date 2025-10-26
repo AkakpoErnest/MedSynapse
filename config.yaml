@@ -6,7 +6,7 @@ networks:
   contracts:
   - name: MedSynapseConsent
     address:
-    - 0xeaDEaAFE440283aEaC909CD58ec367735BfE712f
+    - 0x05133bC59e34413F683Cc336A26f215b3261a51F
     handler: src/EventHandlers.ts
     events:
     - event: ConsentCreated(bytes32 indexed consentId, address indexed contributor, string dataHash, string dataType, string description)

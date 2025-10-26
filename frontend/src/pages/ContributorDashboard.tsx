@@ -103,7 +103,7 @@ const ContributorDashboard: React.FC = () => {
     }
 
     try {
-      const MEDSYNAPSE_CONTRACT = '0xeaDEaAFE440283aEaC909CD58ec367735BfE712f' // Sepolia
+      const MEDSYNAPSE_CONTRACT = '0x05133bC59e34413F683Cc336A26f215b3261a51F' // Sepolia
       const MEDSYNAPSE_ABI = [
         {
           inputs: [
