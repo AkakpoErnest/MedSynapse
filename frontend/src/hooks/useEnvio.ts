@@ -203,6 +203,50 @@ export const useResearchRequests = () => {
   return { requests, loading, error, refetch: fetchRequests }
 }
 
+// Hook for research requests for a specific contributor
+export const useContributorResearchRequests = (contributorAddress: string) => {
+  const [requests, setRequests] = useState<ResearchRequest[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchRequests = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    
+    try {
+      // Fetch all research requests
+      const allRequests = await envioService.getResearchRequests()
+      console.log('All research requests:', allRequests)
+      
+      // Filter requests for consents owned by this contributor
+      // We need to match request consentId with contributor's consents
+      const contributorConsents = await envioService.getContributorConsents(contributorAddress)
+      const consentIds = new Set(contributorConsents.map(c => c.consentId))
+      
+      const filteredRequests = allRequests.filter(req => consentIds.has(req.consentId))
+      console.log('Filtered requests for contributor:', filteredRequests)
+      
+      setRequests(filteredRequests)
+    } catch (err) {
+      console.error('Error fetching contributor research requests:', err)
+      setError(err instanceof Error ? err.message : 'Failed to fetch research requests')
+    } finally {
+      setLoading(false)
+    }
+  }, [contributorAddress])
+
+  useEffect(() => {
+    if (contributorAddress) {
+      fetchRequests()
+      // Refresh every 10 seconds
+      const interval = setInterval(fetchRequests, 10000)
+      return () => clearInterval(interval)
+    }
+  }, [contributorAddress, fetchRequests])
+
+  return { requests, loading, error, refetch: fetchRequests }
+}
+
 // Hook for data access records
 export const useDataAccessRecords = (consentId: string) => {
   const [records, setRecords] = useState<DataAccessRecord[]>([])

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Upload, FileText, Shield, Eye, MoreVertical, Trash2, Eye as ViewIcon, Wifi, WifiOff, Coins, TrendingUp, Users, Award } from 'lucide-react'
-import { useContributorConsents, useEnvioConnection } from '../hooks/useEnvio'
+import { Upload, FileText, Shield, Eye, MoreVertical, Trash2, Eye as ViewIcon, Wifi, WifiOff, Coins, TrendingUp, Users, Award, CheckCircle, XCircle, User } from 'lucide-react'
+import { useAccount, usePublicClient, useWalletClient } from 'wagmi'
+import { useContributorConsents, useEnvioConnection, useContributorResearchRequests } from '../hooks/useEnvio'
 import { formatDate, getDataTypeIcon, getStatusColor } from '../utils/helpers'
-import ConsentDetails from '../components/ConsentDetails'
+// ConsentDetails component removed, using inline modal instead
 import dataCoinService from '../services/dataCoinService'
 
 const ContributorDashboard: React.FC = () => {
@@ -13,8 +14,12 @@ const ContributorDashboard: React.FC = () => {
   const [dataCoinStats, setDataCoinStats] = useState<any>(null)
   const [contributorBalance, setContributorBalance] = useState('0')
   const [dataCoinLoading, setDataCoinLoading] = useState(true)
+  const { address, isConnected } = useAccount()
+  const { data: publicClient } = usePublicClient()
+  const { data: walletClient } = useWalletClient()
   const { consents, loading, error, refetch: refetchConsents } = useContributorConsents()
   const { isConnected: envioConnected, isChecking } = useEnvioConnection()
+  const { requests: researchRequests, loading: requestsLoading } = useContributorResearchRequests(address || '')
 
   // Load data coin information
   useEffect(() => {
@@ -81,9 +86,59 @@ const ContributorDashboard: React.FC = () => {
   }
 
   const handleViewDetails = (consentId: string) => {
-    const consent = consents.find(c => c.id === consentId)
+    const consent = consents.find(c => c.consentId === consentId)
     setSelectedConsent(consent)
     setShowActions(null)
+  }
+
+  const handleApproveRequest = async (consentId: string, requestIndex: number) => {
+    if (!isConnected || !address || !walletClient) {
+      alert('Please connect your wallet first')
+      return
+    }
+
+    try {
+      const MEDSYNAPSE_CONTRACT = '0xeaDEaAFE440283aEaC909CD58ec367735BfE712f' // Sepolia
+      const MEDSYNAPSE_ABI = [
+        {
+          inputs: [
+            { internalType: 'bytes32', name: '_consentId', type: 'bytes32' },
+            { internalType: 'uint256', name: '_requestIndex', type: 'uint256' }
+          ],
+          name: 'approveResearchRequest',
+          outputs: [],
+          stateMutability: 'nonpayable',
+          type: 'function'
+        }
+      ] as const
+
+      console.log('Approving research request for consent:', consentId, 'index:', requestIndex)
+      const hash = await walletClient.writeContract({
+        address: MEDSYNAPSE_CONTRACT as `0x${string}`,
+        abi: MEDSYNAPSE_ABI,
+        functionName: 'approveResearchRequest',
+        args: [consentId, requestIndex]
+      })
+      
+      console.log('Approval transaction submitted:', hash)
+      
+      // Wait for transaction
+      if (publicClient) {
+        const receipt = await publicClient.waitForTransactionReceipt({ hash })
+        console.log('Approval confirmed:', receipt)
+        alert('Research request approved successfully!')
+      }
+      
+      // Refresh data
+      refetchConsents()
+    } catch (error) {
+      console.error('Error approving request:', error)
+      alert('Failed to approve request: ' + (error instanceof Error ? error.message : 'Unknown error'))
+    }
+  }
+
+  const handleDenyRequest = async (consentId: string, requestIndex: number) => {
+    alert('Request denied. Note: Revoking functionality will be added in the next update.')
   }
 
   return (
@@ -379,13 +434,131 @@ const ContributorDashboard: React.FC = () => {
           </div>
         </div>
       </div>
-      
+
+      {/* Research Requests Section */}
+      <div className="bg-black/50 backdrop-blur-sm border border-blue-500/20 rounded-lg hover:border-blue-400/40 transition-all duration-300">
+        <div className="px-6 py-4 border-b border-blue-500/20">
+          <h2 className="text-lg font-semibold text-white">Research Requests</h2>
+          <p className="text-sm text-gray-400">Review and manage access requests from researchers</p>
+        </div>
+        <div className="p-6">
+          {requestsLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="flex items-center text-gray-400">
+                <div className="w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin mr-3"></div>
+                Loading research requests...
+              </div>
+            </div>
+          ) : researchRequests.length === 0 ? (
+            <div className="text-center py-12">
+              <Eye className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+              <p className="text-gray-400">No research requests yet</p>
+              <p className="text-sm text-gray-500 mt-2">Researchers can request access to your datasets</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {researchRequests.map((request, index) => (
+                <div key={request.id} className="bg-black/30 border border-blue-500/20 rounded-lg p-4 hover:border-blue-400/40 transition-all">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center mb-2">
+                        <User className="w-5 h-5 text-blue-400 mr-2" />
+                        <span className="text-sm font-medium text-white">Request #{index + 1}</span>
+                        <span className="ml-3 px-2 py-1 text-xs font-semibold rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
+                          Pending
+                        </span>
+                      </div>
+                      <p className="text-gray-300 text-sm mb-2">{request.purpose}</p>
+                      <p className="text-xs text-gray-500">
+                        Researcher: {request.researcher}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Consent ID: {request.consentId}
+                      </p>
+                    </div>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleApproveRequest(request.consentId, index)}
+                        className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg flex items-center transition-colors"
+                        title="Approve this research request"
+                      >
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => handleDenyRequest(request.consentId, index)}
+                        className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg flex items-center transition-colors"
+                        title="Deny this research request"
+                      >
+                        <XCircle className="w-4 h-4 mr-2" />
+                        Deny
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Consent Details Modal */}
       {selectedConsent && (
-        <ConsentDetails
-          consent={selectedConsent}
-          onClose={() => setSelectedConsent(null)}
-        />
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setSelectedConsent(null)}>
+          <div className="bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-6 border-b border-gray-700">
+              <h2 className="text-xl font-semibold text-white">Consent Details</h2>
+              <button
+                onClick={() => setSelectedConsent(null)}
+                className="text-gray-400 hover:text-white"
+              >
+                <XCircle className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              <div className="flex items-center">
+                <Shield className="w-5 h-5 text-blue-400 mr-3" />
+                <div>
+                  <p className="text-sm font-medium text-gray-400">Data Type</p>
+                  <p className="text-sm text-white capitalize">{(selectedConsent.dataType || 'unknown').replace('_', ' ')}</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center">
+                <FileText className="w-5 h-5 text-green-400 mr-3" />
+                <div>
+                  <p className="text-sm font-medium text-gray-400">Description</p>
+                  <p className="text-sm text-white">{selectedConsent.description || 'No description'}</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center">
+                <Eye className="w-5 h-5 text-purple-400 mr-3" />
+                <div>
+                  <p className="text-sm font-medium text-gray-400">Access Count</p>
+                  <p className="text-sm text-white">{selectedConsent.accessCount || 0}</p>
+                </div>
+              </div>
+              
+              <div>
+                <p className="text-sm font-medium text-gray-400 mb-2">Data Hash</p>
+                <p className="text-xs text-gray-500 font-mono bg-gray-900 p-2 rounded break-all">
+                  {selectedConsent.dataHash}
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex justify-end p-6 border-t border-gray-700">
+              <button
+                onClick={() => setSelectedConsent(null)}
+                className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
