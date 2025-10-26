@@ -224,6 +224,7 @@ export const useContributorResearchRequests = (contributorAddress: string) => {
   const [requests, setRequests] = useState<ResearchRequest[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [approvedRequests, setApprovedRequests] = useState<Set<string>>(new Set())
 
   const fetchRequests = useCallback(async () => {
     setLoading(true)
@@ -241,6 +242,16 @@ export const useContributorResearchRequests = (contributorAddress: string) => {
       
       const filteredRequests = allRequests.filter(req => consentIds.has(req.consentId))
       console.log('Filtered requests for contributor:', filteredRequests)
+      
+      // Also fetch approved requests to mark status
+      try {
+        // Get all approvals for this contributor's consents
+        const allApprovals = await envioService.getResearchApprovals(contributorAddress)
+        const approvedConsentIds = new Set(allApprovals.map(a => a.consentId))
+        setApprovedRequests(approvedConsentIds)
+      } catch (err) {
+        console.error('Error fetching approvals:', err)
+      }
       
       setRequests(filteredRequests)
     } catch (err) {

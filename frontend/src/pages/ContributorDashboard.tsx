@@ -19,7 +19,7 @@ const ContributorDashboard: React.FC = () => {
   const { data: walletClient } = useWalletClient()
   const { consents, loading, error, refetch: refetchConsents } = useContributorConsents()
   const { isConnected: envioConnected, isChecking } = useEnvioConnection()
-  const { requests: researchRequests, loading: requestsLoading } = useContributorResearchRequests(address || '')
+  const { requests: researchRequests, loading: requestsLoading, approvedRequests } = useContributorResearchRequests(address || '')
 
   // Load data coin information
   useEffect(() => {
@@ -378,8 +378,8 @@ const ContributorDashboard: React.FC = () => {
           ) : (
             <div className="space-y-4">
               {researchRequests.map((request, index) => {
-                // Check if this request has been approved by querying Envio
-                const isApproved = false // TODO: Query approval status from Envio
+                // Check if this request has been approved by checking the approved requests set
+                const isApproved = approvedRequests.has(request.consentId)
                 const status = isApproved ? 'approved' : 'pending'
                 
                 return (
