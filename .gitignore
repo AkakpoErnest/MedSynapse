@@ -38,3 +38,5 @@ build
 *.jpeg
 *.jpg
 *.png
+frontend/node_modules/
+generated/
