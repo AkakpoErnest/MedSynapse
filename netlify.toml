@@ -5,6 +5,8 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  # Note: Add VITE_LIGHTHOUSE_API_KEY in Netlify Dashboard
+  # Site settings → Build & deploy → Environment variables
 
 [[redirects]]
   from = "/*"
