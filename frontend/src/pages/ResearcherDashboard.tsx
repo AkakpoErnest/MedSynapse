@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, Filter, BarChart3, Eye, Clock, Users, TrendingUp, Wifi, WifiOff } from 'lucide-react'
 import { useAccount, usePublicClient, useWalletClient } from 'wagmi'
+import { sepolia } from 'wagmi/chains'
 import { useAvailableDatasets, useResearchRequests, useAnalytics, useEnvioConnection } from '../hooks/useEnvio'
 
 const ResearcherDashboard: React.FC = () => {
@@ -14,8 +15,8 @@ const ResearcherDashboard: React.FC = () => {
   
   // Blockchain hooks
   const { address, isConnected } = useAccount()
-  const { data: publicClient } = usePublicClient()
-  const { data: walletClient } = useWalletClient()
+  const publicClient = usePublicClient()
+  const walletClient = useWalletClient()
   
   // Use Envio hooks for real-time data
   const { datasets, loading: datasetsLoading, error: datasetsError } = useAvailableDatasets()
@@ -87,13 +88,14 @@ const ResearcherDashboard: React.FC = () => {
       const purpose = `Research on ${request.consentRecord?.description || 'health data'}`
       
       console.log('Requesting data access for consent:', request.consentId)
-      const hash = await walletClient.writeContract({
-        address: MEDSYNAPSE_CONTRACT as `0x${string}`,
-        abi: MEDSYNAPSE_ABI,
-        functionName: 'requestDataAccess',
-        args: [request.consentId, purpose],
-        gas: 200000n
-      })
+        const hash = await walletClient.writeContract({
+          address: MEDSYNAPSE_CONTRACT as `0x${string}`,
+          abi: MEDSYNAPSE_ABI,
+          functionName: 'requestDataAccess',
+          args: [request.consentId, purpose],
+          gas: 200000n,
+          chain: sepolia
+        })
       
       console.log('Research request submitted:', hash)
       
@@ -152,7 +154,8 @@ const ResearcherDashboard: React.FC = () => {
           abi: MEDSYNAPSE_ABI,
           functionName: 'recordDataAccess',
           args: [request.consentId as `0x${string}`],
-          gas: 100000n
+          gas: 100000n,
+          chain: sepolia
         })
         
         console.log('Access recorded, transaction:', hash)

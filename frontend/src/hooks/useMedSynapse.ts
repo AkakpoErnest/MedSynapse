@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useAccount, usePublicClient, useWalletClient } from 'wagmi'
+import { sepolia } from 'wagmi/chains'
 import envioService from '../services/envioService'
 import lighthouseService from '../services/lighthouseService'
 import { parseEther } from 'viem'
 
 export const useDataUpload = () => {
   const { address, isConnected } = useAccount()
-  const { data: publicClient } = usePublicClient()
-  const { data: walletClient } = useWalletClient()
+  const publicClient = usePublicClient()
+  const walletClient = useWalletClient()
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
@@ -77,7 +78,8 @@ export const useDataUpload = () => {
             address: MEDSYNAPSE_CONTRACT as `0x${string}`,
             abi: MEDSYNAPSE_ABI,
             functionName: 'createConsent',
-            args: [lighthouseResult.hash, dataType, description]
+            args: [lighthouseResult.hash, dataType, description],
+            chain: sepolia
           })
           
           console.log('Transaction submitted:', hash)

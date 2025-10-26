@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Upload, FileText, Shield, Eye, MoreVertical, Trash2, Eye as ViewIcon, Wifi, WifiOff, Coins, TrendingUp, Users, Award, CheckCircle, XCircle, User } from 'lucide-react'
 import { useAccount, usePublicClient, useWalletClient } from 'wagmi'
+import { sepolia } from 'wagmi/chains'
 import { useContributorConsents, useEnvioConnection, useContributorResearchRequests } from '../hooks/useEnvio'
 import { formatDate, getDataTypeIcon, getStatusColor } from '../utils/helpers'
 // ConsentDetails component removed, using inline modal instead
@@ -16,8 +17,8 @@ const ContributorDashboard: React.FC = () => {
   const [dataCoinLoading, setDataCoinLoading] = useState(true)
   const [approvalSuccess, setApprovalSuccess] = useState<string | null>(null)
   const { address, isConnected } = useAccount()
-  const { data: publicClient } = usePublicClient()
-  const { data: walletClient } = useWalletClient()
+  const publicClient = usePublicClient()
+  const walletClient = useWalletClient()
   const { consents, loading, error, refetch: refetchConsents } = useContributorConsents()
   const { isConnected: envioConnected, isChecking } = useEnvioConnection()
   const { requests: researchRequests, loading: requestsLoading, approvedRequests } = useContributorResearchRequests(address || '')
@@ -129,7 +130,8 @@ const ContributorDashboard: React.FC = () => {
         abi: MEDSYNAPSE_ABI,
         functionName: 'approveResearchRequest',
         args: [consentIdBytes, BigInt(requestIndex)],
-        gas: 300000n // Reduced gas limit
+        gas: 300000n, // Reduced gas limit
+        chain: sepolia
       })
       
       console.log('Approval transaction submitted:', hash)
