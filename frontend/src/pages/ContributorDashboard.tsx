@@ -17,8 +17,8 @@ const ContributorDashboard: React.FC = () => {
   const [dataCoinLoading, setDataCoinLoading] = useState(true)
   const [approvalSuccess, setApprovalSuccess] = useState<string | null>(null)
   const { address, isConnected } = useAccount()
-  const publicClient = usePublicClient()
-  const walletClient = useWalletClient()
+  const { data: publicClient } = usePublicClient()
+  const { data: walletClient } = useWalletClient()
   const { consents, loading, error, refetch: refetchConsents } = useContributorConsents()
   const { isConnected: envioConnected, isChecking } = useEnvioConnection()
   const { requests: researchRequests, loading: requestsLoading, approvedRequests } = useContributorResearchRequests(address || '')
@@ -125,13 +125,12 @@ const ContributorDashboard: React.FC = () => {
       console.log('Approving research request for consent:', consentId, 'index:', requestIndex)
       
       // Try to approve with reasonable gas
-      const hash = await walletClient.writeContract({
+      const hash = await walletClient?.writeContract({
         address: MEDSYNAPSE_CONTRACT as `0x${string}`,
         abi: MEDSYNAPSE_ABI,
         functionName: 'approveResearchRequest',
         args: [consentIdBytes, BigInt(requestIndex)],
-        gas: 300000n, // Reduced gas limit
-        chain: sepolia
+        gas: 300000n // Reduced gas limit
       })
       
       console.log('Approval transaction submitted:', hash)

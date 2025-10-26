@@ -7,8 +7,8 @@ import { parseEther } from 'viem'
 
 export const useDataUpload = () => {
   const { address, isConnected } = useAccount()
-  const publicClient = usePublicClient()
-  const walletClient = useWalletClient()
+  const { data: publicClient } = usePublicClient()
+  const { data: walletClient } = useWalletClient()
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
@@ -74,12 +74,11 @@ export const useDataUpload = () => {
           ] as const
 
           console.log('Calling createConsent on blockchain...')
-          const hash = await walletClient.writeContract({
+          const hash = await walletClient?.writeContract({
             address: MEDSYNAPSE_CONTRACT as `0x${string}`,
             abi: MEDSYNAPSE_ABI,
             functionName: 'createConsent',
-            args: [lighthouseResult.hash, dataType, description],
-            chain: sepolia
+            args: [lighthouseResult.hash, dataType, description]
           })
           
           console.log('Transaction submitted:', hash)

@@ -15,8 +15,8 @@ const ResearcherDashboard: React.FC = () => {
   
   // Blockchain hooks
   const { address, isConnected } = useAccount()
-  const publicClient = usePublicClient()
-  const walletClient = useWalletClient()
+  const { data: publicClient } = usePublicClient()
+  const { data: walletClient } = useWalletClient()
   
   // Use Envio hooks for real-time data
   const { datasets, loading: datasetsLoading, error: datasetsError } = useAvailableDatasets()
@@ -88,13 +88,12 @@ const ResearcherDashboard: React.FC = () => {
       const purpose = `Research on ${request.consentRecord?.description || 'health data'}`
       
       console.log('Requesting data access for consent:', request.consentId)
-        const hash = await walletClient.writeContract({
+        const hash = await walletClient?.writeContract({
           address: MEDSYNAPSE_CONTRACT as `0x${string}`,
           abi: MEDSYNAPSE_ABI,
           functionName: 'requestDataAccess',
           args: [request.consentId, purpose],
-          gas: 200000n,
-          chain: sepolia
+          gas: 200000n
         })
       
       console.log('Research request submitted:', hash)
@@ -149,13 +148,12 @@ const ResearcherDashboard: React.FC = () => {
         ] as const
 
         console.log('Recording data access for consent:', request.consentId)
-        const hash = await walletClient.writeContract({
+        const hash = await walletClient?.writeContract({
           address: MEDSYNAPSE_CONTRACT as `0x${string}`,
           abi: MEDSYNAPSE_ABI,
           functionName: 'recordDataAccess',
           args: [request.consentId as `0x${string}`],
-          gas: 100000n,
-          chain: sepolia
+          gas: 100000n
         })
         
         console.log('Access recorded, transaction:', hash)
