@@ -40,8 +40,8 @@ I've been working on a bunch of improvements lately:
 ### Fixed the Build System
 The app wasn't deploying to Vercel because of TypeScript errors and Wagmi version conflicts. I spent time fixing all of that - updated to Wagmi v2, fixed TypeScript definitions, and got everything compiling properly.
 
-### Token Rewards System
-Consents are tracked as "data coins" on-chain. Each upload creates a consent record on the blockchain, and the contributor's balance is tracked via their consent count. Token rewards (10 MEDS tokens) are planned but not yet implemented - we're focusing on the core consent management and data access workflows first.
+### Token Rewards System ✅ DEPLOYED
+I've deployed the MedSynapseToken (MED) contract to Sepolia and linked it to the consent system. Now when contributors upload health data, they automatically earn 10 MED tokens as a reward for sharing their data. The tokens are minted on-chain during the consent creation transaction, making the reward system completely transparent and automated.
 
 ### Authentication & Roles
 Added a proper login system where you connect your wallet, choose your role (contributor or researcher), and the interface adapts based on what you are. Contributors see upload tools and consent management. Researchers see data browsing and analysis tools.
@@ -352,19 +352,31 @@ MedSynapse/
 
 ## Deployed Contracts
 
-**MedSynapseConsent Contract**
-- **Network**: Ethereum Sepolia Testnet (Migrated from Polygon Amoy)
+### MedSynapseConsent Contract
+- **Network**: Ethereum Sepolia Testnet
 - **Address**: `0xeaDEaAFE440283aEaC909CD58ec367735BfE712f`
 - **Explorer**: [View on Etherscan](https://sepolia.etherscan.io/address/0xeaDEaAFE440283aEaC909CD58ec367735BfE712f)
+- **Purpose**: Manages consent records, research requests, and data access permissions
+
+### MedSynapseToken (MED) Contract
+- **Network**: Ethereum Sepolia Testnet
+- **Address**: `0xb6F34abCfF466A26691161c867c9c82936F05f11`
+- **Explorer**: [View on Etherscan](https://sepolia.etherscan.io/address/0xb6F34abCfF466A26691161c867c9c82936F05f11)
+- **Purpose**: ERC20 reward token - contributors earn 10 MED tokens per consent created
+- **Total Supply**: 1,000,000 MED
+- **Reward Rate**: 10 MED per consent/upload
+- **Linked to**: MedSynapseConsent contract (automatic rewards enabled)
 
 **Why We Migrated to Sepolia:**
-We redeployed from Polygon Amoy to Ethereum Sepolia to enable **1MB.io data coin integration**. 1MB.io supports Sepolia testnet, allowing us to:
+We redeployed from Polygon Amoy to Ethereum Sepolia to enable **1MB.io data coin integration** and to support token rewards. Sepolia testnet allows us to:
 - Launch data coins without using mainnet funds
+- Deploy MED token rewards system for contributors
 - Better integrate with Envio's data infrastructure
 - Access more testnet resources and faucets
 - Meet all bounty qualification requirements
 
-The migration uses the same private key, same contract code, and same functionality - just a different network that works with 1MB.io.
+**Token Rewards Now Live:**
+With the MED token deployed at `0xb6F34abCfF466A26691161c867c9c82936F05f11`, contributors now automatically earn 10 MED tokens for each health data upload that creates a consent record on the blockchain. The token is linked to the consent contract, so rewards are minted automatically during the `createConsent()` transaction.
 
 **Note on 1MB.io Integration:**
 During the data coin launch process on 1MB.io, I encountered an issue where the platform attempted to transfer USDC from my wallet address (`0xF9c3F6011C6C9036b99fa67Fb3ea4A7EBdcC76cB`) to their deployed contract (`0xC7Bc3432B0CcfeFb4237172340Cd8935f95f2990`), but the transaction reverted with "ERC20: transfer amount exceeds balance". This indicates I didn't have sufficient USDC/WETH testnet tokens in my wallet to complete the data coin creation transaction on their platform.
@@ -442,12 +454,13 @@ TUI_OFF=true pnpm dev # Run indexer
 - **Ethereum Sepolia migration** - Moved from Polygon Amoy to Sepolia for 1MB.io compatibility
 - **MetaMask transaction flow** - Users sign transactions through their own wallet for maximum security
 
-### ✅ Data Coin System (Conceptual)
-- **Consent tracking** - Each consent record is tracked on-chain
-- **Balance tracking** - Contributors see their consent count in real-time
+### ✅ Token Rewards System (LIVE!)
+- **MED token deployed** - Contract at `0xb6F34abCfF466A26691161c867c9c82936F05f11` on Sepolia
+- **Automatic rewards** - 10 MED tokens minted per consent/upload
+- **Linked to consent** - Token rewards triggered by createConsent() function
+- **Balance tracking** - Contributors see MED balance + consent count
 - **1MB.io integration** - Using contract at `0xC7Bc3432B0CcfeFb4237172340Cd8935f95f2990` on Sepolia
 - **Platform statistics** - Total consents, active contributors tracked
-- **Note**: MED token rewards are not yet deployed - we track "data coins" as the consent count
 
 ### ✅ Researcher Workflow
 - **Browse datasets** - See all available health data on the researcher dashboard
