@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useAccount } from 'wagmi'
-import { Upload, FileText, AlertCircle, CheckCircle, Shield, Coins, TrendingUp } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Upload, FileText, AlertCircle, CheckCircle, Shield, Coins, TrendingUp, ArrowLeft } from 'lucide-react'
 import { useDataUpload } from '../hooks/useMedSynapse'
 import { validateFileType, formatFileSize, validateDataDescription } from '../utils/helpers'
 import lighthouseService from '../services/lighthouseService'
@@ -187,6 +188,17 @@ const DataUpload: React.FC = () => {
               <li>• You'll earn more points as your data is accessed</li>
               <li>• View your dashboard to track all your contributions</li>
             </ul>
+          </div>
+
+          {/* Back to Dashboard Button */}
+          <div className="flex justify-center pt-4">
+            <Link
+              to="/contributor"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-lg shadow-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 hover:scale-105"
+            >
+              <ArrowLeft className="w-5 h-5 mr-2" />
+              Back to Dashboard
+            </Link>
           </div>
         </div>
       ) : (
