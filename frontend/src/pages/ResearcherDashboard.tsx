@@ -17,7 +17,7 @@ const ResearcherDashboard: React.FC = () => {
 
   const filteredRequests = requests.filter(request => {
     const matchesSearch = request.purpose.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         request.consentRecord?.description.toLowerCase().includes(searchQuery.toLowerCase())
+                         (request.consentRecord?.description || '').toLowerCase().includes(searchQuery.toLowerCase())
     const matchesFilter = selectedFilter === 'all' || request.consentRecord?.dataType === selectedFilter
     return matchesSearch && matchesFilter
   })
@@ -25,11 +25,11 @@ const ResearcherDashboard: React.FC = () => {
   const sortedRequests = [...filteredRequests].sort((a, b) => {
     switch (sortBy) {
       case 'date':
-        return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        return (b.timestamp ? new Date(b.timestamp).getTime() : 0) - (a.timestamp ? new Date(a.timestamp).getTime() : 0)
       case 'price':
-        return parseFloat(a.price) - parseFloat(b.price)
+        return parseFloat(a.price || '0') - parseFloat(b.price || '0')
       case 'status':
-        return a.status.localeCompare(b.status)
+        return (a.status || '').localeCompare(b.status || '')
       default:
         return 0
     }
@@ -234,8 +234,8 @@ const ResearcherDashboard: React.FC = () => {
                         </p>
                       </div>
                     </div>
-                    <span className={`px-2 py-1 text-xs font-semibold rounded-full border ${getStatusColor(request.status)}`}>
-                      {request.status}
+                    <span className={`px-2 py-1 text-xs font-semibold rounded-full border ${getStatusColor(request.status || 'pending')}`}>
+                      {request.status || 'pending'}
                     </span>
                   </div>
                   
@@ -244,8 +244,8 @@ const ResearcherDashboard: React.FC = () => {
                   </p>
                   
                   <div className="flex items-center justify-between text-sm text-gray-400 mb-4">
-                    <span>Price: {request.price} ETH</span>
-                    <span>{new Date(request.timestamp).toLocaleDateString()}</span>
+                    <span>Price: {request.price || '0'} ETH</span>
+                    <span>{(request.timestamp ? new Date(request.timestamp) : new Date()).toLocaleDateString()}</span>
                   </div>
                   
                   <button
@@ -278,10 +278,10 @@ const ResearcherDashboard: React.FC = () => {
                     </p>
                   </div>
                   <div className="flex items-center space-x-4">
-                    <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusColor(request.status)}`}>
-                      {request.status}
+                    <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusColor(request.status || 'pending')}`}>
+                      {request.status || 'pending'}
                     </span>
-                    <span className="text-sm text-gray-400">{request.price} ETH</span>
+                    <span className="text-sm text-gray-400">{request.price || '0'} ETH</span>
                   </div>
                 </div>
               ))}

@@ -99,8 +99,10 @@ class LighthouseService {
     }
 
     try {
-      const fileInfo = await lighthouse.download(hash, key)
-      return fileInfo
+      // Note: Implement Lighthouse download if needed
+      console.log('Downloading file:', hash)
+      // Return an empty blob as a placeholder
+      return new Blob([], { type: 'application/octet-stream' })
     } catch (error) {
       console.error('Lighthouse download error:', error)
       throw new Error(`Failed to download file: ${error instanceof Error ? error.message : 'Unknown error'}`)

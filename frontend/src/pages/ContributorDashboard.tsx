@@ -226,7 +226,7 @@ const ContributorDashboard: React.FC = () => {
                   <tr key={item.id} className="hover:bg-black/30 transition-colors duration-200">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <span className="text-2xl mr-3">{getDataTypeIcon(item.type)}</span>
+                        <span className="text-2xl mr-3">{getDataTypeIcon(item.dataType || 'unknown')}</span>
                         <div>
                           <div className="text-sm font-medium text-white capitalize">
                             {item.dataType.replace('_', ' ')}
@@ -236,7 +236,7 @@ const ContributorDashboard: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                      {formatDate(item.timestamp)}
+                      {formatDate(item.timestamp?.toString() || Date.now().toString())}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${

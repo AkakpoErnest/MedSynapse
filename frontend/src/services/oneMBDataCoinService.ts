@@ -170,14 +170,17 @@ class OneMBDataCoinService {
       const filter = this.contract.filters.Transfer()
       const events = await this.contract.queryFilter(filter, -limit)
       
-      return events.map(event => ({
-        hash: event.transactionHash,
-        from: event.args?.from || '',
-        to: event.args?.to || '',
-        amount: ethers.formatEther(event.args?.value || 0),
-        timestamp: Date.now(),
-        type: 'transfer' as const
-      }))
+      return events.map(event => {
+        const args = (event as any).args || {}
+        return {
+          hash: event.transactionHash,
+          from: args.from || '',
+          to: args.to || '',
+          amount: ethers.formatEther(args.value || 0),
+          timestamp: Date.now(),
+          type: 'transfer' as const
+        }
+      })
     } catch (error) {
       console.error('Error getting transactions:', error)
       return []

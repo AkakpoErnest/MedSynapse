@@ -1,7 +1,7 @@
 import { Routes, Route, BrowserRouter } from 'react-router-dom'
-import { WagmiConfig, createConfig, http } from 'wagmi'
+import { WagmiProvider, createConfig, http } from 'wagmi'
 import { mainnet } from 'wagmi/chains'
-import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
+import { injected } from 'wagmi/connectors'
 
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -14,12 +14,10 @@ import AIInsightsDashboard from './components/AIInsightsDashboard'
 import TailwindTest from './components/TailwindTest'
 import { AuthProvider } from './contexts/AuthContext'
 
-// Wagmi configuration
+// Wagmi v2 configuration
 const config = createConfig({
   chains: [mainnet],
-  connectors: [
-    new MetaMaskConnector(),
-  ],
+  connectors: [injected()],
   transports: {
     [mainnet.id]: http(),
   },
@@ -28,7 +26,7 @@ const config = createConfig({
 function App() {
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <WagmiConfig config={config}>
+      <WagmiProvider config={config}>
         <AuthProvider>
           <Layout>
             <Routes>
@@ -73,7 +71,7 @@ function App() {
             </Routes>
           </Layout>
         </AuthProvider>
-      </WagmiConfig>
+      </WagmiProvider>
     </BrowserRouter>
   )
 }

@@ -267,7 +267,7 @@ const AIInsightsDashboard: React.FC = () => {
                     {Object.entries(patterns.uploadTrends.dataTypeDistribution).map(([type, percentage]) => (
                       <div key={type} className="flex justify-between text-sm mb-1">
                         <span className="text-gray-300">{type.replace('_', ' ')}</span>
-                        <span className="text-emerald-400">{percentage}%</span>
+                        <span className="text-emerald-400">{String(percentage)}%</span>
                       </div>
                     ))}
                   </div>

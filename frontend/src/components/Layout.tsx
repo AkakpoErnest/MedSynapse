@@ -1,16 +1,18 @@
 import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
-import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
+import { injected } from 'wagmi/connectors'
 import { useAuth } from '../contexts/AuthContext'
 import { Menu, X, Stethoscope, LogOut, Shield } from 'lucide-react'
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation()
   const { address, isConnected } = useAccount()
-  const { connect } = useConnect({
-    connector: new MetaMaskConnector(),
-  })
+  const { connect } = useConnect()
+  
+  const handleConnect = () => {
+    connect({ connector: injected() })
+  }
   const { disconnect } = useDisconnect()
   const { user, logout: authLogout } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -128,7 +130,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 </div>
               ) : (
                 <button
-                  onClick={() => connect()}
+                  onClick={handleConnect}
                   className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-4 sm:px-6 py-2 rounded-lg font-medium shadow-lg hover:shadow-emerald-500/50 transition-all duration-300 hover:scale-105 hover:from-emerald-600 hover:to-teal-700 border border-emerald-400/30 text-sm sm:text-base"
                 >
                   Connect Wallet
@@ -169,7 +171,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               {user && (
                 <div className="px-4 py-3 bg-blue-500/20 rounded-lg border border-blue-500/30">
                   <div className="flex items-center space-x-2">
-                    <User className="w-4 h-4 text-blue-400" />
+                    <Shield className="w-4 h-4 text-blue-400" />
                     <span className="text-sm text-blue-400 font-medium capitalize">{user.role}</span>
                   </div>
                 </div>

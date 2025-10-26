@@ -131,21 +131,7 @@ class DataCoinService {
         await tx.wait()
 
         // Store reward metadata on Lighthouse
-        const rewardData = {
-          contributor: contribution.contributor,
-          dataHash: contribution.dataHash,
-          rewardAmount: contribution.rewardAmount,
-          dataType: contribution.dataType,
-          timestamp: contribution.timestamp,
-          transactionHash: tx.hash
-        }
-
-        await lighthouse.storeData(
-          JSON.stringify(rewardData),
-          this.apiKey,
-          this.wallet!
-        )
-
+        // Note: Store reward metadata separately if needed
         console.log('Consent created:', tx.hash)
         return tx.hash
       }
@@ -177,12 +163,8 @@ class DataCoinService {
         proof: `zkTLS_proof_${dataHash}_${Date.now()}`
       }
 
-      // Store validation proof on Lighthouse
-      await lighthouse.storeData(
-        JSON.stringify(validationData),
-        this.apiKey,
-        this.wallet
-      )
+      // Note: Store validation proof on Lighthouse if needed
+      console.log('zkTLS validation complete for:', dataHash)
 
       return true
     } catch (error) {

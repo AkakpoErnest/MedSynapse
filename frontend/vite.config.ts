@@ -13,18 +13,40 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    sourcemap: false, // Disable sourcemaps for production
+    minify: 'esbuild',
     rollupOptions: {
+      external: ['@safe-global/safe-apps-sdk'],
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
-          wagmi: ['wagmi', 'viem']
+          wagmi: ['wagmi', 'viem'],
+          ui: ['lucide-react'],
+          utils: ['ethers', 'graphql-request']
         }
       }
-    }
+    },
+    // Optimize for production
+    target: 'esnext',
+    cssCodeSplit: true,
+    assetsInlineLimit: 4096
   },
   define: {
-    global: 'globalThis'
-  }
+    global: 'globalThis',
+    'process.env': process.env
+  },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      'wagmi',
+      'viem',
+      'ethers',
+      'lucide-react'
+    ]
+  },
+  // Environment variables
+  envPrefix: 'VITE_'
 })

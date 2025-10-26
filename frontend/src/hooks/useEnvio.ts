@@ -195,6 +195,6 @@ export const useEnvioConfig = () => {
   return {
     networkInfo,
     contractAddresses,
-    currentNetwork: networkInfo.mumbai, // Default to Mumbai testnet
+    currentNetwork: networkInfo.amoy, // Default to Amoy testnet
   }
 }

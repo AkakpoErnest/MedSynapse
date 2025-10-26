@@ -18,6 +18,13 @@ export interface ResearchRequest {
   consentId: string
   researcher: string
   purpose: string
+  timestamp?: number
+  status?: string
+  price?: string
+  consentRecord?: {
+    description?: string
+    dataType?: string
+  }
 }
 
 export interface DataAccessRecord {
@@ -189,7 +196,7 @@ class EnvioService {
         const requests = await this.getResearchRequests(1, 0)
         if (requests.length > 0) {
           const latest = requests[0]
-          const requestTimestamp = new Date(latest.timestamp).getTime()
+          const requestTimestamp = latest.timestamp ? new Date(latest.timestamp).getTime() : Date.now()
           
           if (requestTimestamp > lastTimestamp) {
             callback(latest)
